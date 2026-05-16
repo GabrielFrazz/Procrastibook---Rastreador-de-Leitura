@@ -1,4 +1,10 @@
-# CSI606-2026-01 - Trabalho final
+# CSI606-2026-01 - Proposta trabalho final
+
+![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
 ## Aluno: Carlos Gabriel de Oliveira Frazão - 22.1.8100
 
@@ -82,24 +88,27 @@ Neste trabalho não serão considerados:
 - Recomendações baseadas em inteligência artificial;
 - Funcionalidades offline;
 - Sistema avançado de autenticação com múltiplos fatores.
-
-Além disso, o projeto terá foco principal na experiência individual do usuário e no gerenciamento pessoal das leituras.
-
 ---
 
 # 4. Protótipo
 
-Os protótipos das páginas do sistema serão desenvolvidos utilizando ferramentas de prototipação visual, contemplando inicialmente as seguintes telas:
+Os esboços da interface do sistema foram elaborados na forma de protótipos de baixa fidelidade, servindo para ilustrar o fluxo de navegação principal e a disposição inicial dos componentes de tela. Os arquivos de imagem correspondentes encontram-se estruturados na pasta `prototipos`:
 
-- Tela de login e cadastro;
-- Dashboard principal;
-- Página de detalhes da obra;
-- Página de registro de leitura;
-- Página de estatísticas;
-- Página de listas pessoais.
+### Tela de Login
+Interface simples contendo campos para autenticação do usuário na plataforma.
+![Tela de Login](prototipos/login.png)
 
-Os protótipos e demais artefatos do projeto serão disponibilizados no repositório do GitHub do trabalho.
+### Dashboard
+Painel central contendo as métricas de leitura, metas anuais, etc.
+![Dashboard](prototipos/dashboard.png)
 
+### Biblioteca
+Visualização de todas as obras cadastradas pelo usuário, separadas por categorias e progresso.
+![Biblioteca](prototipos/biblioteca.png)
+
+### Adicionar Obra
+Formulário para inclusão manual de novos materiais ou para importação automatizada via APIs externas.
+![Adicionar Obra](prototipos/adicionar.png)
 ---
 
 # 5. Tecnologias Previstas
@@ -123,9 +132,30 @@ Os protótipos e demais artefatos do projeto serão disponibilizados no reposit�
 
 ---
 
-# 6. Referências
+# 6. Estrutura de Pastas Prevista
 
-GOOGLE BOOKS API. Disponível em: <https://developers.google.com/books>. Acesso em: 15 maio 2026.
+Como o projeto encontra-se atualmente na fase de proposta, o repositório contém inicialmente apenas a documentação. A estrutura de diretórios planejada para a implementação da aplicação é a seguinte:
+```text
+📦 procrastibook
+ ┣ 📂 backend             # Lógica de negócios e API REST (Java + Spring Boot)
+ ┣ 📂 frontend            # Interface web (React)
+ ┣ 📂 prototipos          # Arquivos de imagem dos protótipos de baixa fidelidade (provavelmente substituído pelos protótipos de alta no futuro)
+ ┣ 📜 docker-compose.yml  # Configuração para conteinerização do ambiente (DB, etc.)
+ ┗ 📜 README.md           # Documentação e informações principais do projeto
+```
+---
 
-OPEN LIBRARY API. Disponível em: <https://openlibrary.org/developers/api>. Acesso em: 15 maio 2026.
+# 7. Referências
 
+
+GOOGLE BOOKS API. Google Books APIs Getting Started. Disponível em: <https://developers.google.com/books>. Acesso em: 15 maio 2026.
+
+JAVA. Java Platform, Standard Edition Documentation. Disponível em: <https://docs.oracle.com/en/java/>. Acesso em: 15 maio 2026.
+
+OPEN LIBRARY API. Open Library Developer Center. Disponível em: <https://openlibrary.org/developers/api>. Acesso em: 15 maio 2026.
+
+POSTGRESQL. PostgreSQL Database Management System Documentation. Disponível em: <https://www.postgresql.org/docs/>. Acesso em: 15 maio 2026.
+
+REACT. React Documentation and Guides. Disponível em: <https://react.dev>. Acesso em: 15 maio 2026.
+
+SPRING. Spring Boot Reference Documentation. Disponível em: <https://docs.spring.io/spring-boot/docs/>. Acesso em: 15 maio 2026.
