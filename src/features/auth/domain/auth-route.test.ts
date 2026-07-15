@@ -13,6 +13,7 @@ describe("isPrivateRoute", () => {
     "/sessions",
     "/goals",
     "/statistics",
+    "/lists",
     "/lists/lista-id",
     "/update-password",
   ])("reconhece %s como rota privada", (pathname) => {

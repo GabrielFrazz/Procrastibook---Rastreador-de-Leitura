@@ -656,6 +656,10 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      add_work_to_reading_list: {
+        Args: { p_list_id: string; p_work_id: string };
+        Returns: undefined;
+      };
       create_catalog_work: {
         Args: {
           p_authors: string[];
@@ -701,6 +705,15 @@ export type Database = {
           p_type: Database["public"]["Enums"]["work_type"];
         };
         Returns: string;
+      };
+      create_reading_list: {
+        Args: { p_description?: string; p_name: string };
+        Returns: string;
+      };
+      delete_reading_list: { Args: { p_list_id: string }; Returns: boolean };
+      remove_work_from_reading_list: {
+        Args: { p_list_id: string; p_work_id: string };
+        Returns: boolean;
       };
     };
     Enums: {

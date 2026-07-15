@@ -53,11 +53,16 @@ O sistema contará com as seguintes funcionalidades principais:
   - Comentários;
   - Citações favoritas.
 
-- Organização por listas personalizadas:
+- Status de leitura:
   - Quero Ler;
   - Lendo;
   - Finalizado;
   - Abandonado.
+
+- Listas personalizadas independentes dos status:
+  - Criação por nome e descrição;
+  - Uma obra pode participar de várias listas;
+  - Excluir uma lista preserva as obras da biblioteca.
 
 - Dashboard com estatísticas pessoais:
   - Quantidade de obras lidas;

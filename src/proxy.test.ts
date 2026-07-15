@@ -10,6 +10,7 @@ describe("proxy matcher", () => {
     "/sessions",
     "/goals/2026",
     "/statistics",
+    "/lists",
     "/lists/lista-id",
     "/login",
     "/signup",
