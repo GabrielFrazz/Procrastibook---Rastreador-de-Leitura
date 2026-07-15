@@ -711,6 +711,15 @@ export type Database = {
         Returns: string;
       };
       delete_reading_list: { Args: { p_list_id: string }; Returns: boolean };
+      record_work_progress: {
+        Args: {
+          p_event_type: Database["public"]["Enums"]["progress_event_type"];
+          p_expected_previous_value: number;
+          p_new_value: number;
+          p_work_id: string;
+        };
+        Returns: number;
+      };
       remove_work_from_reading_list: {
         Args: { p_list_id: string; p_work_id: string };
         Returns: boolean;

@@ -41,7 +41,9 @@ O sistema contará com as seguintes funcionalidades principais:
 - Controle de progresso de leitura:
   - Páginas lidas;
   - Porcentagem concluída;
-  - Controle de capítulos.
+  - Controle de capítulos;
+  - Histórico auditável, com correção explícita para reduções;
+  - Atualização atômica protegida contra alterações concorrentes.
 
 - Registro de sessões de leitura:
   - Tempo gasto;

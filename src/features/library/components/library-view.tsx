@@ -19,6 +19,7 @@ import {
   type LibrarySort,
   type LibraryWork,
 } from "@/features/library/domain/library-catalog";
+import { WorkProgressForm } from "@/features/progress/components/work-progress-form";
 
 export type LibraryResult =
   | Readonly<{ status: "error" }>
@@ -160,6 +161,14 @@ function LibraryCard({ work }: Readonly<{ work: LibraryWork }>) {
             valueLabel={formatProgressValue(work)}
           />
         )}
+
+        <WorkProgressForm
+          currentProgress={work.currentProgress}
+          id={work.id}
+          progressUnit={work.progressUnit}
+          title={work.title}
+          totalProgress={work.totalProgress}
+        />
 
         <div className="library-card__footer">
           <Badge tone={getStatusTone(work.status)}>
