@@ -16,6 +16,7 @@
     "db:status": "supabase status",
     "db:reset": "supabase db reset",
     "db:test": "supabase test db",
+    "db:types": "supabase gen types typescript --local --schema public > src/lib/supabase/database.types.ts && prettier --write src/lib/supabase/database.types.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -26,6 +27,8 @@
     "validate": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm build"
   },
   "dependencies": {
+    "@supabase/ssr": "0.12.1",
+    "@supabase/supabase-js": "2.110.3",
     "next": "16.2.10",
     "react": "19.2.7",
     "react-dom": "19.2.7"
