@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { LibraryView } from "@/features/library/components/library-view";
 import type { LibraryWork } from "@/features/library/domain/library-catalog";
+import type { ProgressHistoryPage } from "@/features/progress/domain/progress-history";
 
 const previewWorks: LibraryWork[] = [
   {
@@ -122,6 +123,41 @@ const previewWorks: LibraryWork[] = [
   },
 ];
 
+const previewHistory: Readonly<Record<string, ProgressHistoryPage>> = {
+  "10000000-0000-4000-8000-000000000101": {
+    items: [
+      {
+        eventType: "UPDATE",
+        id: "20000000-0000-4000-8000-000000000101",
+        newValue: 184,
+        previousValue: 112,
+        recordedAt: "2026-07-15T17:30:00.000Z",
+      },
+      {
+        eventType: "CORRECTION",
+        id: "20000000-0000-4000-8000-000000000102",
+        newValue: 112,
+        previousValue: 120,
+        recordedAt: "2026-07-14T21:10:00.000Z",
+      },
+      {
+        eventType: "UPDATE",
+        id: "20000000-0000-4000-8000-000000000103",
+        newValue: 120,
+        previousValue: 50,
+        recordedAt: "2026-07-12T13:00:00.000Z",
+      },
+    ],
+    nextPage: 1,
+    total: 8,
+  },
+  "10000000-0000-4000-8000-000000000102": {
+    items: [],
+    nextPage: null,
+    total: 0,
+  },
+};
+
 type LibraryPreviewPageProps = Readonly<{
   searchParams: Promise<{ state?: string | string[] }>;
 }>;
@@ -139,6 +175,7 @@ export default async function LibraryPreviewPage({
   return (
     <AppShell displayName="Gabriel" previewPath="/library">
       <LibraryView
+        historyPreview={previewHistory}
         result={
           state === "error"
             ? { status: "error" }

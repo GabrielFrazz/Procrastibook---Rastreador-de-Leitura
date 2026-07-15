@@ -42,7 +42,7 @@ O sistema contará com as seguintes funcionalidades principais:
   - Páginas lidas;
   - Porcentagem concluída;
   - Controle de capítulos;
-  - Histórico auditável, com correção explícita para reduções;
+  - Histórico auditável e paginado sob demanda, com correção explícita para reduções;
   - Atualização atômica protegida contra alterações concorrentes.
 
 - Registro de sessões de leitura:

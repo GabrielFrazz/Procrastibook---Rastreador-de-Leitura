@@ -193,11 +193,13 @@
   margin-top: auto;
 }
 
-.work-progress-form {
+.work-progress-form,
+.work-progress-history {
   border-top: 1px solid var(--color-border);
 }
 
-.work-progress-form summary {
+.work-progress-form summary,
+.work-progress-history summary {
   min-height: 2.75rem;
   padding: var(--space-3) 0;
   color: var(--color-text);
@@ -206,7 +208,8 @@
   font-weight: 700;
 }
 
-.work-progress-form summary::marker {
+.work-progress-form summary::marker,
+.work-progress-history summary::marker {
   color: var(--color-text-muted);
 }
 
@@ -235,6 +238,91 @@
 }
 
 .work-progress-form .ui-button {
+  width: 100%;
+}
+
+.work-progress-history__count {
+  float: right;
+  min-width: 1.5rem;
+  padding: 0 var(--space-2);
+  border-radius: 999px;
+  background: var(--color-surface-subtle);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  line-height: 1.5rem;
+  text-align: center;
+}
+
+.work-progress-history__body {
+  display: grid;
+  gap: var(--space-3);
+  padding-bottom: var(--space-4);
+}
+
+.work-progress-history__state,
+.work-progress-history__error {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-normal);
+}
+
+.work-progress-history__error {
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--color-error-surface);
+  color: var(--color-error);
+}
+
+.progress-history-list {
+  display: grid;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.progress-history-list li {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-left: 3px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-subtle);
+}
+
+.progress-history-list li.progress-history-event--correction {
+  border-left-color: var(--color-warning);
+  background: var(--color-warning-surface);
+}
+
+.progress-history-event__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.progress-history-event__heading time {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  text-align: right;
+}
+
+.progress-history-list p {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--font-size-sm);
+}
+
+.progress-history-list p > span:first-child {
+  color: var(--color-text-muted);
+}
+
+.work-progress-history .ui-button {
   width: 100%;
 }
 
@@ -308,8 +396,19 @@
   }
 
   .work-progress-form summary,
-  .work-progress-form .ui-button {
+  .work-progress-form .ui-button,
+  .work-progress-history summary,
+  .work-progress-history .ui-button {
     min-height: 2.75rem;
+  }
+
+  .progress-history-event__heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .progress-history-event__heading time {
+    text-align: left;
   }
 }
 

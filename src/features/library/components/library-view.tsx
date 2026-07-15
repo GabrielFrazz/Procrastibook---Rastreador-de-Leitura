@@ -19,15 +19,19 @@ import {
   type LibrarySort,
   type LibraryWork,
 } from "@/features/library/domain/library-catalog";
+import { ProgressHistory } from "@/features/progress/components/progress-history";
 import { WorkProgressForm } from "@/features/progress/components/work-progress-form";
+import type { ProgressHistoryPage } from "@/features/progress/domain/progress-history";
 
 export type LibraryResult =
   | Readonly<{ status: "error" }>
   | Readonly<{ status: "success"; works: readonly LibraryWork[] }>;
 
 type LibraryViewProps = Readonly<{
+  historyPreview?: Readonly<Record<string, ProgressHistoryPage>>;
   notice?: string;
   result: LibraryResult;
+  timezone?: string;
 }>;
 
 const statusLabels = {
@@ -111,7 +115,15 @@ function getCoverStyle(coverUrl: string | null): CSSProperties | undefined {
     : undefined;
 }
 
-function LibraryCard({ work }: Readonly<{ work: LibraryWork }>) {
+function LibraryCard({
+  historyPreview,
+  timezone,
+  work,
+}: Readonly<{
+  historyPreview?: ProgressHistoryPage | undefined;
+  timezone: string;
+  work: LibraryWork;
+}>) {
   return (
     <Card as="article" className="library-card" padded={false}>
       <div
@@ -170,6 +182,14 @@ function LibraryCard({ work }: Readonly<{ work: LibraryWork }>) {
           totalProgress={work.totalProgress}
         />
 
+        <ProgressHistory
+          {...(historyPreview ? { initialPage: historyPreview } : {})}
+          progressUnit={work.progressUnit}
+          timezone={timezone}
+          title={work.title}
+          workId={work.id}
+        />
+
         <div className="library-card__footer">
           <Badge tone={getStatusTone(work.status)}>
             {statusLabels[work.status]}
@@ -193,7 +213,12 @@ function LibraryCard({ work }: Readonly<{ work: LibraryWork }>) {
   );
 }
 
-export function LibraryView({ notice, result }: LibraryViewProps) {
+export function LibraryView({
+  historyPreview,
+  notice,
+  result,
+  timezone = "America/Sao_Paulo",
+}: LibraryViewProps) {
   const works = useMemo(
     () => (result.status === "success" ? result.works : []),
     [result],
@@ -381,7 +406,11 @@ export function LibraryView({ notice, result }: LibraryViewProps) {
               <ul className="library-grid">
                 {filteredWorks.map((work) => (
                   <li key={work.id}>
-                    <LibraryCard work={work} />
+                    <LibraryCard
+                      historyPreview={historyPreview?.[work.id]}
+                      timezone={timezone}
+                      work={work}
+                    />
                   </li>
                 ))}
               </ul>

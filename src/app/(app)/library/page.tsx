@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { getCurrentProfile } from "@/features/auth/data/current-profile";
 import { LibraryView } from "@/features/library/components/library-view";
 import { getLibraryWorks } from "@/features/library/data/library-repository";
 
@@ -14,9 +15,18 @@ type LibraryPageProps = Readonly<{
 export default async function LibraryPage({ searchParams }: LibraryPageProps) {
   const params = await searchParams;
   const notice = typeof params.notice === "string" ? params.notice : undefined;
-  const result = await getLibraryWorks()
-    .then((works) => ({ status: "success" as const, works }))
-    .catch(() => ({ status: "error" as const }));
+  const [result, profile] = await Promise.all([
+    getLibraryWorks()
+      .then((works) => ({ status: "success" as const, works }))
+      .catch(() => ({ status: "error" as const })),
+    getCurrentProfile().catch(() => null),
+  ]);
 
-  return <LibraryView result={result} {...(notice ? { notice } : {})} />;
+  return (
+    <LibraryView
+      result={result}
+      timezone={profile?.timezone ?? "America/Sao_Paulo"}
+      {...(notice ? { notice } : {})}
+    />
+  );
 }
