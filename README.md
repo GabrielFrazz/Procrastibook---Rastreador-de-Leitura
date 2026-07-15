@@ -146,6 +146,8 @@ A aplicação ficará disponível em <http://localhost:3000>.
 
 Copie `.env.example` para `.env.local` quando precisar alterar os valores locais. Os placeholders do Supabase devem ser substituídos pelos valores exibidos por `pnpm db:status`. A chave `GOOGLE_BOOKS_API_KEY` é usada somente no servidor e nunca deve receber o prefixo `NEXT_PUBLIC_`. Ajuste `OPEN_LIBRARY_USER_AGENT` com o nome da aplicação e um contato real; esse valor também permanece somente no servidor.
 
+A busca externa autenticada está disponível em `GET /api/catalog/search`. As respostas normalizadas ficam em cache por 24 horas e cada instância limita cada usuário a 20 consultas por minuto. A seleção de um resultado preenche o formulário de nova obra; o salvamento registra obra, autores, gêneros e referência externa em uma única transação.
+
 ## Supabase local
 
 Com o Docker Desktop em execução:

@@ -3,12 +3,17 @@ import type { Database } from "@/lib/supabase/database.types";
 type WorkType = Database["public"]["Enums"]["work_type"];
 type ProgressUnit = Database["public"]["Enums"]["progress_unit"];
 type ReadingStatus = Database["public"]["Enums"]["reading_status"];
+type ExternalProvider = Database["public"]["Enums"]["external_provider"];
 
 export type WorkFormField =
   | "authors"
   | "cover"
+  | "coverExternalUrl"
   | "description"
+  | "externalId"
+  | "externalProvider"
   | "genres"
+  | "isbn10"
   | "isbn13"
   | "language"
   | "progressUnit"
@@ -38,6 +43,12 @@ export type ManualWorkInput = Readonly<{
   chapterCount?: number;
   coverFile: File | null;
   description?: string;
+  externalSource?: Readonly<{
+    coverUrl?: string;
+    externalId: string;
+    isbn10?: string;
+    provider: ExternalProvider;
+  }>;
   genres: readonly string[];
   isbn13?: string;
   language?: string;
@@ -66,6 +77,10 @@ const readingStatuses: readonly ReadingStatus[] = [
   "READING",
   "FINISHED",
   "ABANDONED",
+];
+const externalProviders: readonly ExternalProvider[] = [
+  "GOOGLE_BOOKS",
+  "OPEN_LIBRARY",
 ];
 const allowedCoverTypes = ["image/jpeg", "image/png", "image/webp"];
 const maxCoverSize = 2 * 1024 * 1024;
@@ -142,6 +157,11 @@ export function validateWorkForm(formData: FormData): WorkValidationResult {
   const startedAtValue = readText(formData, "startedAt");
   const rawIsbn = readText(formData, "isbn13");
   const isbn13 = rawIsbn.replace(/[\s-]/g, "");
+  const externalProviderValue = readText(formData, "externalProvider");
+  const externalId = readText(formData, "externalId");
+  const rawIsbn10 = readText(formData, "isbn10");
+  const isbn10 = rawIsbn10.replace(/[\s-]/g, "").toUpperCase();
+  const coverExternalUrl = readText(formData, "coverExternalUrl");
   const coverValue = formData.get("cover");
   const coverFile =
     typeof File !== "undefined" &&
@@ -214,6 +234,42 @@ export function validateWorkForm(formData: FormData): WorkValidationResult {
     addError(errors, "isbn13", "Informe um ISBN-13 com 13 dígitos.");
   }
 
+  const hasExternalSource =
+    externalProviderValue !== "" ||
+    externalId !== "" ||
+    rawIsbn10 !== "" ||
+    coverExternalUrl !== "";
+
+  if (
+    hasExternalSource &&
+    !externalProviders.includes(externalProviderValue as ExternalProvider)
+  ) {
+    addError(errors, "externalProvider", "Provedor externo inválido.");
+  }
+
+  if (hasExternalSource && (externalId === "" || externalId.length > 256)) {
+    addError(errors, "externalId", "Referência externa inválida.");
+  }
+
+  if (rawIsbn10 !== "" && !/^\d{9}[\dX]$/.test(isbn10)) {
+    addError(errors, "isbn10", "ISBN-10 externo inválido.");
+  }
+
+  if (coverExternalUrl !== "") {
+    try {
+      const url = new URL(coverExternalUrl);
+      const trustedHosts =
+        externalProviderValue === "OPEN_LIBRARY"
+          ? ["covers.openlibrary.org"]
+          : ["books.google.com", "books.googleusercontent.com"];
+
+      if (url.protocol !== "https:" || !trustedHosts.includes(url.hostname)) {
+        addError(errors, "coverExternalUrl", "URL de capa externa inválida.");
+      }
+    } catch {
+      addError(errors, "coverExternalUrl", "URL de capa externa inválida.");
+    }
+  }
   if (startedAtValue !== "" && !/^\d{4}-\d{2}-\d{2}$/.test(startedAtValue)) {
     addError(errors, "startedAt", "Informe uma data válida.");
   }
@@ -249,6 +305,16 @@ export function validateWorkForm(formData: FormData): WorkValidationResult {
       type,
       ...(subtitle ? { subtitle } : {}),
       ...(description ? { description } : {}),
+      ...(hasExternalSource
+        ? {
+            externalSource: {
+              externalId,
+              provider: externalProviderValue as ExternalProvider,
+              ...(coverExternalUrl ? { coverUrl: coverExternalUrl } : {}),
+              ...(isbn10 ? { isbn10 } : {}),
+            },
+          }
+        : {}),
       ...(publisher ? { publisher } : {}),
       ...(publishedYear ? { publishedYear } : {}),
       ...(language ? { language } : {}),

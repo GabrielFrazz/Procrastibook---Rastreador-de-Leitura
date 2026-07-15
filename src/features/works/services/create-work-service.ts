@@ -52,7 +52,7 @@ export async function createManualWork(
     }
   }
 
-  const createResult = await supabase.rpc("create_manual_work", {
+  const commonArguments = {
     p_authors: [...input.authors],
     p_progress_unit: input.progressUnit,
     p_status: input.status,
@@ -69,7 +69,20 @@ export async function createManualWork(
     ...(input.publisher ? { p_publisher: input.publisher } : {}),
     ...(input.startedAt ? { p_started_at: input.startedAt } : {}),
     ...(input.subtitle ? { p_subtitle: input.subtitle } : {}),
-  });
+  };
+  const createResult = input.externalSource
+    ? await supabase.rpc("create_catalog_work", {
+        ...commonArguments,
+        p_external_id: input.externalSource.externalId,
+        p_provider: input.externalSource.provider,
+        ...(input.externalSource.coverUrl
+          ? { p_cover_external_url: input.externalSource.coverUrl }
+          : {}),
+        ...(input.externalSource.isbn10
+          ? { p_isbn_10: input.externalSource.isbn10 }
+          : {}),
+      })
+    : await supabase.rpc("create_manual_work", commonArguments);
 
   if (createResult.error) {
     if (coverPath) {

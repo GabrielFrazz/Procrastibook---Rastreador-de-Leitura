@@ -91,4 +91,42 @@ describe("validação do cadastro manual", () => {
       expect(result.fieldErrors.publishedYear).toBeDefined();
     }
   });
+
+  it("normaliza a referência selecionada no catálogo", () => {
+    const formData = createValidForm();
+    formData.set("externalProvider", "OPEN_LIBRARY");
+    formData.set("externalId", "/works/OL45804W");
+    formData.set("isbn10", "85-359-0277-5");
+    formData.set(
+      "coverExternalUrl",
+      "https://covers.openlibrary.org/b/id/8231856-L.jpg?default=false",
+    );
+
+    const result = validateWorkForm(formData);
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.data.externalSource).toEqual({
+        coverUrl:
+          "https://covers.openlibrary.org/b/id/8231856-L.jpg?default=false",
+        externalId: "/works/OL45804W",
+        isbn10: "8535902775",
+        provider: "OPEN_LIBRARY",
+      });
+    }
+  });
+
+  it("rejeita capa externa fora dos hosts dos provedores", () => {
+    const formData = createValidForm();
+    formData.set("externalProvider", "GOOGLE_BOOKS");
+    formData.set("externalId", "google-1");
+    formData.set("coverExternalUrl", "https://tracker.example/capa.jpg");
+
+    const result = validateWorkForm(formData);
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.fieldErrors.coverExternalUrl).toBeDefined();
+    }
+  });
 });

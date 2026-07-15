@@ -30,6 +30,12 @@ export async function createWorkAction(
 
     if (!result.ok) {
       if (result.code === "DUPLICATE") {
+        if (validation.data.externalSource) {
+          return createWorkErrorState(
+            "Esta obra importada já está cadastrada na sua biblioteca.",
+          );
+        }
+
         return createWorkErrorState(
           "Já existe uma obra com este identificador na sua biblioteca.",
           { isbn13: ["Este ISBN-13 já está cadastrado."] },

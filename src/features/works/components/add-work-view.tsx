@@ -11,7 +11,6 @@ import {
 import { useFormStatus } from "react-dom";
 
 import {
-  Badge,
   Button,
   Card,
   FormField,
@@ -20,6 +19,8 @@ import {
   Select,
   Textarea,
 } from "@/components/ui";
+import { CatalogSearchPanel } from "@/features/catalog/components/catalog-search-panel";
+import type { NormalizedWorkCandidate } from "@/features/catalog/domain/catalog-provider";
 import { createWorkAction } from "@/features/works/actions/create-work-action";
 import {
   INITIAL_WORK_FORM_STATE,
@@ -28,6 +29,7 @@ import {
 } from "@/features/works/domain/work-form";
 
 type AddWorkViewProps = Readonly<{
+  initialCatalogCandidates?: readonly NormalizedWorkCandidate[];
   initialState?: WorkFormState;
 }>;
 
@@ -44,22 +46,6 @@ function BookIcon(props: SVGProps<SVGSVGElement>) {
       {...props}
     >
       <path d="M4.5 5.5A2.5 2.5 0 0 1 7 3h4v16H7a2.5 2.5 0 0 0-2.5 2.5v-16Zm15 0A2.5 2.5 0 0 0 17 3h-4v16h4a2.5 2.5 0 0 1 2.5 2.5v-16Z" />
-    </svg>
-  );
-}
-
-function SearchIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      aria-hidden="true"
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeWidth="1.8"
-      viewBox="0 0 24 24"
-      {...props}
-    >
-      <path d="m20 20-4.3-4.3m2.3-5.2a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
     </svg>
   );
 }
@@ -97,18 +83,27 @@ function FormMessage({ state }: Readonly<{ state: WorkFormState }>) {
   );
 }
 
-function CoverField({ state }: Readonly<{ state: WorkFormState }>) {
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+function CoverField({
+  externalCoverUrl,
+  state,
+}: Readonly<{
+  externalCoverUrl: string | null;
+  state: WorkFormState;
+}>) {
+  const [uploadedPreviewUrl, setUploadedPreviewUrl] = useState<string | null>(
+    null,
+  );
   const [fileName, setFileName] = useState<string | null>(null);
   const error = getFieldError(state, "cover");
+  const previewUrl = uploadedPreviewUrl ?? externalCoverUrl;
 
   useEffect(
     () => () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
+      if (uploadedPreviewUrl) {
+        URL.revokeObjectURL(uploadedPreviewUrl);
       }
     },
-    [previewUrl],
+    [uploadedPreviewUrl],
   );
 
   const previewStyle: CSSProperties | undefined = previewUrl
@@ -144,17 +139,20 @@ function CoverField({ state }: Readonly<{ state: WorkFormState }>) {
         onChange={(event) => {
           const file = event.target.files?.[0];
 
-          if (previewUrl) {
-            URL.revokeObjectURL(previewUrl);
+          if (uploadedPreviewUrl) {
+            URL.revokeObjectURL(uploadedPreviewUrl);
           }
 
           setFileName(file?.name ?? null);
-          setPreviewUrl(file ? URL.createObjectURL(file) : null);
+          setUploadedPreviewUrl(file ? URL.createObjectURL(file) : null);
         }}
         type="file"
       />
       <label className="add-cover__picker" htmlFor="cover">
-        <span>{fileName ?? "Selecionar imagem"}</span>
+        <span>
+          {fileName ??
+            (externalCoverUrl ? "Substituir capa" : "Selecionar imagem")}
+        </span>
         <small>JPEG, PNG ou WebP de até 2 MB</small>
       </label>
       {error ? (
@@ -176,9 +174,17 @@ function SubmitButton() {
   );
 }
 
-function WorkForm({ initialState }: Required<AddWorkViewProps>) {
+function WorkForm({
+  initialState,
+  selectedCandidate,
+}: Readonly<{
+  initialState: WorkFormState;
+  selectedCandidate: NormalizedWorkCandidate | null;
+}>) {
   const [state, formAction] = useActionState(createWorkAction, initialState);
-  const [workType, setWorkType] = useState("BOOK");
+  const [workType, setWorkType] = useState<string>(
+    selectedCandidate?.suggestedType ?? "BOOK",
+  );
   const [progressUnit, setProgressUnit] = useState("PAGE");
   const totalLabel =
     progressUnit === "CHAPTER" ? "Total de capítulos" : "Total de páginas";
@@ -186,9 +192,46 @@ function WorkForm({ initialState }: Required<AddWorkViewProps>) {
   return (
     <form action={formAction} className="add-work-form">
       <FormMessage state={state} />
+      {selectedCandidate ? (
+        <>
+          <input
+            name="externalProvider"
+            type="hidden"
+            value={selectedCandidate.provider}
+          />
+          <input
+            name="externalId"
+            type="hidden"
+            value={selectedCandidate.externalId}
+          />
+          {selectedCandidate.isbn10 ? (
+            <input
+              name="isbn10"
+              type="hidden"
+              value={selectedCandidate.isbn10}
+            />
+          ) : null}
+          {selectedCandidate.coverUrl ? (
+            <input
+              name="coverExternalUrl"
+              type="hidden"
+              value={selectedCandidate.coverUrl}
+            />
+          ) : null}
+        </>
+      ) : null}
+      {selectedCandidate ? (
+        <p className="add-work__import-notice" role="status">
+          Dados de <strong>{selectedCandidate.title}</strong> importados. Revise
+          os campos antes de salvar.
+        </p>
+      ) : null}
 
       <div className="add-work-form__layout">
-        <CoverField state={state} />
+        <CoverField
+          externalCoverUrl={selectedCandidate?.coverUrl ?? null}
+          state={state}
+        />
 
         <Card as="section" className="add-work-fields">
           <fieldset className="add-work-fields__section">
@@ -202,6 +245,7 @@ function WorkForm({ initialState }: Required<AddWorkViewProps>) {
               >
                 <Input
                   {...getFieldA11y(state, "title")}
+                  defaultValue={selectedCandidate?.title}
                   id="title"
                   maxLength={200}
                   name="title"
@@ -217,6 +261,7 @@ function WorkForm({ initialState }: Required<AddWorkViewProps>) {
               >
                 <Input
                   {...getFieldA11y(state, "subtitle")}
+                  defaultValue={selectedCandidate?.subtitle ?? undefined}
                   id="subtitle"
                   maxLength={200}
                   name="subtitle"
@@ -233,6 +278,7 @@ function WorkForm({ initialState }: Required<AddWorkViewProps>) {
                 >
                   <Input
                     {...getFieldA11y(state, "authors", true)}
+                    defaultValue={selectedCandidate?.authors.join("; ")}
                     id="authors"
                     maxLength={968}
                     name="authors"
@@ -326,6 +372,7 @@ function WorkForm({ initialState }: Required<AddWorkViewProps>) {
               >
                 <Input
                   {...getFieldA11y(state, "total", true)}
+                  defaultValue={selectedCandidate?.pageCount ?? undefined}
                   disabled={progressUnit === "PERCENT"}
                   id="total"
                   inputMode="numeric"
@@ -345,6 +392,7 @@ function WorkForm({ initialState }: Required<AddWorkViewProps>) {
                 >
                   <Input
                     {...getFieldA11y(state, "genres", true)}
+                    defaultValue={selectedCandidate?.genres.join(", ")}
                     id="genres"
                     maxLength={620}
                     name="genres"
@@ -365,6 +413,7 @@ function WorkForm({ initialState }: Required<AddWorkViewProps>) {
               >
                 <Input
                   {...getFieldA11y(state, "publisher")}
+                  defaultValue={selectedCandidate?.publisher ?? undefined}
                   id="publisher"
                   maxLength={160}
                   name="publisher"
@@ -378,6 +427,7 @@ function WorkForm({ initialState }: Required<AddWorkViewProps>) {
               >
                 <Input
                   {...getFieldA11y(state, "publishedYear")}
+                  defaultValue={selectedCandidate?.publishedYear ?? undefined}
                   id="publishedYear"
                   inputMode="numeric"
                   max={2100}
@@ -394,6 +444,7 @@ function WorkForm({ initialState }: Required<AddWorkViewProps>) {
               >
                 <Input
                   {...getFieldA11y(state, "language")}
+                  defaultValue={selectedCandidate?.language ?? undefined}
                   id="language"
                   maxLength={35}
                   name="language"
@@ -408,6 +459,7 @@ function WorkForm({ initialState }: Required<AddWorkViewProps>) {
               >
                 <Input
                   {...getFieldA11y(state, "isbn13")}
+                  defaultValue={selectedCandidate?.isbn13 ?? undefined}
                   id="isbn13"
                   inputMode="numeric"
                   maxLength={17}
@@ -437,6 +489,7 @@ function WorkForm({ initialState }: Required<AddWorkViewProps>) {
                 >
                   <Textarea
                     {...getFieldA11y(state, "description")}
+                    defaultValue={selectedCandidate?.description ?? undefined}
                     id="description"
                     maxLength={5000}
                     name="description"
@@ -460,8 +513,12 @@ function WorkForm({ initialState }: Required<AddWorkViewProps>) {
 }
 
 export function AddWorkView({
+  initialCatalogCandidates = [],
   initialState = INITIAL_WORK_FORM_STATE,
 }: AddWorkViewProps) {
+  const [selectedCandidate, setSelectedCandidate] =
+    useState<NormalizedWorkCandidate | null>(null);
+
   return (
     <div className="add-work">
       <PageHeader
@@ -470,29 +527,31 @@ export function AddWorkView({
             Voltar à biblioteca
           </Link>
         }
-        description="Cadastre os dados essenciais agora e complete os detalhes quando quiser."
+        description="Busque uma obra para importar os dados ou preencha o formulário manualmente."
         eyebrow="Nova leitura"
         title="Adicionar obra"
       />
 
-      <Card as="section" className="add-work-catalog">
-        <span className="add-work-catalog__icon">
-          <SearchIcon />
-        </span>
-        <div>
-          <div className="add-work-catalog__heading">
-            <h2>Importação automática</h2>
-            <Badge>Próxima etapa</Badge>
-          </div>
-          <p>
-            A busca por Google Books e Open Library será conectada na entrega de
-            catálogo externo. O cadastro manual já salva todos os dados com
-            segurança.
-          </p>
-        </div>
-      </Card>
+      <CatalogSearchPanel
+        initialCandidates={initialCatalogCandidates}
+        onSelect={(candidate) => {
+          setSelectedCandidate(candidate);
+          window.setTimeout(
+            () => document.querySelector<HTMLInputElement>("#title")?.focus(),
+            0,
+          );
+        }}
+      />
 
-      <WorkForm initialState={initialState} />
+      <WorkForm
+        key={
+          selectedCandidate
+            ? `${selectedCandidate.provider}:${selectedCandidate.externalId}`
+            : "manual"
+        }
+        initialState={initialState}
+        selectedCandidate={selectedCandidate}
+      />
     </div>
   );
 }
