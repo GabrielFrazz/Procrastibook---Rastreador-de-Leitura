@@ -154,6 +154,7 @@ Com o Docker Desktop em execução:
 pnpm db:start
 pnpm db:status
 pnpm db:reset
+pnpm db:test
 pnpm db:stop
 ```
 
@@ -164,6 +165,7 @@ Serviços locais padrão:
 - Mailpit: <http://127.0.0.1:54324>.
 
 `pnpm db:reset` recria o banco a partir das migrações e executa `supabase/seed.sql`.
+`pnpm db:test` executa os testes pgTAP de constraints e isolamento por RLS.
 
 ## Comandos de qualidade
 
