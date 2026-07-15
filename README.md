@@ -47,8 +47,9 @@ O sistema contará com as seguintes funcionalidades principais:
 
 - Registro de sessões de leitura:
   - Tempo gasto;
-  - Quantidade de páginas lidas;
-  - Anotações pessoais.
+  - Avanço por páginas, capítulos ou percentual;
+  - Anotações pessoais;
+  - Resumo acumulado e histórico recente.
 
 - Sistema de avaliações e reviews:
   - Notas;
