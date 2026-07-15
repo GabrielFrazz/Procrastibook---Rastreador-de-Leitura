@@ -1,6 +1,15 @@
 import { z } from "zod";
 
 import {
+  normalizeCatalogList,
+  normalizeCatalogText,
+  normalizeCatalogUrl,
+  normalizeIsbn,
+  normalizePageCount,
+  normalizePublishedYear,
+} from "@/features/catalog/domain/catalog-normalization";
+
+import {
   CatalogProviderError,
   type CatalogProvider,
   type CatalogQuery,
@@ -63,134 +72,19 @@ const googleBooksVolumeSchema = z.object({
 
 type GoogleBooksVolume = z.infer<typeof googleBooksVolumeSchema>;
 
-const entityMap: Readonly<Record<string, string>> = {
-  amp: "&",
-  apos: "'",
-  gt: ">",
-  lt: "<",
-  nbsp: " ",
-  quot: '"',
-};
-
-function decodeEntity(entity: string) {
-  const normalized = entity.toLowerCase();
-
-  const decodeCodePoint = (value: string, radix: number) => {
-    const codePoint = Number.parseInt(value, radix);
-
-    if (
-      !Number.isInteger(codePoint) ||
-      codePoint < 0 ||
-      codePoint > 0x10ffff ||
-      (codePoint >= 0xd800 && codePoint <= 0xdfff)
-    ) {
-      return " ";
-    }
-
-    return String.fromCodePoint(codePoint);
-  };
-
-  if (normalized.startsWith("#x")) {
-    return decodeCodePoint(normalized.slice(2), 16);
-  }
-
-  if (normalized.startsWith("#")) {
-    return decodeCodePoint(normalized.slice(1), 10);
-  }
-
-  return entityMap[normalized] ?? " ";
-}
-
-function normalizeText(value: string | undefined, maximumLength: number) {
-  if (!value) {
-    return null;
-  }
-
-  const normalized = value
-    .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, " ")
-    .replace(/<br\s*\/?>|<\/p\s*>/gi, " ")
-    .replace(/<[^>]+>/g, " ")
-    .replace(/&([a-z]+|#\d+|#x[\da-f]+);/gi, (_match, entity: string) =>
-      decodeEntity(entity),
-    )
-    .replace(/[\u0000-\u001f\u007f]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-
-  return normalized ? normalized.slice(0, maximumLength) : null;
-}
-
-function normalizeList(
-  values: readonly string[] | undefined,
-  maximumItems: number,
-  maximumLength: number,
-) {
-  const seen = new Set<string>();
-  const normalized: string[] = [];
-
-  for (const value of values ?? []) {
-    const item = normalizeText(value, maximumLength);
-    const key = item?.toLocaleLowerCase("pt-BR");
-
-    if (!item || !key || seen.has(key)) {
-      continue;
-    }
-
-    seen.add(key);
-    normalized.push(item);
-
-    if (normalized.length === maximumItems) {
-      break;
-    }
-  }
-
-  return normalized;
-}
-
-function normalizeUrl(value: string | undefined) {
-  if (!value) {
-    return null;
-  }
-
-  try {
-    const url = new URL(value);
-
-    if (url.protocol !== "http:" && url.protocol !== "https:") {
-      return null;
-    }
-
-    url.protocol = "https:";
-    return url.toString();
-  } catch {
-    return null;
-  }
-}
-
-function normalizePublishedYear(value: string | undefined) {
-  const match = value?.match(/(?:^|\D)(\d{4})(?:\D|$)/);
-  const year = match?.[1] ? Number(match[1]) : Number.NaN;
-
-  return Number.isInteger(year) && year >= 1000 && year <= 2100 ? year : null;
-}
-
 function findIdentifier(
   identifiers: GoogleBooksVolume["volumeInfo"]["industryIdentifiers"],
   type: "ISBN_10" | "ISBN_13",
 ) {
-  const rawValue = identifiers?.find((item) => item.type === type)?.identifier;
-  const value = rawValue?.replace(/[\s-]/g, "").toUpperCase();
+  const value = identifiers?.find((item) => item.type === type)?.identifier;
 
-  if (type === "ISBN_10") {
-    return value && /^\d{9}[\dX]$/.test(value) ? value : null;
-  }
-
-  return value && /^\d{13}$/.test(value) ? value : null;
+  return normalizeIsbn(value, type);
 }
 
 function pickCoverUrl(
   imageLinks: GoogleBooksVolume["volumeInfo"]["imageLinks"],
 ) {
-  return normalizeUrl(
+  return normalizeCatalogUrl(
     imageLinks?.extraLarge ??
       imageLinks?.large ??
       imageLinks?.medium ??
@@ -203,35 +97,27 @@ function pickCoverUrl(
 function normalizeVolume(
   volume: GoogleBooksVolume,
 ): NormalizedWorkCandidate | null {
-  const title = normalizeText(volume.volumeInfo.title, 200);
+  const title = normalizeCatalogText(volume.volumeInfo.title, 200);
 
   if (!title) {
     return null;
   }
 
-  const pageCount = volume.volumeInfo.pageCount;
-
   return {
-    authors: normalizeList(volume.volumeInfo.authors, 8, 120),
+    authors: normalizeCatalogList(volume.volumeInfo.authors, 8, 120),
     coverUrl: pickCoverUrl(volume.volumeInfo.imageLinks),
-    description: normalizeText(volume.volumeInfo.description, 5_000),
+    description: normalizeCatalogText(volume.volumeInfo.description, 5_000),
     externalId: volume.id,
-    genres: normalizeList(volume.volumeInfo.categories, 10, 60),
-    infoUrl: normalizeUrl(volume.volumeInfo.infoLink),
+    genres: normalizeCatalogList(volume.volumeInfo.categories, 10, 60),
+    infoUrl: normalizeCatalogUrl(volume.volumeInfo.infoLink),
     isbn10: findIdentifier(volume.volumeInfo.industryIdentifiers, "ISBN_10"),
     isbn13: findIdentifier(volume.volumeInfo.industryIdentifiers, "ISBN_13"),
-    language: normalizeText(volume.volumeInfo.language, 35),
-    pageCount:
-      pageCount &&
-      Number.isInteger(pageCount) &&
-      pageCount > 0 &&
-      pageCount <= 10_000_000
-        ? pageCount
-        : null,
+    language: normalizeCatalogText(volume.volumeInfo.language, 35),
+    pageCount: normalizePageCount(volume.volumeInfo.pageCount),
     provider: "GOOGLE_BOOKS",
     publishedYear: normalizePublishedYear(volume.volumeInfo.publishedDate),
-    publisher: normalizeText(volume.volumeInfo.publisher, 160),
-    subtitle: normalizeText(volume.volumeInfo.subtitle, 200),
+    publisher: normalizeCatalogText(volume.volumeInfo.publisher, 160),
+    subtitle: normalizeCatalogText(volume.volumeInfo.subtitle, 200),
     suggestedType: volume.saleInfo?.isEbook ? "EBOOK" : "BOOK",
     title,
   };

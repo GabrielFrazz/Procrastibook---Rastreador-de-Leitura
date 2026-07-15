@@ -144,7 +144,7 @@ pnpm dev
 
 A aplicação ficará disponível em <http://localhost:3000>.
 
-Copie `.env.example` para `.env.local` quando precisar alterar os valores locais. Os placeholders do Supabase devem ser substituídos pelos valores exibidos por `pnpm db:status`. A chave `GOOGLE_BOOKS_API_KEY` é usada somente no servidor e nunca deve receber o prefixo `NEXT_PUBLIC_`.
+Copie `.env.example` para `.env.local` quando precisar alterar os valores locais. Os placeholders do Supabase devem ser substituídos pelos valores exibidos por `pnpm db:status`. A chave `GOOGLE_BOOKS_API_KEY` é usada somente no servidor e nunca deve receber o prefixo `NEXT_PUBLIC_`. Ajuste `OPEN_LIBRARY_USER_AGENT` com o nome da aplicação e um contato real; esse valor também permanece somente no servidor.
 
 ## Supabase local
 

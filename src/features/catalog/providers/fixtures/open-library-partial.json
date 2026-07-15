@@ -1,0 +1,19 @@
+{
+  "docs": [
+    {
+      "key": "OL999W",
+      "title": "  Obra sem metadados  ",
+      "isbn": ["invalido"],
+      "cover_i": -4,
+      "number_of_pages_median": 4.5
+    },
+    {
+      "key": "/authors/OL1A",
+      "title": "Chave que não representa uma obra"
+    },
+    {
+      "key": "/works/OLINVALIDW",
+      "title": 12
+    }
+  ]
+}
