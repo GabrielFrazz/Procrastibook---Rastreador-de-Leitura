@@ -132,7 +132,8 @@ O projeto será implementado como uma aplicação full stack em um único worksp
 Pré-requisitos:
 
 - Node.js 24 LTS;
-- pnpm 11.
+- pnpm 11;
+- Docker Desktop com o mecanismo WSL 2 para o Supabase local.
 
 Instale as dependências e execute o servidor:
 
@@ -143,7 +144,26 @@ pnpm dev
 
 A aplicação ficará disponível em <http://localhost:3000>.
 
-Copie `.env.example` para `.env.local` quando precisar alterar os valores locais. Nesta fase, nenhuma credencial externa é necessária.
+Copie `.env.example` para `.env.local` quando precisar alterar os valores locais. Os placeholders do Supabase devem ser substituídos pelos valores exibidos por `pnpm db:status`.
+
+## Supabase local
+
+Com o Docker Desktop em execução:
+
+```bash
+pnpm db:start
+pnpm db:status
+pnpm db:reset
+pnpm db:stop
+```
+
+Serviços locais padrão:
+
+- API: <http://127.0.0.1:54321>;
+- Studio: <http://127.0.0.1:54323>;
+- Mailpit: <http://127.0.0.1:54324>.
+
+`pnpm db:reset` recria o banco a partir das migrações e executa `supabase/seed.sql`.
 
 ## Comandos de qualidade
 
