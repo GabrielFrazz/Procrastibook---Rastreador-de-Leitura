@@ -7,8 +7,8 @@ import type {
 
 type FormFieldProps = Readonly<{
   children: ReactNode;
-  error?: string;
-  hint?: string;
+  error?: string | undefined;
+  hint?: string | undefined;
   htmlFor: string;
   label: string;
   required?: boolean;

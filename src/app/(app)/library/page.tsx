@@ -7,10 +7,16 @@ export const metadata: Metadata = {
   title: "Biblioteca | Procrastibook",
 };
 
-export default async function LibraryPage() {
+type LibraryPageProps = Readonly<{
+  searchParams: Promise<{ notice?: string | string[] }>;
+}>;
+
+export default async function LibraryPage({ searchParams }: LibraryPageProps) {
+  const params = await searchParams;
+  const notice = typeof params.notice === "string" ? params.notice : undefined;
   const result = await getLibraryWorks()
     .then((works) => ({ status: "success" as const, works }))
     .catch(() => ({ status: "error" as const }));
 
-  return <LibraryView result={result} />;
+  return <LibraryView result={result} {...(notice ? { notice } : {})} />;
 }

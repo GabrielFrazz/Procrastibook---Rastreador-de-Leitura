@@ -25,6 +25,7 @@ export type LibraryResult =
   | Readonly<{ status: "success"; works: readonly LibraryWork[] }>;
 
 type LibraryViewProps = Readonly<{
+  notice?: string;
   result: LibraryResult;
 }>;
 
@@ -183,7 +184,7 @@ function LibraryCard({ work }: Readonly<{ work: LibraryWork }>) {
   );
 }
 
-export function LibraryView({ result }: LibraryViewProps) {
+export function LibraryView({ notice, result }: LibraryViewProps) {
   const works = useMemo(
     () => (result.status === "success" ? result.works : []),
     [result],
@@ -232,6 +233,12 @@ export function LibraryView({ result }: LibraryViewProps) {
         eyebrow="Sua coleção"
         title="Biblioteca"
       />
+
+      {notice === "work-created" ? (
+        <p className="library-notice" role="status">
+          Obra adicionada à biblioteca com sucesso.
+        </p>
+      ) : null}
 
       {result.status === "error" ? (
         <Card as="section">

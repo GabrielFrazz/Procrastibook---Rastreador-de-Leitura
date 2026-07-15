@@ -656,7 +656,27 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      create_manual_work: {
+        Args: {
+          p_authors: string[];
+          p_chapter_count?: number;
+          p_cover_path?: string;
+          p_description?: string;
+          p_genres?: string[];
+          p_isbn_13?: string;
+          p_language?: string;
+          p_page_count?: number;
+          p_progress_unit: Database["public"]["Enums"]["progress_unit"];
+          p_published_year?: number;
+          p_publisher?: string;
+          p_started_at?: string;
+          p_status: Database["public"]["Enums"]["reading_status"];
+          p_subtitle?: string;
+          p_title: string;
+          p_type: Database["public"]["Enums"]["work_type"];
+        };
+        Returns: string;
+      };
     };
     Enums: {
       external_provider: "GOOGLE_BOOKS" | "OPEN_LIBRARY";
