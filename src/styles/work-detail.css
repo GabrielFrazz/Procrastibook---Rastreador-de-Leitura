@@ -1,0 +1,362 @@
+.work-detail-page {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.work-detail-back {
+  width: fit-content;
+  min-height: var(--touch-target);
+  color: var(--color-text-subtle);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  line-height: var(--touch-target);
+  text-decoration: none;
+}
+
+.work-detail-back:hover {
+  color: var(--color-text);
+  text-decoration: underline;
+}
+
+.work-detail-overview {
+  display: grid;
+  grid-template-columns: minmax(12rem, 17rem) minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.work-detail-cover {
+  display: grid;
+  min-height: 26rem;
+  place-items: center;
+  border-right: 1px solid var(--color-border);
+  background: var(--color-surface-strong);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: 750;
+}
+
+.work-detail-cover--image {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.work-detail-overview__content {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: var(--space-6);
+  padding: var(--space-8);
+}
+
+.work-detail-overview__badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.work-detail-overview__badges > span:not(.ui-badge) {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.work-detail-overview h1,
+.work-detail-overview h2,
+.work-detail-overview p {
+  margin: 0;
+}
+
+.work-detail-overview h1 {
+  font-size: var(--font-size-2xl);
+  letter-spacing: -0.04em;
+  line-height: var(--line-height-tight);
+  overflow-wrap: anywhere;
+}
+
+.work-detail-subtitle,
+.work-detail-authors {
+  margin-top: var(--space-2) !important;
+  color: var(--color-text-muted);
+  line-height: var(--line-height-normal);
+}
+
+.work-detail-open-progress {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-subtle);
+  color: var(--color-text-subtle);
+  font-size: var(--font-size-sm);
+}
+
+.work-detail-metadata {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.work-detail-metadata > div {
+  min-width: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-subtle);
+}
+
+.work-detail-metadata dt {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 650;
+}
+
+.work-detail-metadata dd {
+  margin: var(--space-1) 0 0;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.work-detail-description {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.work-detail-description h2 {
+  margin-bottom: var(--space-2);
+  font-size: var(--font-size-md);
+}
+
+.work-detail-description p {
+  max-width: 78ch;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+.work-engagement-grid,
+.work-note-collections {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.work-review-card,
+.work-note-form-card {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-6);
+}
+
+.work-detail-section-heading p,
+.work-detail-section-heading h2 {
+  margin: 0;
+}
+
+.work-detail-section-heading p {
+  margin-bottom: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.work-detail-section-heading h2 {
+  font-size: var(--font-size-lg);
+  letter-spacing: -0.02em;
+}
+
+.work-detail-section-heading--collection {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.work-detail-section-heading--collection > span {
+  min-width: 1.75rem;
+  border-radius: 999px;
+  background: var(--color-surface-strong);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  line-height: 1.75rem;
+  text-align: center;
+}
+
+.work-review-form,
+.work-note-form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.work-review-form .ui-textarea,
+.work-note-form .ui-textarea {
+  min-height: 8rem;
+}
+
+.work-note-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.work-note-form > .ui-form-field:last-of-type,
+.work-note-form .work-engagement-actions {
+  grid-column: 1 / -1;
+}
+
+.work-engagement-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+.work-engagement-message {
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+}
+
+.work-engagement-message--error {
+  border-color: var(--color-error-border);
+  background: var(--color-error-surface);
+  color: var(--color-error);
+}
+
+.work-engagement-message--success {
+  border-color: var(--color-success-border);
+  background: var(--color-success-surface);
+  color: var(--color-success);
+}
+
+.work-note-list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.work-note-card {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-3);
+}
+
+.work-note-card--quote {
+  border-left: 3px solid var(--color-warning);
+}
+
+.work-note-card header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.work-note-card header > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.work-note-card header > div > span:not(.ui-badge),
+.work-note-card time,
+.work-note-card__session {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.work-note-card p,
+.work-note-card blockquote {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  overflow-wrap: anywhere;
+}
+
+.work-note-card blockquote {
+  color: var(--color-text-subtle);
+  font-style: italic;
+}
+
+.work-note-card form {
+  justify-self: end;
+}
+
+.work-note-card .ui-button {
+  min-height: var(--touch-target);
+  color: var(--color-error);
+}
+
+@media (max-width: 64rem) {
+  .work-detail-metadata {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .work-engagement-grid,
+  .work-note-collections {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 48rem) {
+  .work-detail-overview {
+    grid-template-columns: minmax(9rem, 13rem) minmax(0, 1fr);
+  }
+
+  .work-detail-cover {
+    min-height: 22rem;
+  }
+
+  .work-detail-overview__content {
+    padding: var(--space-6);
+  }
+}
+
+@media (max-width: 40rem) {
+  .work-detail-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .work-detail-cover {
+    min-height: 12rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .work-detail-overview__content,
+  .work-review-card,
+  .work-note-form-card,
+  .work-note-card {
+    padding: var(--space-4);
+  }
+
+  .work-detail-overview h1 {
+    font-size: var(--font-size-xl);
+  }
+
+  .work-detail-metadata,
+  .work-note-form {
+    grid-template-columns: 1fr;
+  }
+
+  .work-note-form > .ui-form-field:last-of-type,
+  .work-note-form .work-engagement-actions {
+    grid-column: auto;
+  }
+
+  .work-engagement-actions,
+  .work-note-card header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .work-engagement-actions,
+  .work-engagement-actions .ui-button {
+    width: 100%;
+  }
+}

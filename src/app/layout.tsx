@@ -11,6 +11,7 @@ import "@/styles/library.css";
 import "@/styles/add-work.css";
 import "@/styles/reading-lists.css";
 import "@/styles/reading-sessions.css";
+import "@/styles/work-detail.css";
 
 export const metadata: Metadata = {
   title: "Procrastibook",

@@ -52,9 +52,9 @@ O sistema contará com as seguintes funcionalidades principais:
   - Resumo acumulado e histórico recente.
 
 - Sistema de avaliações e reviews:
-  - Notas;
-  - Comentários;
-  - Citações favoritas.
+  - Avaliação editável de 1 a 5 por obra;
+  - Comentários opcionais;
+  - Anotações e citações com localização e vínculo opcional a uma sessão.
 
 - Status de leitura:
   - Quero Ler;

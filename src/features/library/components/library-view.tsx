@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState, type CSSProperties, type SVGProps } from "react";
 
 import {
@@ -150,7 +151,9 @@ function LibraryCard({
             <Badge>{typeLabels[work.type]}</Badge>
             {work.genres[0] ? <span>{work.genres[0]}</span> : null}
           </div>
-          <h2>{work.title}</h2>
+          <h2>
+            <Link href={"/library/" + work.id}>{work.title}</Link>
+          </h2>
           <p className="library-card__authors">
             {work.authors.length > 0
               ? work.authors.join(", ")
