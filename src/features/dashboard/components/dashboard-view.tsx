@@ -175,6 +175,7 @@ function CurrentWork({ work }: Readonly<{ work: DashboardCurrentWork }>) {
           </p>
         ) : (
           <Progress
+            ariaLabel={`Progresso de ${work.title}`}
             label="Progresso"
             max={work.totalProgress}
             value={work.currentProgress}
@@ -244,7 +245,10 @@ function DashboardContent({
               <p className="dashboard-section__eyebrow">Em andamento</p>
               <h2 id="dashboard-current-title">Continuar lendo</h2>
             </div>
-            <Badge>{summary.statusCounts.reading} ativas</Badge>
+            <Badge>
+              {summary.statusCounts.reading}{" "}
+              {summary.statusCounts.reading === 1 ? "ativa" : "ativas"}
+            </Badge>
           </div>
           {summary.currentWorks.length > 0 ? (
             <ul className="dashboard-work-list">
@@ -354,7 +358,9 @@ function DashboardContent({
                       {formatDate(review.updatedAt, timezone)}
                     </time>
                   </div>
-                  <span aria-label={`Avaliação ${review.rating} de 5`}>
+                  <span
+                    aria-label={`Avaliação ${numberFormatter.format(review.rating)} de 5`}
+                  >
                     ★ {numberFormatter.format(review.rating)}
                   </span>
                 </li>

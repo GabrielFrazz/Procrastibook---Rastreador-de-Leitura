@@ -1,4 +1,5 @@
 type ProgressProps = Readonly<{
+  ariaLabel?: string;
   label: string;
   max?: number;
   value: number;
@@ -6,6 +7,7 @@ type ProgressProps = Readonly<{
 }>;
 
 export function Progress({
+  ariaLabel,
   label,
   max = 100,
   value,
@@ -24,7 +26,11 @@ export function Progress({
         <strong>{label}</strong>
         <span>{valueLabel ?? `${percentage}%`}</span>
       </div>
-      <progress aria-label={label} max={safeMax} value={safeValue} />
+      <progress
+        aria-label={ariaLabel ?? label}
+        max={safeMax}
+        value={safeValue}
+      />
     </div>
   );
 }
