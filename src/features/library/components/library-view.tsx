@@ -94,9 +94,13 @@ function formatProgressValue(work: LibraryWork) {
   const unit = work.currentProgress === 1 ? labels[0] : labels[1];
   const current = `${numberFormatter.format(work.currentProgress)} ${unit}`;
 
-  return work.totalProgress === null
-    ? current
-    : `${numberFormatter.format(work.currentProgress)} de ${numberFormatter.format(work.totalProgress)}`;
+  if (work.totalProgress === null) {
+    return current;
+  }
+
+  const totalUnit = work.totalProgress === 1 ? labels[0] : labels[1];
+
+  return `${numberFormatter.format(work.currentProgress)} de ${numberFormatter.format(work.totalProgress)} ${totalUnit}`;
 }
 
 function getCoverStyle(coverUrl: string | null): CSSProperties | undefined {
@@ -332,7 +336,7 @@ export function LibraryView({ result }: LibraryViewProps) {
               </FormField>
             </div>
 
-            {hasActiveFilters ? (
+            {hasActiveFilters && filteredWorks.length > 0 ? (
               <div className="library-filters__actions">
                 <Button onClick={clearFilters} size="sm" variant="ghost">
                   Limpar filtros
