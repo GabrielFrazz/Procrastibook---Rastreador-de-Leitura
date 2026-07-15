@@ -28,9 +28,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   return (
     <section className="auth-card" aria-labelledby="login-title">
       <div className="auth-card__heading">
-        <p className="auth-card__eyebrow">Bem-vindo de volta</p>
-        <h1 id="login-title">Entre na sua conta</h1>
-        <p>Continue acompanhando suas leituras de onde parou.</p>
+        <h1 id="login-title">Bem-vindo de volta</h1>
+        <p>Entre para continuar sua leitura.</p>
       </div>
 
       {feedback ? (
@@ -42,11 +41,15 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         </p>
       ) : null}
 
-      <GoogleSignInLink enabled={isGoogleAuthEnabled()} nextPath={nextPath} />
       <LoginForm nextPath={nextPath} />
+      <GoogleSignInLink
+        dividerPlacement="before"
+        enabled={isGoogleAuthEnabled()}
+        nextPath={nextPath}
+      />
 
       <p className="auth-card__footer">
-        Ainda não tem uma conta? <Link href="/signup">Criar conta</Link>
+        Não tem uma conta? <Link href="/signup">Cadastre-se</Link>
       </p>
     </section>
   );

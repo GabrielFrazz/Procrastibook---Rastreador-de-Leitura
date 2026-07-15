@@ -133,7 +133,7 @@ export function LoginForm({ nextPath }: Readonly<{ nextPath: string }>) {
           inputMode="email"
           maxLength={254}
           name="email"
-          placeholder="voce@exemplo.com"
+          placeholder="seu@email.com"
           required
           type="email"
         />

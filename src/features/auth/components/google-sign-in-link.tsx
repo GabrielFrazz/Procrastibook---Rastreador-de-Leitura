@@ -1,11 +1,16 @@
 import Link from "next/link";
 
 type GoogleSignInLinkProps = Readonly<{
+  dividerPlacement?: "after" | "before";
   enabled: boolean;
   nextPath: string;
 }>;
 
-export function GoogleSignInLink({ enabled, nextPath }: GoogleSignInLinkProps) {
+export function GoogleSignInLink({
+  dividerPlacement = "after",
+  enabled,
+  nextPath,
+}: GoogleSignInLinkProps) {
   const content = (
     <>
       <span aria-hidden="true" className="auth-google__mark">
@@ -14,9 +19,19 @@ export function GoogleSignInLink({ enabled, nextPath }: GoogleSignInLinkProps) {
       {enabled ? "Continuar com Google" : "Google indisponível neste ambiente"}
     </>
   );
+  const divider = (
+    <div className="auth-divider">
+      <span>
+        {dividerPlacement === "before"
+          ? "ou continue com"
+          : "ou continue com e-mail"}
+      </span>
+    </div>
+  );
 
   return (
-    <div className="auth-provider">
+    <div className={`auth-provider auth-provider--divider-${dividerPlacement}`}>
+      {dividerPlacement === "before" ? divider : null}
       {enabled ? (
         <Link
           className="auth-google"
@@ -32,9 +47,7 @@ export function GoogleSignInLink({ enabled, nextPath }: GoogleSignInLinkProps) {
           {content}
         </span>
       )}
-      <div className="auth-divider">
-        <span>ou continue com e-mail</span>
-      </div>
+      {dividerPlacement === "after" ? divider : null}
     </div>
   );
 }
