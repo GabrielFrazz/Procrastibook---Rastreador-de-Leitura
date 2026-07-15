@@ -41,7 +41,7 @@ type AppShellProps = {
 
 const primaryNavigation: NavigationItem[] = [
   { label: "Visão geral", icon: "dashboard", href: "/dashboard" },
-  { label: "Biblioteca", icon: "book" },
+  { label: "Biblioteca", icon: "book", href: "/library" },
   { label: "Adicionar obra", icon: "add" },
   { label: "Sessões", icon: "clock" },
   { label: "Metas", icon: "target" },
