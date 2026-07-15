@@ -1,0 +1,30 @@
+{
+  "kind": "books#volumes",
+  "totalItems": 1,
+  "items": [
+    {
+      "kind": "books#volume",
+      "id": "google-complete-1",
+      "volumeInfo": {
+        "title": "  O <b>Livro</b> &amp; a Leitura  ",
+        "subtitle": "Uma edição especial",
+        "authors": ["Autora Principal", " autora principal ", "Coautor"],
+        "publisher": "Editora Exemplo",
+        "publishedDate": "2021-05-10",
+        "description": "<p>Uma <strong>descrição</strong><br>segura &amp; útil. &#x110000;</p><script>conteúdo indevido</script>",
+        "industryIdentifiers": [
+          { "type": "ISBN_10", "identifier": "85-359-0277-5" },
+          { "type": "ISBN_13", "identifier": "978-85-359-0277-5" }
+        ],
+        "pageCount": 176,
+        "categories": ["Ficção", " ficção ", "Clássicos"],
+        "imageLinks": {
+          "thumbnail": "http://books.google.com/books/content?id=complete"
+        },
+        "language": "pt-BR",
+        "infoLink": "http://books.google.com/books?id=complete"
+      },
+      "saleInfo": { "isEbook": true }
+    }
+  ]
+}

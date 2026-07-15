@@ -1,0 +1,18 @@
+{
+  "kind": "books#volumes",
+  "totalItems": 3,
+  "items": [
+    {
+      "id": "google-partial-1",
+      "volumeInfo": { "title": "Obra sem metadados opcionais" }
+    },
+    {
+      "id": "google-invalid-no-title",
+      "volumeInfo": { "authors": ["Sem Título"] }
+    },
+    {
+      "id": 42,
+      "volumeInfo": { "title": "Identificador inválido" }
+    }
+  ]
+}
