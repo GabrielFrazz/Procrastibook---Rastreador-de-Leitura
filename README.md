@@ -181,6 +181,13 @@ pnpm build
 
 `pnpm validate` executa a sequência completa acima.
 
+## Fundação visual
+
+Durante `pnpm dev`, a rota <http://localhost:3000/dev/ui> apresenta os tokens e
+componentes compartilhados. Ela existe somente no ambiente de desenvolvimento;
+as cores, espaçamentos, tipografia e estados ficam centralizados em
+`src/styles/tokens.css` e `src/components/ui`.
+
 ---
 
 # 6. Estrutura de Pastas Prevista

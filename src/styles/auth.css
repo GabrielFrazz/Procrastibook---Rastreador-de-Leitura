@@ -1,26 +1,16 @@
 :root {
-  --auth-background: #f8fafc;
-  --auth-surface: #ffffff;
-  --auth-text: #111827;
-  --auth-muted: #6b7280;
-  --auth-border: #d1d5db;
-  --auth-primary: #171717;
-  --auth-focus: #2563eb;
-  --auth-success: #047857;
-  --auth-error: #b91c1c;
-  --auth-radius-small: 6px;
-  --auth-radius-medium: 10px;
-  --auth-radius-large: 14px;
-}
-
-button,
-input {
-  font: inherit;
-}
-
-:focus-visible {
-  outline: 3px solid var(--auth-focus);
-  outline-offset: 3px;
+  --auth-background: var(--color-background);
+  --auth-surface: var(--color-surface);
+  --auth-text: var(--color-text);
+  --auth-muted: var(--color-text-muted);
+  --auth-border: var(--color-border);
+  --auth-primary: var(--color-primary);
+  --auth-focus: var(--color-focus);
+  --auth-success: var(--color-success);
+  --auth-error: var(--color-error);
+  --auth-radius-small: var(--radius-sm);
+  --auth-radius-medium: var(--radius-md);
+  --auth-radius-large: var(--radius-lg);
 }
 
 .auth-layout {
@@ -37,7 +27,7 @@ input {
   justify-content: space-between;
   padding: clamp(2rem, 5vw, 4.5rem);
   background: var(--auth-primary);
-  color: #ffffff;
+  color: var(--color-on-primary);
 }
 
 .auth-brand__logo {
@@ -46,7 +36,7 @@ input {
   min-height: 2.75rem;
   align-items: center;
   gap: 0.75rem;
-  color: #ffffff;
+  color: var(--color-on-primary);
   font-size: 1.125rem;
   font-weight: 750;
   text-decoration: none;
@@ -57,7 +47,7 @@ input {
   width: 2.25rem;
   height: 2.25rem;
   place-items: center;
-  border: 1px solid rgb(255 255 255 / 0.42);
+  border: 1px solid var(--color-on-primary-border);
   border-radius: var(--auth-radius-small);
 }
 
@@ -76,7 +66,7 @@ input {
 }
 
 .auth-brand__eyebrow {
-  color: #cbd5e1;
+  color: var(--color-on-primary-muted);
 }
 
 .auth-brand__copy h2 {
@@ -90,13 +80,13 @@ input {
 .auth-brand__copy > p:last-child {
   max-width: 36ch;
   margin: 1.5rem 0 0;
-  color: #cbd5e1;
+  color: var(--color-on-primary-muted);
   line-height: 1.7;
 }
 
 .auth-brand__footnote {
   margin: 0;
-  color: #94a3b8;
+  color: var(--color-on-primary-subtle);
   font-size: 0.8125rem;
 }
 
@@ -160,8 +150,8 @@ input {
 }
 
 .auth-google:hover:not(.auth-google--disabled) {
-  border-color: #9ca3af;
-  background: #f9fafb;
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-hover);
 }
 
 .auth-google--disabled {
@@ -177,8 +167,8 @@ input {
   place-items: center;
   border: 1px solid var(--auth-border);
   border-radius: 50%;
-  background: #ffffff;
-  color: #374151;
+  background: var(--color-surface);
+  color: var(--color-text-strong);
   font-size: 0.75rem;
   font-weight: 800;
 }
@@ -206,7 +196,7 @@ input {
 
 .auth-field label,
 .auth-form__password-heading {
-  color: #374151;
+  color: var(--color-text-strong);
   font-size: 0.875rem;
   font-weight: 650;
 }
@@ -245,7 +235,7 @@ input {
 }
 
 .auth-field input::placeholder {
-  color: #9ca3af;
+  color: var(--color-border-strong);
 }
 
 .auth-field input[aria-invalid="true"] {
@@ -270,14 +260,14 @@ input {
   border: 0;
   border-radius: var(--auth-radius-small);
   background: transparent;
-  color: #4b5563;
+  color: var(--color-text-subtle);
   cursor: pointer;
   font-size: 0.75rem;
   font-weight: 700;
 }
 
 .auth-password__toggle:hover {
-  background: #f3f4f6;
+  background: var(--color-surface-subtle);
 }
 
 .auth-field__error {
@@ -308,11 +298,11 @@ input {
   width: 100%;
   border: 1px solid var(--auth-primary);
   background: var(--auth-primary);
-  color: #ffffff;
+  color: var(--color-on-primary);
 }
 
 .auth-submit:hover:not(:disabled) {
-  background: #2d2d2d;
+  background: var(--color-primary-hover);
 }
 
 .auth-submit:disabled {
@@ -330,14 +320,14 @@ input {
 }
 
 .auth-message--error {
-  border-color: #fecaca;
-  background: #fef2f2;
+  border-color: var(--color-error-border);
+  background: var(--color-error-surface);
   color: var(--auth-error);
 }
 
 .auth-message--success {
-  border-color: #a7f3d0;
-  background: #ecfdf5;
+  border-color: var(--color-success-border);
+  background: var(--color-success-surface);
   color: var(--auth-success);
 }
 

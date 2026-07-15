@@ -4,21 +4,28 @@
   box-sizing: border-box;
 }
 
-html {
-  color-scheme: light;
-}
-
 body {
   margin: 0;
-  background: #f8fafc;
-  color: #111827;
-  font-family:
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-family-sans);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--color-primary);
+  color: var(--color-surface);
 }
 
 .workspace {
@@ -34,7 +41,7 @@ body {
 
 .workspace__eyebrow {
   margin: 0 0 0.5rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -50,7 +57,7 @@ body {
 .workspace p:last-child {
   max-width: 36rem;
   margin: 1.5rem 0 0;
-  color: #4b5563;
+  color: var(--color-text-subtle);
   font-size: 1rem;
   line-height: 1.6;
 }
