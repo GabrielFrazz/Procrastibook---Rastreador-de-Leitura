@@ -2,7 +2,7 @@ import type { HTMLAttributes, ReactNode } from "react";
 
 type CardProps = HTMLAttributes<HTMLElement> &
   Readonly<{
-    as?: "article" | "div";
+    as?: "article" | "div" | "section";
     children: ReactNode;
     padded?: boolean;
   }>;

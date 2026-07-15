@@ -6,6 +6,7 @@ import "@/styles/globals.css";
 import "@/styles/ui.css";
 import "@/styles/auth.css";
 import "@/styles/app-shell.css";
+import "@/styles/dashboard.css";
 
 export const metadata: Metadata = {
   title: "Procrastibook",

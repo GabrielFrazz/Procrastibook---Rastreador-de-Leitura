@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 
-import { Card } from "@/components/ui/card";
-import { PageHeader } from "@/components/ui/page-header";
+import { getCurrentProfile } from "@/features/auth/data/current-profile";
+import { DashboardView } from "@/features/dashboard/components/dashboard-view";
+import { getDashboardSummary } from "@/features/dashboard/data/dashboard-repository";
 
 export const metadata: Metadata = {
   title: "Visão geral | Procrastibook",
@@ -17,35 +18,25 @@ type DashboardPageProps = Readonly<{
 export default async function DashboardPage({
   searchParams,
 }: DashboardPageProps) {
-  const params = await searchParams;
+  const [params, profile] = await Promise.all([
+    searchParams,
+    getCurrentProfile(),
+  ]);
   const authError =
     typeof params.authError === "string" ? params.authError : undefined;
   const notice = typeof params.notice === "string" ? params.notice : undefined;
+  const timezone = profile?.timezone ?? "America/Sao_Paulo";
+
+  const result = await getDashboardSummary(timezone)
+    .then((summary) => ({ status: "success" as const, summary }))
+    .catch(() => ({ status: "error" as const }));
 
   return (
-    <div className="dashboard-placeholder">
-      <PageHeader
-        description="Acompanhe seu ritmo de leitura e retome suas obras sem perder o contexto."
-        eyebrow="Sua leitura"
-        title="Visão geral"
-      />
-      {authError === "logout" ? (
-        <p className="auth-message auth-message--error" role="alert">
-          Não foi possível encerrar a sessão. Tente novamente.
-        </p>
-      ) : null}
-      {notice === "password-updated" ? (
-        <p className="auth-message auth-message--success" role="status">
-          Senha atualizada com segurança.
-        </p>
-      ) : null}
-      <Card>
-        <p className="dashboard-placeholder__message">
-          O conteúdo do dashboard será implementado em uma entrega futura. O
-          shell autenticado já organiza a navegação e o espaço principal da
-          aplicação.
-        </p>
-      </Card>
-    </div>
+    <DashboardView
+      result={result}
+      timezone={timezone}
+      {...(authError ? { authError } : {})}
+      {...(notice ? { notice } : {})}
+    />
   );
 }
