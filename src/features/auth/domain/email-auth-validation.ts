@@ -14,6 +14,7 @@ export type SignupInput = Readonly<{
   password: string;
 }>;
 export type ForgotPasswordInput = Readonly<{ email: string }>;
+export type UpdatePasswordInput = Readonly<{ password: string }>;
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const CONTROL_CHARACTER_PATTERN = /[\u0000-\u001f\u007f]/;
@@ -118,4 +119,28 @@ export function validateForgotPasswordForm(
   return hasErrors(errors)
     ? { ok: false, fieldErrors: errors }
     : { ok: true, data: { email } };
+}
+
+export function validateUpdatePasswordForm(
+  formData: FormData,
+): ValidationResult<UpdatePasswordInput> {
+  const password = readText(formData, "password");
+  const passwordConfirmation = readText(formData, "passwordConfirmation");
+  const errors: Partial<Record<AuthField, string[]>> = {};
+
+  if (password.length < 8) {
+    addError(errors, "password", "Use pelo menos 8 caracteres.");
+  } else if (password.length > 128) {
+    addError(errors, "password", "A senha deve ter no máximo 128 caracteres.");
+  }
+
+  if (!passwordConfirmation) {
+    addError(errors, "passwordConfirmation", "Confirme sua senha.");
+  } else if (password !== passwordConfirmation) {
+    addError(errors, "passwordConfirmation", "As senhas não coincidem.");
+  }
+
+  return hasErrors(errors)
+    ? { ok: false, fieldErrors: errors }
+    : { ok: true, data: { password } };
 }

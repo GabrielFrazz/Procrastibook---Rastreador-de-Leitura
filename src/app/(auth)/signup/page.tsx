@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { SignupForm } from "@/features/auth/components/auth-forms";
+import { GoogleSignInLink } from "@/features/auth/components/google-sign-in-link";
+import { isGoogleAuthEnabled } from "@/lib/config/google-auth";
 
 export const metadata: Metadata = { title: "Criar conta | Procrastibook" };
 
@@ -14,6 +16,7 @@ export default function SignupPage() {
         <p>Centralize livros, mangás, artigos e e-books em um só lugar.</p>
       </div>
 
+      <GoogleSignInLink enabled={isGoogleAuthEnabled()} nextPath="/dashboard" />
       <SignupForm />
 
       <p className="auth-card__footer">

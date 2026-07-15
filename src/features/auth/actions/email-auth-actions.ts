@@ -9,10 +9,12 @@ import {
   createValidationErrorState,
   type AuthFormState,
 } from "@/features/auth/domain/auth-form-state";
+import { createAuthCallbackUrl } from "@/features/auth/domain/auth-redirects";
 import {
   validateForgotPasswordForm,
   validateLoginForm,
   validateSignupForm,
+  validateUpdatePasswordForm,
 } from "@/features/auth/domain/email-auth-validation";
 import { getSafeNextPath } from "@/features/auth/domain/safe-next-path";
 import {
@@ -20,15 +22,10 @@ import {
   signInWithEmail,
   signOutCurrentSession,
   signUpWithEmail,
+  updatePassword,
 } from "@/features/auth/services/email-auth-service";
-import { createAppUrl } from "@/lib/config/app-url";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-function createCallbackUrl(nextPath: string) {
-  const callbackUrl = new URL(createAppUrl("/auth/callback"));
-  callbackUrl.searchParams.set("next", nextPath);
-  return callbackUrl.toString();
-}
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function loginAction(
   _previousState: AuthFormState,
@@ -70,7 +67,7 @@ export async function signupAction(
     const result = await signUpWithEmail(
       supabase.auth,
       validation.data,
-      createCallbackUrl("/dashboard"),
+      createAuthCallbackUrl("/dashboard"),
     );
 
     if (!result.ok) {
@@ -100,7 +97,7 @@ export async function forgotPasswordAction(
     const result = await requestPasswordRecovery(
       supabase.auth,
       validation.data.email,
-      createCallbackUrl("/update-password"),
+      createAuthCallbackUrl("/update-password"),
     );
 
     if (!result.ok) {
@@ -113,6 +110,33 @@ export async function forgotPasswordAction(
   } catch {
     return createAuthUnavailableState();
   }
+}
+
+export async function updatePasswordAction(
+  _previousState: AuthFormState,
+  formData: FormData,
+): Promise<AuthFormState> {
+  const validation = validateUpdatePasswordForm(formData);
+
+  if (!validation.ok) {
+    return createValidationErrorState(validation.fieldErrors);
+  }
+
+  try {
+    const supabase = await createServerSupabaseClient();
+    const result = await updatePassword(
+      supabase.auth,
+      validation.data.password,
+    );
+
+    if (!result.ok) {
+      return createAuthErrorState(result);
+    }
+  } catch {
+    return createAuthUnavailableState();
+  }
+
+  redirect("/dashboard?notice=password-updated");
 }
 
 export async function logoutAction(): Promise<never> {

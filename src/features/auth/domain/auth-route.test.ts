@@ -14,6 +14,7 @@ describe("isPrivateRoute", () => {
     "/goals",
     "/statistics",
     "/lists/lista-id",
+    "/update-password",
   ])("reconhece %s como rota privada", (pathname) => {
     expect(isPrivateRoute(pathname)).toBe(true);
   });

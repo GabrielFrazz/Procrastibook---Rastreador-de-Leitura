@@ -5,6 +5,7 @@ const PRIVATE_ROUTE_PREFIXES = [
   "/goals",
   "/statistics",
   "/lists",
+  "/update-password",
 ] as const;
 
 const AUTH_ENTRY_PATHS = new Set(["/login", "/signup", "/forgot-password"]);

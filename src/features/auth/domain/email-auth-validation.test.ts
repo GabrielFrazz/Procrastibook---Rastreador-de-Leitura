@@ -4,6 +4,7 @@ import {
   validateForgotPasswordForm,
   validateLoginForm,
   validateSignupForm,
+  validateUpdatePasswordForm,
 } from "@/features/auth/domain/email-auth-validation";
 
 function createFormData(values: Record<string, string>) {
@@ -91,5 +92,29 @@ describe("validateForgotPasswordForm", () => {
     expect(
       validateForgotPasswordForm(createFormData({ email: "reader" })).ok,
     ).toBe(false);
+  });
+});
+
+describe("validateUpdatePasswordForm", () => {
+  it("aceita senhas iguais dentro dos limites", () => {
+    expect(
+      validateUpdatePasswordForm(
+        createFormData({
+          password: "nova-senha-segura",
+          passwordConfirmation: "nova-senha-segura",
+        }),
+      ),
+    ).toEqual({ ok: true, data: { password: "nova-senha-segura" } });
+  });
+
+  it("rejeita senha curta e confirmação diferente", () => {
+    const result = validateUpdatePasswordForm(
+      createFormData({ password: "curta", passwordConfirmation: "outra" }),
+    );
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.fieldErrors.password).toBeDefined();
+      expect(result.fieldErrors.passwordConfirmation).toBeDefined();
+    }
   });
 });

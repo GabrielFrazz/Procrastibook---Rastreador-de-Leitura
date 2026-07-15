@@ -21,10 +21,12 @@ export type EmailAuthApi = Readonly<{
     email: string,
     options: { redirectTo: string },
   ): AuthCallResult;
+  updateUser(attributes: { password: string }): AuthCallResult;
   signOut(options: { scope: "local" }): AuthCallResult;
 }>;
 
-type AuthOperation = "login" | "signup" | "recovery" | "logout";
+type AuthOperation =
+  "login" | "signup" | "recovery" | "password-update" | "logout";
 
 function failure(code: string, message: string): ActionResult<null> {
   return { ok: false, code, message };
@@ -52,6 +54,23 @@ export function mapAuthError(
     );
   }
 
+  if (operation === "password-update" && error.code === "same_password") {
+    return failure(
+      "SAME_PASSWORD",
+      "A nova senha deve ser diferente da senha atual.",
+    );
+  }
+
+  if (
+    operation === "password-update" &&
+    (error.code === "session_not_found" ||
+      error.code === "refresh_token_not_found")
+  ) {
+    return failure(
+      "RECOVERY_EXPIRED",
+      "Sua sessão de recuperação expirou. Solicite um novo link.",
+    );
+  }
   if (error.code === "signup_disabled") {
     return failure(
       "SIGNUP_DISABLED",
@@ -127,4 +146,10 @@ export function requestPasswordRecovery(
 
 export function signOutCurrentSession(auth: EmailAuthApi) {
   return executeAuthCall("logout", () => auth.signOut({ scope: "local" }));
+}
+
+export function updatePassword(auth: EmailAuthApi, password: string) {
+  return executeAuthCall("password-update", () =>
+    auth.updateUser({ password }),
+  );
 }

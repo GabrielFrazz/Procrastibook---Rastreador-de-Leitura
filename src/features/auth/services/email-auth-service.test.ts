@@ -6,6 +6,7 @@ import {
   signInWithEmail,
   signOutCurrentSession,
   signUpWithEmail,
+  updatePassword,
   type EmailAuthApi,
 } from "@/features/auth/services/email-auth-service";
 
@@ -16,6 +17,7 @@ function createAuthApi(
     signInWithPassword: vi.fn(async () => ({ error })),
     signUp: vi.fn(async () => ({ error })),
     resetPasswordForEmail: vi.fn(async () => ({ error })),
+    updateUser: vi.fn(async () => ({ error })),
     signOut: vi.fn(async () => ({ error })),
   } satisfies EmailAuthApi;
 }
@@ -90,6 +92,25 @@ describe("email auth service", () => {
     );
   });
 
+  it("atualiza a senha da sessão de recuperação", async () => {
+    const auth = createAuthApi();
+    await expect(updatePassword(auth, "new-secret-123")).resolves.toEqual({
+      ok: true,
+      data: null,
+    });
+    expect(auth.updateUser).toHaveBeenCalledWith({
+      password: "new-secret-123",
+    });
+  });
+
+  it("orienta a solicitar outro link quando a recuperação expirou", async () => {
+    const auth = createAuthApi({ code: "session_not_found" });
+    await expect(updatePassword(auth, "new-secret-123")).resolves.toEqual({
+      ok: false,
+      code: "RECOVERY_EXPIRED",
+      message: "Sua sessão de recuperação expirou. Solicite um novo link.",
+    });
+  });
   it("encerra somente a sessão atual", async () => {
     const auth = createAuthApi();
     await signOutCurrentSession(auth);

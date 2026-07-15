@@ -17,6 +17,7 @@ export const config = {
     "/login",
     "/signup",
     "/forgot-password",
+    "/update-password",
     "/auth/callback",
   ],
 };

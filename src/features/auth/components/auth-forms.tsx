@@ -8,6 +8,7 @@ import {
   forgotPasswordAction,
   loginAction,
   signupAction,
+  updatePasswordAction,
 } from "@/features/auth/actions/email-auth-actions";
 import {
   INITIAL_AUTH_FORM_STATE,
@@ -248,6 +249,35 @@ export function ForgotPasswordForm() {
       </div>
 
       <SubmitButton idleLabel="Enviar instruções" />
+    </form>
+  );
+}
+
+export function UpdatePasswordForm() {
+  const [state, formAction] = useActionState(
+    updatePasswordAction,
+    INITIAL_AUTH_FORM_STATE,
+  );
+
+  return (
+    <form action={formAction} className="auth-form">
+      <FormMessage state={state} />
+
+      <PasswordField
+        autoComplete="new-password"
+        field="password"
+        label="Nova senha"
+        state={state}
+      />
+      <p className="auth-form__hint">Use pelo menos 8 caracteres.</p>
+      <PasswordField
+        autoComplete="new-password"
+        field="passwordConfirmation"
+        label="Confirmar nova senha"
+        state={state}
+      />
+
+      <SubmitButton idleLabel="Atualizar senha" />
     </form>
   );
 }

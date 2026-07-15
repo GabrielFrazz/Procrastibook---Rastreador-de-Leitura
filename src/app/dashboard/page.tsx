@@ -8,7 +8,10 @@ export const metadata: Metadata = {
 };
 
 type DashboardPageProps = Readonly<{
-  searchParams: Promise<{ authError?: string | string[] }>;
+  searchParams: Promise<{
+    authError?: string | string[];
+    notice?: string | string[];
+  }>;
 }>;
 
 export default async function DashboardPage({
@@ -20,6 +23,7 @@ export default async function DashboardPage({
   ]);
   const authError =
     typeof params.authError === "string" ? params.authError : undefined;
+  const notice = typeof params.notice === "string" ? params.notice : undefined;
 
   return (
     <main className="authenticated-placeholder">
@@ -35,6 +39,11 @@ export default async function DashboardPage({
         {authError === "logout" ? (
           <p className="auth-message auth-message--error" role="alert">
             Não foi possível encerrar a sessão. Tente novamente.
+          </p>
+        ) : null}
+        {notice === "password-updated" ? (
+          <p className="auth-message auth-message--success" role="status">
+            Senha atualizada com segurança.
           </p>
         ) : null}
         <form action={logoutAction}>
