@@ -68,11 +68,19 @@ function getFieldError(state: WorkFormState, field: WorkFormField) {
   return state.fieldErrors[field]?.[0];
 }
 
-function getFieldA11y(state: WorkFormState, field: WorkFormField) {
+function getFieldA11y(
+  state: WorkFormState,
+  field: WorkFormField,
+  hasHint = false,
+) {
   const hasError = Boolean(getFieldError(state, field));
 
   return {
-    "aria-describedby": hasError ? `${field}-error` : undefined,
+    "aria-describedby": hasError
+      ? `${field}-error`
+      : hasHint
+        ? `${field}-hint`
+        : undefined,
     "aria-invalid": hasError || undefined,
   };
 }
@@ -127,14 +135,10 @@ function CoverField({ state }: Readonly<{ state: WorkFormState }>) {
         {previewUrl ? null : <BookIcon />}
       </div>
 
-      <label className="add-cover__picker" htmlFor="cover">
-        <span>{fileName ?? "Selecionar imagem"}</span>
-        <small>JPEG, PNG ou WebP de até 2 MB</small>
-      </label>
       <input
         {...getFieldA11y(state, "cover")}
         accept="image/jpeg,image/png,image/webp"
-        className="sr-only"
+        className="add-cover__input sr-only"
         id="cover"
         name="cover"
         onChange={(event) => {
@@ -149,6 +153,10 @@ function CoverField({ state }: Readonly<{ state: WorkFormState }>) {
         }}
         type="file"
       />
+      <label className="add-cover__picker" htmlFor="cover">
+        <span>{fileName ?? "Selecionar imagem"}</span>
+        <small>JPEG, PNG ou WebP de até 2 MB</small>
+      </label>
       {error ? (
         <p className="ui-form-field__error" id="cover-error" role="alert">
           {error}
@@ -224,7 +232,7 @@ function WorkForm({ initialState }: Required<AddWorkViewProps>) {
                   required
                 >
                   <Input
-                    {...getFieldA11y(state, "authors")}
+                    {...getFieldA11y(state, "authors", true)}
                     id="authors"
                     maxLength={968}
                     name="authors"
@@ -317,7 +325,7 @@ function WorkForm({ initialState }: Required<AddWorkViewProps>) {
                 label={totalLabel}
               >
                 <Input
-                  {...getFieldA11y(state, "total")}
+                  {...getFieldA11y(state, "total", true)}
                   disabled={progressUnit === "PERCENT"}
                   id="total"
                   inputMode="numeric"
@@ -336,7 +344,7 @@ function WorkForm({ initialState }: Required<AddWorkViewProps>) {
                   label="Gêneros"
                 >
                   <Input
-                    {...getFieldA11y(state, "genres")}
+                    {...getFieldA11y(state, "genres", true)}
                     id="genres"
                     maxLength={620}
                     name="genres"

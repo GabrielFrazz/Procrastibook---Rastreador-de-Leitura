@@ -75,6 +75,10 @@
   text-decoration: none;
 }
 
+.app-header .app-brand {
+  min-height: var(--touch-target);
+}
+
 .app-brand__mark {
   display: grid;
   flex: 0 0 auto;

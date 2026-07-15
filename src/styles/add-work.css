@@ -129,6 +129,11 @@
   background: var(--color-surface-subtle);
 }
 
+.add-cover__input:focus-visible + .add-cover__picker {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
 .add-cover__picker span {
   max-width: 100%;
   overflow: hidden;
@@ -214,10 +219,6 @@
   .add-cover,
   .add-work-fields {
     padding: var(--space-4);
-  }
-
-  .add-work-catalog {
-    grid-template-columns: 1fr;
   }
 
   .add-work-form__layout {
