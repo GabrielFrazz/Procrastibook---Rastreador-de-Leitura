@@ -1,4 +1,6 @@
+export { Avatar, BookCover } from "@/components/ui/media-placeholder";
 export { Badge } from "@/components/ui/badge";
+export { BrandLockup, BrandMark } from "@/components/ui/brand-lockup";
 export { Button } from "@/components/ui/button";
 export { Card } from "@/components/ui/card";
 export {
@@ -16,3 +18,5 @@ export { IconButton } from "@/components/ui/icon-button";
 export { PageHeader } from "@/components/ui/page-header";
 export { PasswordInput } from "@/components/ui/password-input";
 export { Progress } from "@/components/ui/progress";
+export { Skeleton } from "@/components/ui/skeleton";
+export { Tooltip } from "@/components/ui/tooltip";

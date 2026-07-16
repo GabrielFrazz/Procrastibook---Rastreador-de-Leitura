@@ -4,7 +4,10 @@ import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
 
 import {
+  Avatar,
   Badge,
+  BookCover,
+  BrandLockup,
   Button,
   Card,
   EmptyState,
@@ -17,7 +20,9 @@ import {
   PasswordInput,
   Progress,
   Select,
+  Skeleton,
   Textarea,
+  Tooltip,
 } from "@/components/ui";
 
 export const metadata: Metadata = {
@@ -63,7 +68,7 @@ export default function UiPage() {
         className="ui-showcase__nav"
       >
         <Link className="ui-showcase__brand" href="/">
-          Procrastibook
+          <BrandLockup size="sm" />
         </Link>
         <span className="ui-showcase__label">Ambiente de desenvolvimento</span>
       </nav>
@@ -119,9 +124,12 @@ export default function UiPage() {
             <Button variant="danger">Excluir</Button>
             <Button disabled>Desabilitado</Button>
             <Button isLoading>Salvando</Button>
-            <IconButton label="Buscar obras">
-              <SearchIcon />
-            </IconButton>
+            <Tooltip content="Buscar obras" placement="bottom">
+              <IconButton label="Buscar obras">
+                <SearchIcon />
+              </IconButton>
+            </Tooltip>
+            <Avatar alt="Avatar de Marina" name="Marina Costa" />
           </div>
         </section>
 
@@ -212,7 +220,11 @@ export default function UiPage() {
           </div>
           <div className="ui-showcase__grid">
             <Card as="article" className="ui-showcase__book">
-              <div className="ui-showcase__book-cover">Capa indisponível</div>
+              <BookCover
+                className="ui-showcase__book-cover"
+                size="lg"
+                title="O Nome do Vento"
+              />
               <div>
                 <h3>O Nome do Vento</h3>
                 <p>Patrick Rothfuss</p>
@@ -228,7 +240,11 @@ export default function UiPage() {
               </div>
             </Card>
             <Card as="article" className="ui-showcase__book">
-              <div className="ui-showcase__book-cover">Capa do artigo</div>
+              <BookCover
+                className="ui-showcase__book-cover"
+                size="lg"
+                title="Designing for reliable reading habits"
+              />
               <div>
                 <h3>Designing for reliable reading habits</h3>
                 <p>Artigo · 18 páginas</p>
@@ -237,6 +253,7 @@ export default function UiPage() {
               <div className="ui-showcase__badges">
                 <Badge>Quero ler</Badge>
                 <Badge tone="warning">Sem prazo</Badge>
+                <Badge tone="error">Requer atenção</Badge>
               </div>
             </Card>
           </div>
@@ -253,19 +270,30 @@ export default function UiPage() {
             </p>
           </div>
           <div className="ui-showcase__grid">
+            <Card className="ui-showcase__skeleton">
+              <Skeleton variant="cover" width="5rem" />
+              <Skeleton variant="text" width="68%" />
+              <Skeleton variant="text" width="92%" />
+              <Skeleton variant="text" width="54%" />
+            </Card>
             <Card padded={false}>
               <LoadingState description="Carregando sua biblioteca…" />
             </Card>
             <Card padded={false}>
               <EmptyState
+                action={<Button size="sm">Adicionar obra</Button>}
                 description="Adicione a primeira obra para começar seu acompanhamento."
                 title="Sua biblioteca está vazia"
               />
             </Card>
             <Card padded={false}>
               <ErrorState
+                action={
+                  <Button size="sm" variant="secondary">
+                    Recarregar
+                  </Button>
+                }
                 description="Confira sua conexão e tente carregar os dados novamente."
-                retryHref="/dev/ui"
                 title="Não foi possível carregar"
               />
             </Card>

@@ -4,13 +4,21 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   useEffect,
+  useMemo,
   useRef,
   useState,
+  type ReactElement,
   type ReactNode,
   type SVGProps,
 } from "react";
 
+import { Avatar, BrandLockup, Tooltip } from "@/components/ui";
 import { logoutAction } from "@/features/auth/actions/email-auth-actions";
+
+import {
+  getActiveNavigationHref,
+  SIDEBAR_STORAGE_KEY,
+} from "./app-shell-navigation";
 
 type IconName =
   | "add"
@@ -20,7 +28,9 @@ type IconName =
   | "check"
   | "clock"
   | "close"
+  | "collapse"
   | "dashboard"
+  | "expand"
   | "flag"
   | "logout"
   | "menu"
@@ -60,6 +70,19 @@ const readingNavigation: NavigationItem[] = [
   { label: "Finalizados", icon: "check", href: "/library?status=FINISHED" },
 ];
 
+const navigationHrefs = [...primaryNavigation, ...readingNavigation].flatMap(
+  (item) => (item.href ? [item.href] : []),
+);
+
+const drawerFocusableSelector = [
+  "a[href]",
+  "button:not([disabled])",
+  "input:not([disabled])",
+  "select:not([disabled])",
+  "textarea:not([disabled])",
+  '[tabindex]:not([tabindex="-1"])',
+].join(",");
+
 function Icon({
   name,
   ...props
@@ -76,9 +99,11 @@ function Icon({
     check: <path d="m5 12 4.5 4.5L19 7" />,
     clock: <path d="M12 7v5l3 2m6-2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />,
     close: <path d="m6 6 12 12M18 6 6 18" />,
+    collapse: <path d="M4 4h16v16H4V4Zm6 0v16m5-12-3 4 3 4" />,
     dashboard: (
       <path d="M4 4h6v6H4V4Zm10 0h6v9h-6V4ZM4 14h6v6H4v-6Zm10 3h6v3h-6v-3Z" />
     ),
+    expand: <path d="M4 4h16v16H4V4Zm6 0v16m3-12 3 4-3 4" />,
     flag: <path d="M6 21V4m0 1h10l-2 3 2 3H6" />,
     logout: <path d="M10 5H5v14h5m4-4 4-3-4-3m4 3H9" />,
     menu: <path d="M4 7h16M4 12h16M4 17h16" />,
@@ -107,49 +132,91 @@ function Icon({
 }
 
 function Navigation({
+  collapsed,
   currentPath,
   onNavigate,
   preview,
 }: {
+  collapsed: boolean;
   currentPath: string;
-  onNavigate?: () => void;
+  onNavigate?: (href: string) => void;
   preview: boolean;
 }) {
+  const activeHref = useMemo(
+    () => getActiveNavigationHref(currentPath, navigationHrefs),
+    [currentPath],
+  );
+
+  const withCollapsedTooltip = (
+    element: ReactElement<{ "aria-describedby"?: string }>,
+    label: string,
+  ) =>
+    collapsed ? (
+      <Tooltip content={label} placement="right">
+        {element}
+      </Tooltip>
+    ) : (
+      element
+    );
+
   const renderItem = (item: NavigationItem) => {
     const content = (
       <>
         <Icon className="app-nav__icon" name={item.icon} />
-        <span>{item.label}</span>
+        <span className="app-nav__label">{item.label}</span>
       </>
     );
 
     if (item.href) {
-      const isCurrent = currentPath === item.href;
-
-      return (
+      const isCurrent = activeHref === item.href;
+      const link = (
         <Link
           aria-current={isCurrent ? "page" : undefined}
+          aria-label={collapsed ? item.label : undefined}
           className="app-nav__item"
           href={item.href}
-          key={item.label}
-          {...(onNavigate ? { onClick: onNavigate } : {})}
+          onClick={() => onNavigate?.(item.href ?? "")}
         >
           {content}
         </Link>
       );
+
+      return (
+        <div className="app-nav__item-shell" key={item.label}>
+          {withCollapsedTooltip(link, item.label)}
+        </div>
+      );
     }
 
-    return (
+    const disabledItem = (
       <span
         aria-disabled="true"
+        aria-label={collapsed ? item.label : undefined}
         className="app-nav__item app-nav__item--disabled"
-        key={item.label}
       >
         {content}
         <span className="app-nav__status">Em breve</span>
       </span>
     );
+
+    return (
+      <div className="app-nav__item-shell" key={item.label}>
+        {withCollapsedTooltip(disabledItem, item.label)}
+      </div>
+    );
   };
+
+  const logoutButton = (
+    <button
+      aria-label={collapsed ? "Sair" : undefined}
+      className="app-nav__item app-nav__item--button"
+      disabled={preview}
+      type="submit"
+    >
+      <Icon className="app-nav__icon" name="logout" />
+      <span className="app-nav__label">Sair</span>
+    </button>
+  );
 
   return (
     <nav aria-label="Navegação da aplicação" className="app-nav">
@@ -163,14 +230,7 @@ function Navigation({
       </div>
 
       <form action={logoutAction} className="app-nav__logout">
-        <button
-          className="app-nav__item app-nav__item--button"
-          disabled={preview}
-          type="submit"
-        >
-          <Icon className="app-nav__icon" name="logout" />
-          <span>Sair</span>
-        </button>
+        {withCollapsedTooltip(logoutButton, "Sair")}
       </form>
     </nav>
   );
@@ -183,43 +243,148 @@ export function AppShell({
   previewPath,
 }: AppShellProps) {
   const pathname = usePathname();
-  const currentPath = previewPath ?? pathname;
+  const [locationSearch, setLocationSearch] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const initial =
-    displayName.trim().charAt(0).toLocaleUpperCase("pt-BR") || "L";
+  const drawerPanelRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+  const shellBodyRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const currentPath = previewPath ?? `${pathname}${locationSearch}`;
+
+  useEffect(() => {
+    const syncLocationSearch = () => setLocationSearch(window.location.search);
+
+    syncLocationSearch();
+    window.addEventListener("popstate", syncLocationSearch);
+    return () => window.removeEventListener("popstate", syncLocationSearch);
+  }, [pathname]);
+
+  useEffect(() => {
+    const syncCollapsedPreference = window.requestAnimationFrame(() => {
+      try {
+        setIsSidebarCollapsed(
+          window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === "true",
+        );
+      } catch {
+        setIsSidebarCollapsed(false);
+      }
+    });
+
+    return () => window.cancelAnimationFrame(syncCollapsedPreference);
+  }, []);
 
   useEffect(() => {
     if (!isMenuOpen) {
       return;
     }
 
-    closeButtonRef.current?.focus();
+    const panel = drawerPanelRef.current;
+    const header = headerRef.current;
+    const shellBody = shellBodyRef.current;
+    const menuButton = menuButtonRef.current;
+    const previousOverflow = document.body.style.overflow;
+    previousFocusRef.current =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : menuButton;
 
-    const handleEscape = (event: KeyboardEvent) => {
+    header?.setAttribute("inert", "");
+    shellBody?.setAttribute("inert", "");
+    document.body.style.overflow = "hidden";
+
+    const focusCloseButton = window.requestAnimationFrame(() => {
+      closeButtonRef.current?.focus();
+    });
+
+    const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
+        event.preventDefault();
         setIsMenuOpen(false);
-        menuButtonRef.current?.focus();
+        return;
+      }
+
+      if (event.key !== "Tab" || !panel) {
+        return;
+      }
+
+      const focusableElements = Array.from(
+        panel.querySelectorAll<HTMLElement>(drawerFocusableSelector),
+      ).filter((element) => !element.hasAttribute("disabled"));
+
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        panel.focus();
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements.at(-1);
+
+      if (
+        event.shiftKey &&
+        (document.activeElement === firstElement ||
+          document.activeElement === panel)
+      ) {
+        event.preventDefault();
+        lastElement?.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement?.focus();
       }
     };
 
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.cancelAnimationFrame(focusCloseButton);
+      document.removeEventListener("keydown", handleKeyDown);
+      header?.removeAttribute("inert");
+      shellBody?.removeAttribute("inert");
+      document.body.style.overflow = previousOverflow;
+
+      window.requestAnimationFrame(() => {
+        (previousFocusRef.current ?? menuButton)?.focus();
+      });
+    };
   }, [isMenuOpen]);
 
-  const closeMenu = () => {
+  const toggleSidebar = () => {
+    setIsSidebarCollapsed((currentValue) => {
+      const nextValue = !currentValue;
+
+      try {
+        window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(nextValue));
+      } catch {
+        // A navegação continua funcional quando o armazenamento está indisponível.
+      }
+
+      return nextValue;
+    });
+  };
+
+  const handleNavigate = (href: string) => {
+    setLocationSearch(new URL(href, window.location.origin).search);
+  };
+
+  const closeMenu = () => setIsMenuOpen(false);
+
+  const handleDrawerNavigate = (href: string) => {
+    handleNavigate(href);
     setIsMenuOpen(false);
-    menuButtonRef.current?.focus();
   };
 
   return (
-    <div className="app-shell">
+    <div
+      className={`app-shell${isSidebarCollapsed ? " app-shell--sidebar-collapsed" : ""}`}
+    >
       <a className="app-skip-link" href="#app-main-content">
         Ir para o conteúdo
       </a>
 
-      <header className="app-header">
+      <header className="app-header" ref={headerRef}>
         <div className="app-header__inner">
           <button
             aria-controls="app-mobile-navigation"
@@ -238,10 +403,7 @@ export function AppShell({
             className="app-brand"
             href="/dashboard"
           >
-            <span className="app-brand__mark">
-              <Icon name="book" />
-            </span>
-            <span className="app-brand__name">Procrastibook</span>
+            <BrandLockup size="sm" />
           </Link>
 
           <form
@@ -264,26 +426,43 @@ export function AppShell({
             className="app-profile"
             href="/profile"
           >
-            <span
-              aria-hidden="true"
-              className={`app-profile__avatar${avatarUrl ? " app-profile__avatar--image" : ""}`}
-              style={
-                avatarUrl
-                  ? { backgroundImage: `url(${JSON.stringify(avatarUrl)})` }
-                  : undefined
-              }
-            >
-              {avatarUrl ? null : initial}
-            </span>
+            <Avatar name={displayName} size="sm" src={avatarUrl} />
             <span className="app-profile__name">{displayName}</span>
           </Link>
         </div>
       </header>
 
-      <div className="app-shell__body">
+      <div className="app-shell__body" ref={shellBodyRef}>
         <aside className="app-sidebar app-sidebar--desktop">
+          <div className="app-sidebar__controls">
+            <Tooltip
+              content={
+                isSidebarCollapsed
+                  ? "Expandir menu lateral"
+                  : "Recolher menu lateral"
+              }
+              placement="right"
+            >
+              <button
+                aria-label={
+                  isSidebarCollapsed
+                    ? "Expandir menu lateral"
+                    : "Recolher menu lateral"
+                }
+                aria-pressed={isSidebarCollapsed}
+                className="app-sidebar__toggle"
+                onClick={toggleSidebar}
+                type="button"
+              >
+                <Icon name={isSidebarCollapsed ? "expand" : "collapse"} />
+              </button>
+            </Tooltip>
+          </div>
+
           <Navigation
+            collapsed={isSidebarCollapsed}
             currentPath={currentPath}
+            onNavigate={handleNavigate}
             preview={Boolean(previewPath)}
           />
         </aside>
@@ -299,6 +478,7 @@ export function AppShell({
             aria-label="Fechar menu de navegação"
             className="app-drawer__backdrop"
             onClick={closeMenu}
+            tabIndex={-1}
             type="button"
           />
           <aside
@@ -306,14 +486,13 @@ export function AppShell({
             aria-modal="true"
             className="app-drawer__panel"
             id="app-mobile-navigation"
+            ref={drawerPanelRef}
             role="dialog"
+            tabIndex={-1}
           >
             <div className="app-drawer__header">
               <span className="app-brand">
-                <span className="app-brand__mark">
-                  <Icon name="book" />
-                </span>
-                <span className="app-brand__name">Procrastibook</span>
+                <BrandLockup size="sm" />
               </span>
               <button
                 aria-label="Fechar menu"
@@ -326,8 +505,9 @@ export function AppShell({
               </button>
             </div>
             <Navigation
+              collapsed={false}
               currentPath={currentPath}
-              onNavigate={() => setIsMenuOpen(false)}
+              onNavigate={handleDrawerNavigate}
               preview={Boolean(previewPath)}
             />
           </aside>

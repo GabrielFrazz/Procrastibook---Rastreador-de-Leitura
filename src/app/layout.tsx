@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { DM_Sans, Lora } from "next/font/google";
 import type { ReactNode } from "react";
 
 import "@/styles/tokens.css";
@@ -16,6 +17,20 @@ import "@/styles/goals.css";
 import "@/styles/statistics.css";
 import "@/styles/profile.css";
 
+const dmSans = DM_Sans({
+  display: "swap",
+  subsets: ["latin"],
+  variable: "--font-dm-sans",
+  weight: "variable",
+});
+
+const lora = Lora({
+  display: "swap",
+  subsets: ["latin"],
+  variable: "--font-lora",
+  weight: "variable",
+});
+
 export const metadata: Metadata = {
   title: "Procrastibook",
   description: "Rastreador pessoal de leituras.",
@@ -27,7 +42,7 @@ type RootLayoutProps = Readonly<{
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="pt-BR">
+    <html className={`${dmSans.variable} ${lora.variable}`} lang="pt-BR">
       <body>{children}</body>
     </html>
   );

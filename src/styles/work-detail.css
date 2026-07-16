@@ -1,44 +1,56 @@
 .work-detail-page {
   display: grid;
-  gap: var(--space-6);
+  gap: var(--space-8);
+  min-width: 0;
 }
 
 .work-detail-back {
+  display: inline-flex;
   width: fit-content;
   min-height: var(--touch-target);
+  align-items: center;
   color: var(--color-text-subtle);
   font-size: var(--font-size-sm);
   font-weight: 700;
-  line-height: var(--touch-target);
   text-decoration: none;
 }
 
 .work-detail-back:hover {
-  color: var(--color-text);
+  color: var(--color-accent-text);
   text-decoration: underline;
+  text-underline-offset: 0.2em;
 }
 
 .work-detail-overview {
   display: grid;
-  grid-template-columns: minmax(12rem, 17rem) minmax(0, 1fr);
+  min-width: 0;
+  grid-template-columns: minmax(15rem, 18rem) minmax(0, 1fr);
   overflow: hidden;
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
 }
 
-.work-detail-cover {
+.work-detail-cover-stage {
   display: grid;
-  min-height: 26rem;
-  place-items: center;
-  border-right: 1px solid var(--color-border);
-  background: var(--color-surface-strong);
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
-  font-weight: 750;
+  min-width: 0;
+  padding: var(--space-8);
+  place-items: start center;
+  border-right: 1px solid var(--color-card-border);
+  background: var(--color-accent-surface);
 }
 
-.work-detail-cover--image {
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+.work-detail-cover.ui-book-cover {
+  width: min(100%, 14rem);
+  max-width: none;
+  aspect-ratio: 2 / 3;
+  border-color: color-mix(
+    in srgb,
+    var(--color-accent) 24%,
+    var(--color-border)
+  );
+  box-shadow: 0 12px 28px rgb(70 60 47 / 0.12);
 }
 
 .work-detail-overview__content {
@@ -57,8 +69,12 @@
 }
 
 .work-detail-overview__badges > span:not(.ui-badge) {
-  color: var(--color-text-muted);
+  padding: var(--space-1) var(--space-2);
+  border-radius: 999px;
+  background: var(--color-accent-surface);
+  color: var(--color-accent-text);
   font-size: var(--font-size-xs);
+  font-weight: 650;
 }
 
 .work-detail-overview h1,
@@ -68,10 +84,12 @@
 }
 
 .work-detail-overview h1 {
-  font-size: var(--font-size-2xl);
+  max-width: 26ch;
+  font-size: clamp(var(--font-size-xl), 3vw, var(--font-size-2xl));
   letter-spacing: -0.04em;
   line-height: var(--line-height-tight);
   overflow-wrap: anywhere;
+  text-wrap: balance;
 }
 
 .work-detail-subtitle,
@@ -81,26 +99,61 @@
   line-height: var(--line-height-normal);
 }
 
-.work-detail-open-progress {
-  padding: var(--space-3);
+.work-detail-subtitle {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-md);
+}
+
+.work-detail-progress {
+  padding: var(--space-4);
   border-radius: var(--radius-md);
-  background: var(--color-surface-subtle);
-  color: var(--color-text-subtle);
+  background: var(--color-accent-surface);
+}
+
+.work-detail-open-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  color: var(--color-accent-text);
   font-size: var(--font-size-sm);
+}
+
+.work-detail-open-progress strong {
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+}
+
+.work-detail-metadata-section {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.work-detail-metadata-section > h2,
+.work-detail-description h2 {
+  color: var(--color-text-subtle);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-xs);
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .work-detail-metadata {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--space-3);
   margin: 0;
+  border-block: 1px solid var(--color-card-border);
 }
 
 .work-detail-metadata > div {
   min-width: 0;
-  padding: var(--space-3);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface-subtle);
+  padding: var(--space-3) var(--space-4);
+  border-left: 1px solid var(--color-card-border);
+}
+
+.work-detail-metadata > div:first-child {
+  border-left: 0;
 }
 
 .work-detail-metadata dt {
@@ -111,26 +164,28 @@
 
 .work-detail-metadata dd {
   margin: var(--space-1) 0 0;
+  color: var(--color-text);
   font-size: var(--font-size-sm);
   font-weight: 700;
   overflow-wrap: anywhere;
 }
 
 .work-detail-description {
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--color-border);
-}
-
-.work-detail-description h2 {
-  margin-bottom: var(--space-2);
-  font-size: var(--font-size-md);
+  display: grid;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
 }
 
 .work-detail-description p {
-  max-width: 78ch;
+  max-width: 74ch;
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
   line-height: var(--line-height-relaxed);
+}
+
+.work-reading-record {
+  display: grid;
+  gap: var(--space-4);
 }
 
 .work-engagement-grid,
@@ -146,6 +201,18 @@
   display: grid;
   min-width: 0;
   gap: var(--space-6);
+  padding: var(--space-6);
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+}
+
+.work-review-card {
+  background: var(--color-surface-paper);
+}
+
+.work-note-form-card {
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
 }
 
 .work-detail-section-heading p,
@@ -167,6 +234,15 @@
   letter-spacing: -0.02em;
 }
 
+.work-detail-section-heading--intro {
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-card-border);
+}
+
+.work-detail-section-heading--intro h2 {
+  font-size: var(--font-size-xl);
+}
+
 .work-detail-section-heading--collection {
   display: flex;
   align-items: flex-end;
@@ -178,8 +254,8 @@
 .work-detail-section-heading--collection > span {
   min-width: 1.75rem;
   border-radius: 999px;
-  background: var(--color-surface-strong);
-  color: var(--color-text-muted);
+  background: var(--color-accent-surface);
+  color: var(--color-accent-text);
   font-size: var(--font-size-xs);
   font-weight: 700;
   line-height: 1.75rem;
@@ -243,10 +319,17 @@
   display: grid;
   min-width: 0;
   gap: var(--space-3);
+  border-color: var(--color-card-border);
+  box-shadow: var(--shadow-card);
 }
 
 .work-note-card--quote {
   border-left: 3px solid var(--color-warning);
+  background: color-mix(
+    in srgb,
+    var(--color-warning-surface) 34%,
+    var(--color-surface)
+  );
 }
 
 .work-note-card header {
@@ -280,6 +363,8 @@
 
 .work-note-card blockquote {
   color: var(--color-text-subtle);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-md);
   font-style: italic;
 }
 
@@ -292,75 +377,6 @@
   color: var(--color-error);
 }
 
-@media (max-width: 64rem) {
-  .work-detail-metadata {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .work-engagement-grid,
-  .work-note-collections {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 48rem) {
-  .work-detail-overview {
-    grid-template-columns: minmax(9rem, 13rem) minmax(0, 1fr);
-  }
-
-  .work-detail-cover {
-    min-height: 22rem;
-  }
-
-  .work-detail-overview__content {
-    padding: var(--space-6);
-  }
-}
-
-@media (max-width: 40rem) {
-  .work-detail-overview {
-    grid-template-columns: 1fr;
-  }
-
-  .work-detail-cover {
-    min-height: 12rem;
-    border-right: 0;
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .work-detail-overview__content,
-  .work-review-card,
-  .work-note-form-card,
-  .work-note-card {
-    padding: var(--space-4);
-  }
-
-  .work-detail-overview h1 {
-    font-size: var(--font-size-xl);
-  }
-
-  .work-detail-metadata,
-  .work-note-form {
-    grid-template-columns: 1fr;
-  }
-
-  .work-note-form > .ui-form-field:last-of-type,
-  .work-note-form .work-engagement-actions {
-    grid-column: auto;
-  }
-
-  .work-engagement-actions,
-  .work-note-card header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .work-engagement-actions,
-  .work-engagement-actions .ui-button {
-    width: 100%;
-  }
-}
-
 .work-management-card,
 .work-management-form,
 .work-delete-form {
@@ -368,29 +384,40 @@
   gap: var(--space-4);
 }
 
+.work-management-card {
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-card-border);
+}
+
 .work-management-details {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
   overflow: hidden;
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
 }
 
 .work-management-details > summary {
+  display: flex;
   min-height: var(--touch-target);
+  align-items: center;
   padding: var(--space-3) var(--space-4);
-  background: var(--color-surface-subtle);
+  background: var(--color-surface-paper);
   cursor: pointer;
   font-size: var(--font-size-sm);
   font-weight: 750;
-  line-height: calc(var(--touch-target) - var(--space-6));
+}
+
+.work-management-details > summary:hover {
+  background: var(--color-surface-hover);
 }
 
 .work-management-details[open] > summary {
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-card-border);
 }
 
 .work-management-form,
 .work-delete-form {
-  padding: var(--space-4);
+  padding: var(--space-6);
 }
 
 .work-management-grid {
@@ -437,35 +464,201 @@
   color: var(--color-success);
 }
 
+.work-management-details--danger {
+  border-color: var(--color-error-border);
+}
+
 .work-management-details--danger > summary {
+  background: color-mix(
+    in srgb,
+    var(--color-error-surface) 55%,
+    var(--color-surface)
+  );
   color: var(--color-error);
+}
+
+.work-management-details--danger > summary:hover {
+  background: var(--color-error-surface);
 }
 
 .work-delete-confirmation {
   display: flex;
+  min-height: var(--touch-target);
   align-items: center;
   gap: var(--space-2);
-  min-height: var(--touch-target);
   color: var(--color-text-subtle);
   font-size: var(--font-size-sm);
 }
 
+.work-detail-loading-overview {
+  display: grid;
+  grid-template-columns: minmax(15rem, 18rem) minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.work-detail-loading-cover {
+  display: grid;
+  padding: var(--space-8);
+  place-items: start center;
+  background: var(--color-accent-surface);
+}
+
+.work-detail-loading-cover .ui-skeleton {
+  width: min(100%, 14rem);
+  aspect-ratio: 2 / 3;
+}
+
+.work-detail-loading-content {
+  display: grid;
+  align-content: start;
+  gap: var(--space-6);
+  padding: var(--space-8);
+}
+
+.work-detail-loading-meta,
+.work-detail-loading-panels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.work-detail-loading-panel {
+  display: grid;
+  min-height: 15rem;
+  align-content: start;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+@media (max-width: 64rem) {
+  .work-detail-metadata {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .work-detail-metadata > div:nth-child(odd) {
+    border-left: 0;
+  }
+
+  .work-detail-metadata > div:nth-child(n + 3) {
+    border-top: 1px solid var(--color-card-border);
+  }
+
+  .work-engagement-grid,
+  .work-note-collections {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 48rem) {
+  .work-detail-overview,
+  .work-detail-loading-overview {
+    grid-template-columns: minmax(12rem, 14rem) minmax(0, 1fr);
+  }
+
+  .work-detail-cover-stage,
+  .work-detail-loading-cover {
+    padding: var(--space-6);
+  }
+
+  .work-detail-overview__content,
+  .work-detail-loading-content {
+    padding: var(--space-6);
+  }
+}
+
 @media (max-width: 40rem) {
-  .work-management-grid {
+  .work-detail-page {
+    gap: var(--space-6);
+  }
+
+  .work-detail-overview,
+  .work-detail-loading-overview {
     grid-template-columns: 1fr;
   }
 
+  .work-detail-cover-stage {
+    padding: var(--space-6);
+    border-right: 0;
+    border-bottom: 1px solid var(--color-card-border);
+  }
+
+  .work-detail-cover.ui-book-cover {
+    width: min(52vw, 10.5rem);
+  }
+
+  .work-detail-loading-cover {
+    border-bottom: 1px solid var(--color-card-border);
+  }
+
+  .work-detail-loading-cover .ui-skeleton {
+    width: min(52vw, 10.5rem);
+  }
+
+  .work-detail-overview__content,
+  .work-review-card,
+  .work-note-form-card,
+  .work-note-card,
+  .work-detail-loading-content,
+  .work-detail-loading-panel,
+  .work-management-form,
+  .work-delete-form {
+    padding: var(--space-4);
+  }
+
+  .work-detail-overview h1 {
+    font-size: var(--font-size-xl);
+  }
+
+  .work-detail-metadata {
+    grid-template-columns: 1fr;
+  }
+
+  .work-detail-metadata > div {
+    border-left: 0;
+  }
+
+  .work-detail-metadata > div:nth-child(n + 2) {
+    border-top: 1px solid var(--color-card-border);
+  }
+
+  .work-note-form,
+  .work-management-grid,
+  .work-detail-loading-meta,
+  .work-detail-loading-panels {
+    grid-template-columns: 1fr;
+  }
+
+  .work-note-form > .ui-form-field:last-of-type,
+  .work-note-form .work-engagement-actions,
   .work-management-grid > .ui-form-field:last-child,
   .work-management-unit {
     grid-column: auto;
   }
 
-  .work-management-actions {
+  .work-engagement-actions,
+  .work-management-actions,
+  .work-note-card header {
     align-items: stretch;
     flex-direction: column;
   }
 
+  .work-engagement-actions,
+  .work-engagement-actions .ui-button,
   .work-management-actions .ui-button {
+    width: 100%;
+  }
+
+  .work-note-card form {
+    justify-self: stretch;
+  }
+
+  .work-note-card form .ui-button {
     width: 100%;
   }
 }

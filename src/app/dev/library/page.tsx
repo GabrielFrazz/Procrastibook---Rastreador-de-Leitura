@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 
+import LibraryLoading from "@/app/(app)/library/loading";
+
 import { AppShell } from "@/components/layout/app-shell";
 import { LibraryView } from "@/features/library/components/library-view";
 import type { LibraryWork } from "@/features/library/domain/library-catalog";
@@ -171,6 +173,14 @@ export default async function LibraryPreviewPage({
 
   const params = await searchParams;
   const state = typeof params.state === "string" ? params.state : undefined;
+
+  if (state === "loading") {
+    return (
+      <AppShell displayName="Gabriel" previewPath="/library">
+        <LibraryLoading />
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell displayName="Gabriel" previewPath="/library">

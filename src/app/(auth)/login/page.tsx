@@ -28,8 +28,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   return (
     <section className="auth-card" aria-labelledby="login-title">
       <div className="auth-card__heading">
-        <h1 id="login-title">Bem-vindo de volta</h1>
-        <p>Entre para continuar sua leitura.</p>
+        <p className="auth-card__eyebrow">Que bom ter você aqui</p>
+        <h1 id="login-title">Volte para sua estante</h1>
+        <p>Entre para continuar de onde parou.</p>
       </div>
 
       {feedback ? (

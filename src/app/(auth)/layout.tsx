@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { BrandLockup } from "@/components/ui";
 import { ReadingJourneyArtwork } from "@/features/auth/components/reading-journey-artwork";
 
 export default function AuthLayout({
@@ -8,35 +9,45 @@ export default function AuthLayout({
 }: Readonly<{ children: ReactNode }>) {
   return (
     <div className="public-auth-shell">
+      <a className="auth-skip-link" href="#auth-main">
+        Pular para o formulário
+      </a>
+
       <header className="auth-header">
         <div className="auth-header__inner">
-          <Link className="auth-header__brand" href="/">
-            <strong>Procrastibook</strong>
-            <span>Rastreador de Leitura</span>
+          <Link
+            aria-label="Procrastibook — página inicial"
+            className="auth-header__brand"
+            href="/"
+          >
+            <BrandLockup showTagline size="md" />
           </Link>
+          <p className="auth-header__note">
+            Seu tempo de leitura, bem cuidado.
+          </p>
         </div>
       </header>
 
-      <main className="auth-layout">
+      <main className="auth-layout" id="auth-main" tabIndex={-1}>
         <aside className="auth-story" aria-label="Sobre o Procrastibook">
-          <ReadingJourneyArtwork />
           <div className="auth-story__copy">
-            <h2>Organize sua jornada literária</h2>
+            <p className="auth-story__eyebrow">Uma pausa para suas leituras</p>
+            <h2>Sua estante merece um lugar tranquilo.</h2>
             <p>
-              Acompanhe seu progresso, registre suas leituras e alcance suas
-              metas de forma simples e elegante.
+              Guarde o que deseja ler, acompanhe cada página e retome suas
+              histórias no seu próprio ritmo.
             </p>
           </div>
+          <ReadingJourneyArtwork />
+          <p className="auth-story__caption">
+            Um registro pessoal, feito para acompanhar — nunca apressar.
+          </p>
         </aside>
 
         <div className="auth-content">
           {children}
           <p className="auth-support">
-            <span>Privacidade</span>
-            <span aria-hidden="true">•</span>
-            <span>Termos</span>
-            <span aria-hidden="true">•</span>
-            <span>Ajuda</span>
+            Seus dados de leitura permanecem organizados na sua conta.
           </p>
         </div>
       </main>

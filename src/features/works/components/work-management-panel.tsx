@@ -4,14 +4,7 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
 
-import {
-  Button,
-  Card,
-  FormField,
-  Input,
-  Select,
-  Textarea,
-} from "@/components/ui";
+import { Button, FormField, Input, Select, Textarea } from "@/components/ui";
 import type { WorkDetail } from "@/features/engagement/domain/work-engagement";
 import {
   deleteWorkAction,
@@ -91,10 +84,13 @@ export function WorkManagementPanel({ work }: Readonly<{ work: WorkDetail }>) {
   }, [router, updateState.status]);
 
   return (
-    <Card as="section" className="work-management-card">
+    <section
+      aria-labelledby="work-management-title"
+      className="work-management-card"
+    >
       <div className="work-detail-section-heading">
         <p>Organização</p>
-        <h2>Gerenciar obra</h2>
+        <h2 id="work-management-title">Gerenciar obra</h2>
       </div>
 
       <details className="work-management-details">
@@ -129,6 +125,7 @@ export function WorkManagementPanel({ work }: Readonly<{ work: WorkDetail }>) {
                 id="work-edit-subtitle"
                 maxLength={200}
                 name="subtitle"
+                placeholder="Ex.: uma história de inverno"
               />
             </FormField>
 
@@ -242,6 +239,7 @@ export function WorkManagementPanel({ work }: Readonly<{ work: WorkDetail }>) {
                 id="work-edit-publisher"
                 maxLength={160}
                 name="publisher"
+                placeholder="Ex.: Companhia das Letras"
               />
             </FormField>
 
@@ -264,6 +262,7 @@ export function WorkManagementPanel({ work }: Readonly<{ work: WorkDetail }>) {
                 defaultValue={work.isbn10 ?? ""}
                 id="work-edit-isbn10"
                 name="isbn10"
+                placeholder="Ex.: 8535902775"
               />
             </FormField>
 
@@ -276,6 +275,7 @@ export function WorkManagementPanel({ work }: Readonly<{ work: WorkDetail }>) {
                 defaultValue={work.isbn13 ?? ""}
                 id="work-edit-isbn13"
                 name="isbn13"
+                placeholder="Ex.: 9788535902778"
               />
             </FormField>
 
@@ -289,6 +289,7 @@ export function WorkManagementPanel({ work }: Readonly<{ work: WorkDetail }>) {
                 id="work-edit-doi"
                 maxLength={250}
                 name="doi"
+                placeholder="Ex.: 10.1000/xyz123"
               />
             </FormField>
 
@@ -302,6 +303,7 @@ export function WorkManagementPanel({ work }: Readonly<{ work: WorkDetail }>) {
                 id="work-edit-description"
                 maxLength={5_000}
                 name="description"
+                placeholder="Inclua uma sinopse breve da obra."
               />
             </FormField>
           </div>
@@ -340,6 +342,6 @@ export function WorkManagementPanel({ work }: Readonly<{ work: WorkDetail }>) {
           </div>
         </form>
       </details>
-    </Card>
+    </section>
   );
 }

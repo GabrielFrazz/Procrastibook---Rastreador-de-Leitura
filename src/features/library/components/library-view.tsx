@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, type CSSProperties, type SVGProps } from "react";
+import { useMemo, useState } from "react";
 
 import {
   Badge,
+  BookCover,
   Button,
   Card,
   EmptyState,
@@ -61,23 +62,6 @@ const numberFormatter = new Intl.NumberFormat("pt-BR", {
   maximumFractionDigits: 1,
 });
 
-function LibraryIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      aria-hidden="true"
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="1.8"
-      viewBox="0 0 24 24"
-      {...props}
-    >
-      <path d="M4.5 5.5A2.5 2.5 0 0 1 7 3h4v16H7a2.5 2.5 0 0 0-2.5 2.5v-16Zm15 0A2.5 2.5 0 0 0 17 3h-4v16h4a2.5 2.5 0 0 1 2.5 2.5v-16Z" />
-    </svg>
-  );
-}
-
 function getStatusTone(status: LibraryWork["status"]) {
   if (status === "READING") {
     return "strong" as const;
@@ -112,12 +96,6 @@ function formatProgressValue(work: LibraryWork) {
   return `${numberFormatter.format(work.currentProgress)} de ${numberFormatter.format(work.totalProgress)} ${totalUnit}`;
 }
 
-function getCoverStyle(coverUrl: string | null): CSSProperties | undefined {
-  return coverUrl
-    ? { backgroundImage: `url(${JSON.stringify(coverUrl)})` }
-    : undefined;
-}
-
 function LibraryCard({
   historyPreview,
   timezone,
@@ -129,40 +107,50 @@ function LibraryCard({
 }>) {
   return (
     <Card as="article" className="library-card" padded={false}>
-      <div
-        aria-hidden="true"
-        className={[
-          "library-card__cover",
-          work.coverUrl ? "library-card__cover--image" : null,
-        ]
-          .filter(Boolean)
-          .join(" ")}
-        style={getCoverStyle(work.coverUrl)}
-      >
-        {work.coverUrl ? null : (
-          <span className="library-card__placeholder">
-            <LibraryIcon />
-            <span>{typeLabels[work.type]}</span>
-          </span>
-        )}
-      </div>
+      <div className="library-card__summary">
+        <BookCover
+          alt=""
+          className="library-card__cover"
+          size="md"
+          src={work.coverUrl}
+          title={work.title}
+        />
 
-      <div className="library-card__content">
         <div className="library-card__metadata">
           <div className="library-card__badges">
             <Badge>{typeLabels[work.type]}</Badge>
             {work.genres[0] ? <span>{work.genres[0]}</span> : null}
           </div>
           <h2>
-            <Link href={"/library/" + work.id}>{work.title}</Link>
+            <Link href={`/library/${work.id}`}>{work.title}</Link>
           </h2>
           <p className="library-card__authors">
             {work.authors.length > 0
               ? work.authors.join(", ")
               : "Autoria não informada"}
           </p>
+          <div className="library-card__footer">
+            <Badge tone={getStatusTone(work.status)}>
+              {statusLabels[work.status]}
+            </Badge>
+            {work.rating === null ? (
+              <span className="library-card__rating library-card__rating--empty">
+                Sem avaliação
+              </span>
+            ) : (
+              <span
+                aria-label={`Avaliação ${numberFormatter.format(work.rating)} de 5`}
+                className="library-card__rating"
+              >
+                <span aria-hidden="true">★</span>{" "}
+                {numberFormatter.format(work.rating)}
+              </span>
+            )}
+          </div>
         </div>
+      </div>
 
+      <div className="library-card__reading">
         {work.progressPercent === null || work.totalProgress === null ? (
           <div className="library-card__open-progress">
             <strong>Progresso</strong>
@@ -179,39 +167,22 @@ function LibraryCard({
           />
         )}
 
-        <WorkProgressForm
-          currentProgress={work.currentProgress}
-          id={work.id}
-          progressUnit={work.progressUnit}
-          title={work.title}
-          totalProgress={work.totalProgress}
-        />
+        <div className="library-card__details">
+          <WorkProgressForm
+            currentProgress={work.currentProgress}
+            id={work.id}
+            progressUnit={work.progressUnit}
+            title={work.title}
+            totalProgress={work.totalProgress}
+          />
 
-        <ProgressHistory
-          {...(historyPreview ? { initialPage: historyPreview } : {})}
-          progressUnit={work.progressUnit}
-          timezone={timezone}
-          title={work.title}
-          workId={work.id}
-        />
-
-        <div className="library-card__footer">
-          <Badge tone={getStatusTone(work.status)}>
-            {statusLabels[work.status]}
-          </Badge>
-          {work.rating === null ? (
-            <span className="library-card__rating library-card__rating--empty">
-              Sem avaliação
-            </span>
-          ) : (
-            <span
-              aria-label={`Avaliação ${numberFormatter.format(work.rating)} de 5`}
-              className="library-card__rating"
-            >
-              <span aria-hidden="true">★</span>{" "}
-              {numberFormatter.format(work.rating)}
-            </span>
-          )}
+          <ProgressHistory
+            {...(historyPreview ? { initialPage: historyPreview } : {})}
+            progressUnit={work.progressUnit}
+            timezone={timezone}
+            title={work.title}
+            workId={work.id}
+          />
         </div>
       </div>
     </Card>
@@ -235,6 +206,7 @@ export function LibraryView({
   const [type, setType] = useState("ALL");
   const [genre, setGenre] = useState("ALL");
   const [sort, setSort] = useState<LibrarySort>("UPDATED_DESC");
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const genres = useMemo(
     () =>
       [...new Set(works.flatMap((work) => work.genres))].sort((first, second) =>
@@ -253,6 +225,9 @@ export function LibraryView({
       }),
     [genre, query, sort, status, type, works],
   );
+  const activeFilterCount = [status, type, genre].filter(
+    (value) => value !== "ALL",
+  ).length;
   const hasActiveFilters =
     query !== "" || status !== "ALL" || type !== "ALL" || genre !== "ALL";
 
@@ -266,6 +241,11 @@ export function LibraryView({
   return (
     <div className="library">
       <PageHeader
+        actions={
+          <Link className="ui-button ui-button--primary" href="/library/new">
+            Adicionar obra
+          </Link>
+        }
         description={
           result.status === "success"
             ? `${works.length} ${works.length === 1 ? "obra organizada" : "obras organizadas"} na sua estante.`
@@ -284,31 +264,38 @@ export function LibraryView({
       ) : null}
 
       {result.status === "error" ? (
-        <Card as="section">
+        <section className="library-feedback">
           <ErrorState
             description="Verifique sua conexão e tente carregar as obras novamente."
             retryHref="/library"
             title="A biblioteca não pôde ser carregada"
           />
-        </Card>
+        </section>
       ) : works.length === 0 ? (
-        <Card as="section">
+        <section className="library-feedback">
           <EmptyState
-            description="Quando você adicionar sua primeira obra, ela aparecerá aqui com status e progresso."
-            title="Sua biblioteca está vazia"
+            action={
+              <Link
+                className="ui-button ui-button--primary ui-button--sm"
+                href="/library/new"
+              >
+                Adicionar primeira obra
+              </Link>
+            }
+            description="Comece com o livro que está na sua cabeceira ou com a próxima leitura da lista."
+            title="Sua estante espera a primeira obra"
           />
-        </Card>
+        </section>
       ) : (
         <>
-          <Card
+          <section
             aria-labelledby="library-filters-title"
-            as="section"
-            className="library-filters"
+            className="library-toolbar"
           >
-            <div className="library-filters__heading">
+            <div className="library-toolbar__heading">
               <div>
-                <p>Refine sua estante</p>
-                <h2 id="library-filters-title">Busca e filtros</h2>
+                <p>Encontre na estante</p>
+                <h2 id="library-filters-title">Busca e organização</h2>
               </div>
               <output aria-live="polite">
                 {filteredWorks.length}{" "}
@@ -316,7 +303,7 @@ export function LibraryView({
               </output>
             </div>
 
-            <div className="library-filters__grid">
+            <div className="library-toolbar__primary">
               <FormField htmlFor="library-query" label="Buscar">
                 <Input
                   autoComplete="off"
@@ -328,6 +315,45 @@ export function LibraryView({
                 />
               </FormField>
 
+              <FormField htmlFor="library-sort" label="Ordenar por">
+                <Select
+                  id="library-sort"
+                  onChange={(event) =>
+                    setSort(event.target.value as LibrarySort)
+                  }
+                  value={sort}
+                >
+                  <option value="UPDATED_DESC">Última atualização</option>
+                  <option value="TITLE_ASC">Título de A a Z</option>
+                  <option value="PROGRESS_DESC">Maior progresso</option>
+                </Select>
+              </FormField>
+
+              <Button
+                aria-controls="library-filter-options"
+                aria-expanded={filtersOpen}
+                className="library-filters-toggle"
+                onClick={() => setFiltersOpen((isOpen) => !isOpen)}
+                variant="secondary"
+              >
+                Filtros
+                {activeFilterCount > 0 ? (
+                  <span className="library-filters-toggle__count">
+                    {activeFilterCount}
+                  </span>
+                ) : null}
+              </Button>
+            </div>
+
+            <div
+              className={[
+                "library-filter-options",
+                filtersOpen ? "library-filter-options--open" : null,
+              ]
+                .filter(Boolean)
+                .join(" ")}
+              id="library-filter-options"
+            >
               <FormField htmlFor="library-status" label="Status">
                 <Select
                   id="library-status"
@@ -345,6 +371,7 @@ export function LibraryView({
                   <option value="ABANDONED">Abandonadas</option>
                 </Select>
               </FormField>
+
               <FormField htmlFor="library-type" label="Tipo">
                 <Select
                   id="library-type"
@@ -373,43 +400,29 @@ export function LibraryView({
                   ))}
                 </Select>
               </FormField>
-
-              <FormField htmlFor="library-sort" label="Ordenar por">
-                <Select
-                  id="library-sort"
-                  onChange={(event) =>
-                    setSort(event.target.value as LibrarySort)
-                  }
-                  value={sort}
-                >
-                  <option value="UPDATED_DESC">Última atualização</option>
-                  <option value="TITLE_ASC">Título de A a Z</option>
-                  <option value="PROGRESS_DESC">Maior progresso</option>
-                </Select>
-              </FormField>
             </div>
 
             {hasActiveFilters && filteredWorks.length > 0 ? (
-              <div className="library-filters__actions">
+              <div className="library-toolbar__actions">
                 <Button onClick={clearFilters} size="sm" variant="ghost">
-                  Limpar filtros
+                  Limpar busca e filtros
                 </Button>
               </div>
             ) : null}
-          </Card>
+          </section>
 
           {filteredWorks.length === 0 ? (
-            <Card as="section">
+            <section className="library-feedback">
               <EmptyState
+                action={
+                  <Button onClick={clearFilters} size="sm" variant="secondary">
+                    Limpar busca e filtros
+                  </Button>
+                }
                 description="Tente remover algum filtro ou buscar com outros termos."
                 title="Nenhuma obra encontrada"
               />
-              <div className="library-empty-action">
-                <Button onClick={clearFilters} size="sm" variant="secondary">
-                  Limpar filtros
-                </Button>
-              </div>
-            </Card>
+            </section>
           ) : (
             <section aria-labelledby="library-results-title">
               <h2 className="sr-only" id="library-results-title">

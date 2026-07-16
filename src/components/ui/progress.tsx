@@ -19,15 +19,17 @@ export function Progress({
     safeMax,
   );
   const percentage = Math.round((safeValue / safeMax) * 100);
+  const accessibleValueLabel = valueLabel ?? `${percentage}%`;
 
   return (
     <div className="ui-progress">
       <div className="ui-progress__heading">
         <strong>{label}</strong>
-        <span>{valueLabel ?? `${percentage}%`}</span>
+        <span>{accessibleValueLabel}</span>
       </div>
       <progress
         aria-label={ariaLabel ?? label}
+        aria-valuetext={accessibleValueLabel}
         max={safeMax}
         value={safeValue}
       />

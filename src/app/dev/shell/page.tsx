@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 
+import DashboardLoading from "@/app/(app)/dashboard/loading";
+
 import { AppShell } from "@/components/layout/app-shell";
 import { DashboardView } from "@/features/dashboard/components/dashboard-view";
 import {
@@ -122,6 +124,14 @@ export default async function ShellPreviewPage({
     reviews: [],
     goals: [],
   });
+
+  if (state === "loading") {
+    return (
+      <AppShell displayName="Gabriel" previewPath="/dashboard">
+        <DashboardLoading />
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell displayName="Gabriel" previewPath="/dashboard">

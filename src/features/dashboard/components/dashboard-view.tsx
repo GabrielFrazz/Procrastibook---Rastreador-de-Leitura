@@ -1,8 +1,9 @@
-import type { CSSProperties, ReactNode, SVGProps } from "react";
+import Link from "next/link";
+import type { ReactNode, SVGProps } from "react";
 
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import { EmptyState, ErrorState } from "@/components/ui/feedback-state";
+import { BookCover } from "@/components/ui/media-placeholder";
 import { PageHeader } from "@/components/ui/page-header";
 import { Progress } from "@/components/ui/progress";
 import type {
@@ -121,7 +122,7 @@ function getSessionDescription(session: DashboardRecentSession) {
   return `${amount} em ${formatDuration(session.durationMinutes)}`;
 }
 
-function MetricCard({
+function DashboardMetric({
   icon,
   label,
   value,
@@ -131,7 +132,7 @@ function MetricCard({
   value: string;
 }>) {
   return (
-    <Card as="div" className="dashboard-metric">
+    <div className={`dashboard-metric dashboard-metric--${icon}`}>
       <span className="dashboard-metric__icon">
         <DashboardIcon name={icon} />
       </span>
@@ -139,7 +140,36 @@ function MetricCard({
         <dt>{label}</dt>
         <dd>{value}</dd>
       </div>
-    </Card>
+    </div>
+  );
+}
+
+function DashboardMetrics({
+  summary,
+}: Readonly<{ summary: DashboardSummary }>) {
+  return (
+    <dl className="dashboard-metrics" aria-label="Resumo de leitura">
+      <DashboardMetric
+        icon="book"
+        label="Em leitura"
+        value={numberFormatter.format(summary.statusCounts.reading)}
+      />
+      <DashboardMetric
+        icon="pages"
+        label="Páginas lidas"
+        value={numberFormatter.format(summary.pagesRead)}
+      />
+      <DashboardMetric
+        icon="clock"
+        label="Tempo registrado"
+        value={formatDuration(summary.minutesRead)}
+      />
+      <DashboardMetric
+        icon="speed"
+        label="Ritmo médio"
+        value={`${numberFormatter.format(summary.readingSpeedPagesPerHour)} pág/h`}
+      />
+    </dl>
   );
 }
 
@@ -158,26 +188,20 @@ function CurrentWork({ work }: Readonly<{ work: DashboardCurrentWork }>) {
 
   return (
     <li className="dashboard-work">
-      <span
-        aria-hidden="true"
-        className={`dashboard-work__cover${work.coverUrl ? " dashboard-work__cover--image" : ""}`}
-        style={
-          work.coverUrl
-            ? ({
-                backgroundImage: `url(${JSON.stringify(work.coverUrl)})`,
-              } satisfies CSSProperties)
-            : undefined
-        }
-      >
-        {work.coverUrl ? null : work.title.charAt(0).toLocaleUpperCase("pt-BR")}
-      </span>
+      <BookCover
+        alt=""
+        className="dashboard-work__cover"
+        size="sm"
+        src={work.coverUrl}
+        title={work.title}
+      />
       <div className="dashboard-work__content">
         <div className="dashboard-work__heading">
           <div>
             <h3>{work.title}</h3>
             <p>{workTypeLabels[work.type]}</p>
           </div>
-          <Badge tone="strong">Lendo</Badge>
+          <Badge tone="neutral">Lendo</Badge>
         </div>
         {work.totalProgress === null ? (
           <p className="dashboard-work__unknown-progress">
@@ -197,27 +221,121 @@ function CurrentWork({ work }: Readonly<{ work: DashboardCurrentWork }>) {
   );
 }
 
-function GoalCard({
+function ReadingSection({ summary }: Readonly<{ summary: DashboardSummary }>) {
+  return (
+    <section
+      className="dashboard-reading"
+      aria-labelledby="dashboard-current-title"
+    >
+      <div className="dashboard-section__header">
+        <div>
+          <p className="dashboard-section__eyebrow">Em andamento</p>
+          <h2 id="dashboard-current-title">Continuar lendo</h2>
+        </div>
+        <Badge>
+          {summary.statusCounts.reading}{" "}
+          {summary.statusCounts.reading === 1 ? "ativa" : "ativas"}
+        </Badge>
+      </div>
+      {summary.currentWorks.length > 0 ? (
+        <ul className="dashboard-work-list">
+          {summary.currentWorks.map((work) => (
+            <CurrentWork key={work.id} work={work} />
+          ))}
+        </ul>
+      ) : (
+        <p className="dashboard-section__empty">
+          Nenhuma obra está marcada como leitura atual.
+        </p>
+      )}
+    </section>
+  );
+}
+
+function ActivitySection({
+  sessions,
+  timezone,
+}: Readonly<{
+  sessions: DashboardSummary["recentSessions"];
+  timezone: string;
+}>) {
+  return (
+    <section
+      className="dashboard-activity"
+      aria-labelledby="dashboard-sessions-title"
+    >
+      <div className="dashboard-section__header">
+        <div>
+          <p className="dashboard-section__eyebrow">Atividade</p>
+          <h2 id="dashboard-sessions-title">Sessões recentes</h2>
+        </div>
+      </div>
+      {sessions.length > 0 ? (
+        <ol className="dashboard-activity-list">
+          {sessions.map((session) => (
+            <li key={session.id}>
+              <span aria-hidden="true" className="dashboard-activity__marker" />
+              <div>
+                <strong>{session.workTitle}</strong>
+                <p>{getSessionDescription(session)}</p>
+              </div>
+              <time dateTime={session.occurredOn}>
+                {formatDate(session.occurredOn, timezone)}
+              </time>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p className="dashboard-section__empty">
+          Suas sessões registradas aparecerão aqui.
+        </p>
+      )}
+    </section>
+  );
+}
+
+function GoalSection({
   goal,
   timezone,
-}: {
-  goal: DashboardGoal;
-  timezone: string;
-}) {
+}: Readonly<{ goal: DashboardGoal | null; timezone: string }>) {
+  if (!goal) {
+    return (
+      <section
+        className="dashboard-goal"
+        aria-labelledby="dashboard-goal-title"
+      >
+        <div className="dashboard-section__header">
+          <div>
+            <p className="dashboard-section__eyebrow">Meta atual</p>
+            <h2 id="dashboard-goal-title">Sem meta ativa</h2>
+          </div>
+        </div>
+        <p className="dashboard-section__empty">
+          Quando uma meta estiver dentro do período, o progresso aparecerá aqui.
+        </p>
+      </section>
+    );
+  }
+
   const current = numberFormatter.format(goal.currentValue);
   const target = numberFormatter.format(goal.targetValue);
+  const isComplete = goal.progressPercent >= 100;
 
   return (
-    <Card as="section" aria-labelledby="dashboard-goal-title">
+    <section className="dashboard-goal" aria-labelledby="dashboard-goal-title">
       <div className="dashboard-section__header">
         <div>
           <p className="dashboard-section__eyebrow">Meta atual</p>
           <h2 id="dashboard-goal-title">{goalLabels[goal.metric]}</h2>
         </div>
-        <Badge tone={goal.progressPercent >= 100 ? "success" : "neutral"}>
-          {goal.progressPercent >= 100 ? "Concluída" : "Em andamento"}
+        <Badge tone={isComplete ? "success" : "neutral"}>
+          {isComplete ? "Concluída" : "Em andamento"}
         </Badge>
       </div>
+      <p className="dashboard-goal__percentage">
+        <strong>{numberFormatter.format(goal.progressPercent)}%</strong>
+        <span>do objetivo alcançado</span>
+      </p>
       <Progress
         label={goalLabels[goal.metric]}
         max={goal.targetValue}
@@ -227,7 +345,83 @@ function GoalCard({
       <p className="dashboard-goal__deadline">
         Período até {formatDate(goal.periodEnd, timezone)}
       </p>
-    </Card>
+    </section>
+  );
+}
+
+function DashboardRail({
+  summary,
+  timezone,
+}: Readonly<{ summary: DashboardSummary; timezone: string }>) {
+  return (
+    <aside className="dashboard-rail" aria-label="Resumo complementar">
+      <GoalSection goal={summary.activeGoal} timezone={timezone} />
+
+      <section
+        className="dashboard-rail__section"
+        aria-labelledby="dashboard-status-title"
+      >
+        <div className="dashboard-section__header">
+          <div>
+            <p className="dashboard-section__eyebrow">Biblioteca</p>
+            <h2 id="dashboard-status-title">Status das obras</h2>
+          </div>
+        </div>
+        <ul className="dashboard-status-list">
+          <li>
+            <span>Quero ler</span>
+            <strong>{summary.statusCounts.wantToRead}</strong>
+          </li>
+          <li>
+            <span>Lendo</span>
+            <strong>{summary.statusCounts.reading}</strong>
+          </li>
+          <li>
+            <span>Finalizadas</span>
+            <strong>{summary.statusCounts.finished}</strong>
+          </li>
+          <li>
+            <span>Abandonadas</span>
+            <strong>{summary.statusCounts.abandoned}</strong>
+          </li>
+        </ul>
+      </section>
+
+      <section
+        className="dashboard-rail__section dashboard-rail__reviews"
+        aria-labelledby="dashboard-reviews-title"
+      >
+        <div className="dashboard-section__header">
+          <div>
+            <p className="dashboard-section__eyebrow">Impressões</p>
+            <h2 id="dashboard-reviews-title">Avaliações recentes</h2>
+          </div>
+        </div>
+        {summary.recentReviews.length > 0 ? (
+          <ul className="dashboard-review-list">
+            {summary.recentReviews.map((review) => (
+              <li key={review.id}>
+                <div>
+                  <strong>{review.workTitle}</strong>
+                  <time dateTime={review.updatedAt}>
+                    {formatDate(review.updatedAt, timezone)}
+                  </time>
+                </div>
+                <span
+                  aria-label={`Avaliação ${numberFormatter.format(review.rating)} de 5`}
+                >
+                  ★ {numberFormatter.format(review.rating)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="dashboard-section__empty">
+            Suas avaliações mais recentes aparecerão aqui.
+          </p>
+        )}
+      </section>
+    </aside>
   );
 }
 
@@ -237,152 +431,26 @@ function DashboardContent({
 }: Readonly<{ summary: DashboardSummary; timezone: string }>) {
   if (summary.totalWorks === 0) {
     return (
-      <Card as="section" aria-label="Dashboard vazio">
+      <section className="dashboard-feedback" aria-label="Dashboard vazio">
         <EmptyState
+          action={
+            <Link className="ui-button ui-button--primary" href="/library/new">
+              Adicionar primeira obra
+            </Link>
+          }
           description="Quando suas obras forem cadastradas, este espaço mostrará progresso, sessões, metas e avaliações."
           title="Sua estante começa aqui"
         />
-      </Card>
+      </section>
     );
   }
 
   return (
-    <div className="dashboard-layout">
-      <div className="dashboard-layout__main">
-        <Card as="section" aria-labelledby="dashboard-current-title">
-          <div className="dashboard-section__header">
-            <div>
-              <p className="dashboard-section__eyebrow">Em andamento</p>
-              <h2 id="dashboard-current-title">Continuar lendo</h2>
-            </div>
-            <Badge>
-              {summary.statusCounts.reading}{" "}
-              {summary.statusCounts.reading === 1 ? "ativa" : "ativas"}
-            </Badge>
-          </div>
-          {summary.currentWorks.length > 0 ? (
-            <ul className="dashboard-work-list">
-              {summary.currentWorks.map((work) => (
-                <CurrentWork key={work.id} work={work} />
-              ))}
-            </ul>
-          ) : (
-            <p className="dashboard-section__empty">
-              Nenhuma obra está marcada como leitura atual.
-            </p>
-          )}
-        </Card>
-
-        <Card as="section" aria-labelledby="dashboard-sessions-title">
-          <div className="dashboard-section__header">
-            <div>
-              <p className="dashboard-section__eyebrow">Atividade</p>
-              <h2 id="dashboard-sessions-title">Sessões recentes</h2>
-            </div>
-          </div>
-          {summary.recentSessions.length > 0 ? (
-            <ol className="dashboard-activity-list">
-              {summary.recentSessions.map((session) => (
-                <li key={session.id}>
-                  <span
-                    aria-hidden="true"
-                    className="dashboard-activity__marker"
-                  />
-                  <div>
-                    <strong>{session.workTitle}</strong>
-                    <p>{getSessionDescription(session)}</p>
-                  </div>
-                  <time dateTime={session.occurredOn}>
-                    {formatDate(session.occurredOn, timezone)}
-                  </time>
-                </li>
-              ))}
-            </ol>
-          ) : (
-            <p className="dashboard-section__empty">
-              Suas sessões registradas aparecerão aqui.
-            </p>
-          )}
-        </Card>
-      </div>
-
-      <div className="dashboard-layout__side">
-        {summary.activeGoal ? (
-          <GoalCard goal={summary.activeGoal} timezone={timezone} />
-        ) : (
-          <Card as="section" aria-labelledby="dashboard-goal-title">
-            <div className="dashboard-section__header">
-              <div>
-                <p className="dashboard-section__eyebrow">Meta atual</p>
-                <h2 id="dashboard-goal-title">Sem meta ativa</h2>
-              </div>
-            </div>
-            <p className="dashboard-section__empty">
-              Quando uma meta estiver dentro do período, o progresso aparecerá
-              aqui.
-            </p>
-          </Card>
-        )}
-
-        <Card as="section" aria-labelledby="dashboard-status-title">
-          <div className="dashboard-section__header">
-            <div>
-              <p className="dashboard-section__eyebrow">Biblioteca</p>
-              <h2 id="dashboard-status-title">Status das obras</h2>
-            </div>
-          </div>
-          <ul className="dashboard-status-list">
-            <li>
-              <span>Quero ler</span>
-              <strong>{summary.statusCounts.wantToRead}</strong>
-            </li>
-            <li>
-              <span>Lendo</span>
-              <strong>{summary.statusCounts.reading}</strong>
-            </li>
-            <li>
-              <span>Finalizadas</span>
-              <strong>{summary.statusCounts.finished}</strong>
-            </li>
-            <li>
-              <span>Abandonadas</span>
-              <strong>{summary.statusCounts.abandoned}</strong>
-            </li>
-          </ul>
-        </Card>
-
-        <Card as="section" aria-labelledby="dashboard-reviews-title">
-          <div className="dashboard-section__header">
-            <div>
-              <p className="dashboard-section__eyebrow">Impressões</p>
-              <h2 id="dashboard-reviews-title">Avaliações recentes</h2>
-            </div>
-          </div>
-          {summary.recentReviews.length > 0 ? (
-            <ul className="dashboard-review-list">
-              {summary.recentReviews.map((review) => (
-                <li key={review.id}>
-                  <div>
-                    <strong>{review.workTitle}</strong>
-                    <time dateTime={review.updatedAt}>
-                      {formatDate(review.updatedAt, timezone)}
-                    </time>
-                  </div>
-                  <span
-                    aria-label={`Avaliação ${numberFormatter.format(review.rating)} de 5`}
-                  >
-                    ★ {numberFormatter.format(review.rating)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="dashboard-section__empty">
-              Suas avaliações mais recentes aparecerão aqui.
-            </p>
-          )}
-        </Card>
-      </div>
+    <div className="dashboard-overview">
+      <ReadingSection summary={summary} />
+      <DashboardMetrics summary={summary} />
+      <ActivitySection sessions={summary.recentSessions} timezone={timezone} />
+      <DashboardRail summary={summary} timezone={timezone} />
     </div>
   );
 }
@@ -396,8 +464,8 @@ export function DashboardView({
   return (
     <div className="dashboard">
       <PageHeader
-        description="Acompanhe seu ritmo, retome leituras e veja o que mudou recentemente."
-        eyebrow="Sua leitura"
+        description="Retome suas leituras, acompanhe seu ritmo e veja o que mudou recentemente."
+        eyebrow="Sua leitura, sem pressa"
         title="Visão geral"
       />
 
@@ -413,42 +481,15 @@ export function DashboardView({
       ) : null}
 
       {result.status === "error" ? (
-        <Card as="section" aria-label="Falha no dashboard">
+        <section className="dashboard-feedback" aria-label="Falha no dashboard">
           <ErrorState
             description="Não conseguimos consultar seus dados agora. Sua biblioteca não foi alterada."
             retryHref="/dashboard"
             title="O resumo não pôde ser carregado"
           />
-        </Card>
+        </section>
       ) : (
-        <>
-          <dl className="dashboard-metrics" aria-label="Resumo de leitura">
-            <MetricCard
-              icon="book"
-              label="Em leitura"
-              value={numberFormatter.format(
-                result.summary.statusCounts.reading,
-              )}
-            />
-            <MetricCard
-              icon="pages"
-              label="Páginas lidas"
-              value={numberFormatter.format(result.summary.pagesRead)}
-            />
-            <MetricCard
-              icon="clock"
-              label="Tempo registrado"
-              value={formatDuration(result.summary.minutesRead)}
-            />
-            <MetricCard
-              icon="speed"
-              label="Ritmo médio"
-              value={`${numberFormatter.format(result.summary.readingSpeedPagesPerHour)} pág/h`}
-            />
-          </dl>
-
-          <DashboardContent summary={result.summary} timezone={timezone} />
-        </>
+        <DashboardContent summary={result.summary} timezone={timezone} />
       )}
     </div>
   );

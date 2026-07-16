@@ -1,18 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import {
-  useActionState,
-  useEffect,
-  useState,
-  type CSSProperties,
-  type SVGProps,
-} from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 
 import {
+  BookCover,
   Button,
-  Card,
   FormField,
   Input,
   PageHeader,
@@ -33,22 +27,23 @@ type AddWorkViewProps = Readonly<{
   initialState?: WorkFormState;
 }>;
 
-function BookIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      aria-hidden="true"
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="1.8"
-      viewBox="0 0 24 24"
-      {...props}
-    >
-      <path d="M4.5 5.5A2.5 2.5 0 0 1 7 3h4v16H7a2.5 2.5 0 0 0-2.5 2.5v-16Zm15 0A2.5 2.5 0 0 0 17 3h-4v16h4a2.5 2.5 0 0 1 2.5 2.5v-16Z" />
-    </svg>
-  );
-}
+const workFormFocusOrder = [
+  "title",
+  "subtitle",
+  "authors",
+  "type",
+  "status",
+  "progressUnit",
+  "total",
+  "genres",
+  "publisher",
+  "publishedYear",
+  "language",
+  "isbn13",
+  "startedAt",
+  "description",
+  "cover",
+] satisfies readonly WorkFormField[];
 
 function getFieldError(state: WorkFormState, field: WorkFormField) {
   return state.fieldErrors[field]?.[0];
@@ -86,9 +81,11 @@ function FormMessage({ state }: Readonly<{ state: WorkFormState }>) {
 function CoverField({
   externalCoverUrl,
   state,
+  title,
 }: Readonly<{
   externalCoverUrl: string | null;
   state: WorkFormState;
+  title: string;
 }>) {
   const [uploadedPreviewUrl, setUploadedPreviewUrl] = useState<string | null>(
     null,
@@ -106,29 +103,22 @@ function CoverField({
     [uploadedPreviewUrl],
   );
 
-  const previewStyle: CSSProperties | undefined = previewUrl
-    ? { backgroundImage: `url(${JSON.stringify(previewUrl)})` }
-    : undefined;
-
   return (
-    <Card as="section" className="add-cover">
+    <section aria-labelledby="cover-heading" className="add-cover">
       <div className="add-work__section-heading">
         <p>Opcional</p>
-        <h2>Capa da obra</h2>
+        <h2 id="cover-heading">Capa da obra</h2>
+        <span>Use uma imagem que ajude a reconhecer a leitura na estante.</span>
       </div>
 
-      <div
-        aria-hidden="true"
-        className={[
-          "add-cover__preview",
-          previewUrl ? "add-cover__preview--image" : null,
-        ]
-          .filter(Boolean)
-          .join(" ")}
-        style={previewStyle}
-      >
-        {previewUrl ? null : <BookIcon />}
-      </div>
+      <BookCover
+        alt=""
+        className="add-cover__preview"
+        loading="eager"
+        size="lg"
+        src={previewUrl}
+        title={title}
+      />
 
       <input
         {...getFieldA11y(state, "cover")}
@@ -160,7 +150,7 @@ function CoverField({
           {error}
         </p>
       ) : null}
-    </Card>
+    </section>
   );
 }
 
@@ -182,6 +172,7 @@ function WorkForm({
   selectedCandidate: NormalizedWorkCandidate | null;
 }>) {
   const [state, formAction] = useActionState(createWorkAction, initialState);
+  const formRef = useRef<HTMLFormElement>(null);
   const [workType, setWorkType] = useState<string>(
     selectedCandidate?.suggestedType ?? "BOOK",
   );
@@ -189,9 +180,31 @@ function WorkForm({
   const totalLabel =
     progressUnit === "CHAPTER" ? "Total de capítulos" : "Total de páginas";
 
+  useEffect(() => {
+    if (state.status !== "error") {
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      const firstInvalidField =
+        workFormFocusOrder
+          .map((field) =>
+            formRef.current?.querySelector<HTMLElement>(
+              `#${field}[aria-invalid="true"]`,
+            ),
+          )
+          .find((field): field is HTMLElement => Boolean(field)) ??
+        formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]');
+
+      firstInvalidField?.focus({ preventScroll: true });
+      firstInvalidField?.scrollIntoView({ block: "center" });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [state]);
+
   return (
-    <form action={formAction} className="add-work-form">
-      <FormMessage state={state} />
+    <form action={formAction} className="add-work-form" ref={formRef}>
       {selectedCandidate ? (
         <>
           <input
@@ -231,11 +244,31 @@ function WorkForm({
         <CoverField
           externalCoverUrl={selectedCandidate?.coverUrl ?? null}
           state={state}
+          title={selectedCandidate?.title ?? "Nova obra"}
         />
 
-        <Card as="section" className="add-work-fields">
+        <section
+          aria-labelledby="work-fields-title"
+          className="add-work-fields"
+        >
+          <div className="add-work-fields__heading">
+            <div>
+              <p>Cadastro manual</p>
+              <h2 id="work-fields-title">Informações da obra</h2>
+            </div>
+            <span>
+              <strong aria-hidden="true">*</strong> campos obrigatórios
+            </span>
+          </div>
+
           <fieldset className="add-work-fields__section">
-            <legend>Dados principais</legend>
+            <legend>
+              <span aria-hidden="true">01</span>
+              Dados principais
+            </legend>
+            <p className="add-work-fields__description">
+              Identifique a obra e sua autoria como aparecem na publicação.
+            </p>
             <div className="add-work-fields__grid">
               <FormField
                 error={getFieldError(state, "title")}
@@ -265,6 +298,7 @@ function WorkForm({
                   id="subtitle"
                   maxLength={200}
                   name="subtitle"
+                  placeholder="Ex.: Memórias de uma leitura"
                 />
               </FormField>
 
@@ -291,7 +325,14 @@ function WorkForm({
           </fieldset>
 
           <fieldset className="add-work-fields__section">
-            <legend>Organização e progresso</legend>
+            <legend>
+              <span aria-hidden="true">02</span>
+              Organização e progresso
+            </legend>
+            <p className="add-work-fields__description">
+              Defina como a obra entra na sua estante; tudo pode ser atualizado
+              depois.
+            </p>
             <div className="add-work-fields__grid">
               <FormField
                 error={getFieldError(state, "type")}
@@ -379,6 +420,7 @@ function WorkForm({
                   max={10_000_000}
                   min={1}
                   name="total"
+                  placeholder={progressUnit === "PERCENT" ? "100" : "Ex.: 320"}
                   type="number"
                 />
               </FormField>
@@ -404,7 +446,13 @@ function WorkForm({
           </fieldset>
 
           <fieldset className="add-work-fields__section">
-            <legend>Detalhes adicionais</legend>
+            <legend>
+              <span aria-hidden="true">03</span>
+              Detalhes adicionais
+            </legend>
+            <p className="add-work-fields__description">
+              Acrescente dados editoriais que facilitem buscas e organização.
+            </p>
             <div className="add-work-fields__grid">
               <FormField
                 error={getFieldError(state, "publisher")}
@@ -417,6 +465,7 @@ function WorkForm({
                   id="publisher"
                   maxLength={160}
                   name="publisher"
+                  placeholder="Ex.: Companhia das Letras"
                 />
               </FormField>
 
@@ -433,6 +482,7 @@ function WorkForm({
                   max={2100}
                   min={1000}
                   name="publishedYear"
+                  placeholder="Ex.: 2024"
                   type="number"
                 />
               </FormField>
@@ -499,14 +549,17 @@ function WorkForm({
               </div>
             </div>
           </fieldset>
-        </Card>
+        </section>
       </div>
 
       <div className="add-work-form__actions">
-        <Link className="ui-button ui-button--secondary" href="/library">
-          Cancelar
-        </Link>
-        <SubmitButton />
+        <FormMessage state={state} />
+        <div className="add-work-form__buttons">
+          <Link className="ui-button ui-button--secondary" href="/library">
+            Cancelar
+          </Link>
+          <SubmitButton />
+        </div>
       </div>
     </form>
   );

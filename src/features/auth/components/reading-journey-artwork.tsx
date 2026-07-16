@@ -4,85 +4,51 @@ export function ReadingJourneyArtwork() {
       aria-hidden="true"
       className="auth-story__artwork"
       fill="none"
-      viewBox="0 0 360 300"
+      viewBox="0 0 520 390"
     >
-      <rect
-        className="auth-story__shape"
-        height="82"
-        rx="4"
-        width="54"
-        x="36"
-        y="38"
-      />
-      <rect
-        className="auth-story__shape"
-        height="68"
-        rx="4"
-        width="54"
-        x="36"
-        y="128"
-      />
-      <rect
-        className="auth-story__shape"
-        height="56"
-        rx="4"
-        width="54"
-        x="36"
-        y="204"
-      />
-      <circle className="auth-story__shape" cx="150" cy="78" r="40" />
-      <rect
-        className="auth-story__shape"
-        height="114"
-        rx="4"
-        width="86"
-        x="107"
-        y="124"
-      />
-      <rect
-        className="auth-story__shape"
-        height="70"
-        rx="4"
-        width="54"
-        x="216"
-        y="54"
-      />
-      <rect
-        className="auth-story__shape"
-        height="92"
-        rx="4"
-        width="54"
-        x="216"
-        y="132"
-      />
-      <path className="auth-story__icon" d="M139 82c2-8 20-8 22 0v8h-22v-8Z" />
-      <circle className="auth-story__icon" cx="150" cy="67" r="7" />
       <path
-        className="auth-story__book"
-        d="M128 162c10-5 20-4 22 2v32c-4-5-12-7-22-3v-31Z"
+        className="auth-story__sun"
+        d="M87 289c0-114 77-206 173-206s173 92 173 206H87Z"
+      />
+
+      <g className="auth-story__shelf-books">
+        <rect height="114" rx="5" width="43" x="67" y="206" />
+        <rect height="90" rx="5" width="46" x="114" y="230" />
+        <rect height="126" rx="5" width="38" x="164" y="194" />
+        <path d="m193 194 30 126h39l-30-134-39 8Z" />
+        <rect height="102" rx="5" width="43" x="365" y="218" />
+        <rect height="122" rx="5" width="41" x="412" y="198" />
+      </g>
+
+      <path
+        className="auth-story__page"
+        d="M151 130c42-13 82-6 109 18v151c-27-24-67-30-109-18V130Z"
       />
       <path
-        className="auth-story__book"
-        d="M172 162c-10-5-20-4-22 2v32c4-5 12-7 22-3v-31Z"
+        className="auth-story__page"
+        d="M369 130c-42-13-82-6-109 18v151c27-24 67-30 109-18V130Z"
       />
-      <rect
-        className="auth-story__icon"
-        height="18"
-        rx="2"
-        width="14"
-        x="56"
-        y="70"
-      />
-      <path className="auth-story__line" d="M58 75h10M58 80h8" />
-      <path className="auth-story__icon" d="M234 164h18v28l-9-6-9 6v-28Z" />
-      <path className="auth-story__line" d="M34 272h236" />
-      <path className="auth-story__line" d="m38 254 8-9 7 4 10-12" />
-      <path className="auth-story__meter" d="M76 250h70M76 250h42" />
       <path
-        className="auth-story__star"
-        d="m180 238 5 9 10 2-7 7 2 10-10-5-9 5 2-10-7-7 10-2 4-9Z"
+        className="auth-story__page-fold"
+        d="M151 130c42-13 82-6 109 18v151M369 130c-42-13-82-6-109 18v151"
       />
-      <path className="auth-story__meter" d="M208 250h62M208 250h38" />
+      <path
+        className="auth-story__bookmark"
+        d="M320 131h25v70l-12.5-11-12.5 11v-70Z"
+      />
+
+      <g className="auth-story__page-lines">
+        <path d="M177 171c20-5 38-4 55 2M177 193c20-5 38-4 55 2M177 215c17-4 33-4 48 1" />
+        <path d="M288 173c17-6 34-7 54-3M288 195c17-6 34-7 54-3M288 217c15-5 30-6 45-4" />
+      </g>
+
+      <path className="auth-story__shelf" d="M45 320h430M76 339h368" />
+      <circle className="auth-story__dot" cx="87" cy="158" r="7" />
+      <circle className="auth-story__dot" cx="421" cy="154" r="5" />
+      <path
+        className="auth-story__spark"
+        d="m407 93 5 12 12 5-12 5-5 12-5-12-12-5 12-5 5-12Z"
+      />
     </svg>
   );
 }

@@ -1,13 +1,16 @@
 "use client";
 
-import {
-  useState,
-  type CSSProperties,
-  type FormEvent,
-  type SVGProps,
-} from "react";
+import { useState, type FormEvent, type SVGProps } from "react";
 
-import { Badge, Button, Card, FormField, Input } from "@/components/ui";
+import {
+  Badge,
+  BookCover,
+  Button,
+  Card,
+  FormField,
+  Input,
+  Skeleton,
+} from "@/components/ui";
 import { parseCatalogSearchResponse } from "@/features/catalog/domain/catalog-search-response";
 import type { NormalizedWorkCandidate } from "@/features/catalog/domain/catalog-provider";
 
@@ -40,27 +43,6 @@ function SearchIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-function BookIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      aria-hidden="true"
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="1.8"
-      viewBox="0 0 24 24"
-      {...props}
-    >
-      <path d="M4.5 5.5A2.5 2.5 0 0 1 7 3h4v16H7a2.5 2.5 0 0 0-2.5 2.5v-16Zm15 0A2.5 2.5 0 0 0 17 3h-4v16h4a2.5 2.5 0 0 1 2.5 2.5v-16Z" />
-    </svg>
-  );
-}
-
-function coverStyle(url: string | null): CSSProperties | undefined {
-  return url ? { backgroundImage: `url(${JSON.stringify(url)})` } : undefined;
-}
-
 function resultDetails(candidate: NormalizedWorkCandidate) {
   return [
     candidate.publishedYear,
@@ -69,6 +51,23 @@ function resultDetails(candidate: NormalizedWorkCandidate) {
   ]
     .filter((value): value is number | string => value !== null)
     .join(" · ");
+}
+
+function CatalogSearchSkeleton() {
+  return (
+    <div aria-hidden="true" className="catalog-search__skeleton">
+      {["first", "second"].map((item) => (
+        <div className="catalog-search__skeleton-row" key={item}>
+          <Skeleton variant="cover" width="3.75rem" />
+          <div>
+            <Skeleton variant="text" width="5rem" />
+            <Skeleton variant="text" width="min(18rem, 75%)" />
+            <Skeleton variant="text" width="min(12rem, 58%)" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 export function CatalogSearchPanel({
@@ -92,6 +91,9 @@ export function CatalogSearchPanel({
     if (normalizedQuery.length < 2) {
       setErrorMessage("Digite pelo menos dois caracteres para buscar.");
       setStatus("error");
+      window.requestAnimationFrame(() => {
+        document.querySelector<HTMLInputElement>("#catalog-query")?.focus();
+      });
       return;
     }
 
@@ -159,34 +161,51 @@ export function CatalogSearchPanel({
           htmlFor="catalog-query"
           label="Obra"
         >
-          <Input
-            aria-controls="catalog-results"
-            autoComplete="off"
-            id="catalog-query"
-            maxLength={120}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Ex.: Dom Casmurro ou 9788535902775"
-            type="search"
-            value={query}
-          />
+          <div className="catalog-search__input-row">
+            <Input
+              aria-controls="catalog-results"
+              aria-describedby={
+                status === "error"
+                  ? "catalog-query-hint catalog-search-error"
+                  : "catalog-query-hint"
+              }
+              aria-invalid={
+                status === "error" && query.trim().length < 2 ? true : undefined
+              }
+              autoComplete="off"
+              id="catalog-query"
+              maxLength={120}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Ex.: Dom Casmurro ou 9788535902775"
+              type="search"
+              value={query}
+            />
+            <Button isLoading={status === "loading"} type="submit">
+              {status === "loading" ? "Buscando…" : "Buscar obra"}
+            </Button>
+          </div>
         </FormField>
-        <Button isLoading={status === "loading"} type="submit">
-          {status === "loading" ? "Buscando…" : "Buscar obra"}
-        </Button>
       </form>
 
-      <div aria-live="polite" id="catalog-results">
+      <div
+        aria-busy={status === "loading"}
+        aria-live="polite"
+        id="catalog-results"
+      >
         {status === "idle" ? (
           <p className="catalog-search__notice">
             Você também pode preencher o formulário manualmente logo abaixo.
           </p>
         ) : status === "loading" ? (
-          <p className="catalog-search__notice" role="status">
-            Consultando Google Books e Open Library…
-          </p>
+          <div className="catalog-search__loading" role="status">
+            <p className="catalog-search__notice">
+              Consultando Google Books e Open Library…
+            </p>
+            <CatalogSearchSkeleton />
+          </div>
         ) : status === "error" ? (
           <div className="catalog-search__feedback" role="alert">
-            <p>{errorMessage}</p>
+            <p id="catalog-search-error">{errorMessage}</p>
             {query.trim().length >= 2 ? (
               <Button
                 onClick={() => void search()}
@@ -219,20 +238,13 @@ export function CatalogSearchPanel({
                 return (
                   <li key={key}>
                     <article className="catalog-result">
-                      <div
-                        aria-hidden="true"
-                        className={[
-                          "catalog-result__cover",
-                          candidate.coverUrl
-                            ? "catalog-result__cover--image"
-                            : null,
-                        ]
-                          .filter(Boolean)
-                          .join(" ")}
-                        style={coverStyle(candidate.coverUrl)}
-                      >
-                        {candidate.coverUrl ? null : <BookIcon />}
-                      </div>
+                      <BookCover
+                        alt=""
+                        className="catalog-result__cover"
+                        size="sm"
+                        src={candidate.coverUrl}
+                        title={candidate.title}
+                      />
                       <div className="catalog-result__content">
                         <Badge>{providerLabels[candidate.provider]}</Badge>
                         <h3>{candidate.title}</h3>
@@ -246,6 +258,7 @@ export function CatalogSearchPanel({
                         ) : null}
                       </div>
                       <Button
+                        aria-pressed={selected}
                         disabled={selected}
                         onClick={() => {
                           setSelectedKey(key);

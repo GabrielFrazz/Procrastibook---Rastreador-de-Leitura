@@ -1,6 +1,6 @@
 import type { HTMLAttributes, ReactNode } from "react";
 
-type BadgeTone = "neutral" | "strong" | "success" | "warning";
+export type BadgeTone = "neutral" | "strong" | "success" | "warning" | "error";
 
 type BadgeProps = HTMLAttributes<HTMLSpanElement> &
   Readonly<{

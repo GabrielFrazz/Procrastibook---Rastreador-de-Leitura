@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useEffect, useRef, type CSSProperties } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { useFormStatus } from "react-dom";
 
 import {
   Badge,
+  BookCover,
   Button,
   Card,
   EmptyState,
@@ -96,12 +97,6 @@ function getTotalProgress(work: WorkDetail) {
   return work.progressUnit === "PAGE" ? work.pageCount : work.chapterCount;
 }
 
-function getCoverStyle(coverUrl: string | null): CSSProperties | undefined {
-  return coverUrl
-    ? { backgroundImage: `url(${JSON.stringify(coverUrl)})` }
-    : undefined;
-}
-
 function WorkOverview({ work }: Readonly<{ work: WorkDetail }>) {
   const total = getTotalProgress(work);
   const progressPercent =
@@ -110,13 +105,19 @@ function WorkOverview({ work }: Readonly<{ work: WorkDetail }>) {
       : null;
 
   return (
-    <Card as="section" className="work-detail-overview" padded={false}>
-      <div
-        aria-hidden="true"
-        className={`work-detail-cover${work.coverUrl ? " work-detail-cover--image" : ""}`}
-        style={getCoverStyle(work.coverUrl)}
-      >
-        {work.coverUrl ? null : <span>{typeLabels[work.type]}</span>}
+    <section
+      aria-labelledby="work-detail-title"
+      className="work-detail-overview"
+    >
+      <div className="work-detail-cover-stage">
+        <BookCover
+          alt={`Capa de ${work.title}`}
+          className="work-detail-cover"
+          loading="eager"
+          size="lg"
+          src={work.coverUrl}
+          title={work.title}
+        />
       </div>
 
       <div className="work-detail-overview__content">
@@ -130,8 +131,8 @@ function WorkOverview({ work }: Readonly<{ work: WorkDetail }>) {
           ))}
         </div>
 
-        <div>
-          <h1>{work.title}</h1>
+        <header className="work-detail-title-block">
+          <h1 id="work-detail-title">{work.title}</h1>
           {work.subtitle ? (
             <p className="work-detail-subtitle">{work.subtitle}</p>
           ) : null}
@@ -140,55 +141,65 @@ function WorkOverview({ work }: Readonly<{ work: WorkDetail }>) {
               ? work.authors.join(", ")
               : "Autoria não informada"}
           </p>
+        </header>
+
+        <div className="work-detail-progress">
+          {total === null || progressPercent === null ? (
+            <p className="work-detail-open-progress">
+              <span>Progresso atual</span>
+              <strong>
+                {formatProgressHistoryValue(
+                  work.currentProgress,
+                  work.progressUnit,
+                )}
+              </strong>
+            </p>
+          ) : (
+            <Progress
+              ariaLabel={`Progresso de ${work.title}`}
+              label="Progresso da leitura"
+              max={total}
+              value={work.currentProgress}
+              valueLabel={`${formatProgressHistoryValue(work.currentProgress, work.progressUnit)} de ${formatProgressHistoryValue(total, work.progressUnit)}`}
+            />
+          )}
         </div>
 
-        {total === null || progressPercent === null ? (
-          <p className="work-detail-open-progress">
-            Progresso:{" "}
-            {formatProgressHistoryValue(
-              work.currentProgress,
-              work.progressUnit,
-            )}
-          </p>
-        ) : (
-          <Progress
-            ariaLabel={`Progresso de ${work.title}`}
-            label="Progresso"
-            max={total}
-            value={work.currentProgress}
-            valueLabel={`${formatProgressHistoryValue(work.currentProgress, work.progressUnit)} de ${formatProgressHistoryValue(total, work.progressUnit)}`}
-          />
-        )}
-
-        <dl className="work-detail-metadata">
-          <div>
-            <dt>Editora</dt>
-            <dd>{work.publisher ?? "Não informada"}</dd>
-          </div>
-          <div>
-            <dt>Ano</dt>
-            <dd>{work.publishedYear ?? "Não informado"}</dd>
-          </div>
-          <div>
-            <dt>Idioma</dt>
-            <dd>
-              {work.language?.toLocaleUpperCase("pt-BR") ?? "Não informado"}
-            </dd>
-          </div>
-          <div>
-            <dt>Identificadores</dt>
-            <dd>{work.identifiers.join(" · ") || "Não informados"}</dd>
-          </div>
-        </dl>
+        <section
+          aria-labelledby="work-metadata-title"
+          className="work-detail-metadata-section"
+        >
+          <h2 id="work-metadata-title">Ficha da edição</h2>
+          <dl className="work-detail-metadata">
+            <div>
+              <dt>Editora</dt>
+              <dd>{work.publisher ?? "Não informada"}</dd>
+            </div>
+            <div>
+              <dt>Ano</dt>
+              <dd>{work.publishedYear ?? "Não informado"}</dd>
+            </div>
+            <div>
+              <dt>Idioma</dt>
+              <dd>
+                {work.language?.toLocaleUpperCase("pt-BR") ?? "Não informado"}
+              </dd>
+            </div>
+            <div>
+              <dt>Identificadores</dt>
+              <dd>{work.identifiers.join(" · ") || "Não informados"}</dd>
+            </div>
+          </dl>
+        </section>
 
         {work.description ? (
-          <div className="work-detail-description">
+          <section className="work-detail-description">
             <h2>Sobre a obra</h2>
             <p>{work.description}</p>
-          </div>
+          </section>
         ) : null}
       </div>
-    </Card>
+    </section>
   );
 }
 
@@ -203,13 +214,18 @@ function ReviewForm({
     saveWorkReviewAction,
     initialState,
   );
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (state.status === "error") {
+      formRef.current
+        ?.querySelector<HTMLElement>("[aria-invalid='true']")
+        ?.focus();
+    }
+  }, [state]);
 
   return (
-    <Card
-      aria-labelledby="work-review-title"
-      as="section"
-      className="work-review-card"
-    >
+    <section aria-labelledby="work-review-title" className="work-review-card">
       <div className="work-detail-section-heading">
         <p>Sua opinião</p>
         <h2 id="work-review-title">
@@ -217,7 +233,7 @@ function ReviewForm({
         </h2>
       </div>
 
-      <form action={formAction} className="work-review-form">
+      <form action={formAction} className="work-review-form" ref={formRef}>
         <input name="workId" type="hidden" value={data.work.id} />
         <FormField
           error={state.fieldErrors.rating?.[0]}
@@ -272,7 +288,7 @@ function ReviewForm({
           <SubmitButton pendingLabel="Salvando…">Salvar avaliação</SubmitButton>
         </div>
       </form>
-    </Card>
+    </section>
   );
 }
 
@@ -293,14 +309,16 @@ function NoteForm({
     if (state.status === "success" && state.message !== "Conteúdo excluído.") {
       formRef.current?.reset();
     }
-  }, [state.status, state.message]);
+
+    if (state.status === "error") {
+      formRef.current
+        ?.querySelector<HTMLElement>("[aria-invalid='true']")
+        ?.focus();
+    }
+  }, [state]);
 
   return (
-    <Card
-      aria-labelledby="work-note-title"
-      as="section"
-      className="work-note-form-card"
-    >
+    <section aria-labelledby="work-note-title" className="work-note-form-card">
       <div className="work-detail-section-heading">
         <p>Memória de leitura</p>
         <h2 id="work-note-title">Adicionar conteúdo</h2>
@@ -315,7 +333,16 @@ function NoteForm({
           label="Tipo"
           required
         >
-          <Select defaultValue="NOTE" id="work-note-kind" name="kind" required>
+          <Select
+            aria-describedby={
+              state.fieldErrors.kind ? "work-note-kind-error" : undefined
+            }
+            aria-invalid={Boolean(state.fieldErrors.kind) || undefined}
+            defaultValue="NOTE"
+            id="work-note-kind"
+            name="kind"
+            required
+          >
             <option value="NOTE">Anotação</option>
             <option value="QUOTE">Citação</option>
           </Select>
@@ -327,6 +354,12 @@ function NoteForm({
           label="Localização"
         >
           <Input
+            aria-describedby={
+              state.fieldErrors.locationLabel
+                ? "work-note-location-error"
+                : undefined
+            }
+            aria-invalid={Boolean(state.fieldErrors.locationLabel) || undefined}
             id="work-note-location"
             maxLength={120}
             name="locationLabel"
@@ -339,7 +372,17 @@ function NoteForm({
           htmlFor="work-note-session"
           label="Sessão relacionada"
         >
-          <Select defaultValue="" id="work-note-session" name="sessionId">
+          <Select
+            aria-describedby={
+              state.fieldErrors.sessionId
+                ? "work-note-session-error"
+                : undefined
+            }
+            aria-invalid={Boolean(state.fieldErrors.sessionId) || undefined}
+            defaultValue=""
+            id="work-note-session"
+            name="sessionId"
+          >
             <option value="">Sem vínculo com sessão</option>
             {data.sessions.map((session) => (
               <option key={session.id} value={session.id}>
@@ -376,7 +419,7 @@ function NoteForm({
           <SubmitButton pendingLabel="Salvando…">Salvar conteúdo</SubmitButton>
         </div>
       </form>
-    </Card>
+    </section>
   );
 }
 
@@ -498,12 +541,20 @@ export function WorkDetailView({
       </Link>
       <WorkOverview work={result.data.work} />
 
-      <WorkManagementPanel work={result.data.work} />
+      <section
+        aria-labelledby="work-reading-record-title"
+        className="work-reading-record"
+      >
+        <div className="work-detail-section-heading work-detail-section-heading--intro">
+          <p>Seu registro de leitura</p>
+          <h2 id="work-reading-record-title">Avaliação e memória</h2>
+        </div>
 
-      <div className="work-engagement-grid">
-        <ReviewForm data={result.data} initialState={reviewPreviewState} />
-        <NoteForm data={result.data} initialState={notePreviewState} />
-      </div>
+        <div className="work-engagement-grid">
+          <ReviewForm data={result.data} initialState={reviewPreviewState} />
+          <NoteForm data={result.data} initialState={notePreviewState} />
+        </div>
+      </section>
 
       <div className="work-note-collections">
         <NoteCollection
@@ -517,6 +568,8 @@ export function WorkDetailView({
           workId={result.data.work.id}
         />
       </div>
+
+      <WorkManagementPanel work={result.data.work} />
     </div>
   );
 }

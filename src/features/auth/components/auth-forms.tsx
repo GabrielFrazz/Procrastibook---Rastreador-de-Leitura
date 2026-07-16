@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 
@@ -66,6 +67,8 @@ type PasswordFieldProps = Readonly<{
   autoComplete: "current-password" | "new-password";
   field: "password" | "passwordConfirmation";
   label: string;
+  labelAction?: ReactNode;
+  placeholder: string;
   state: AuthFormState;
 }>;
 
@@ -73,6 +76,8 @@ function PasswordField({
   autoComplete,
   field,
   label,
+  labelAction,
+  placeholder,
   state,
 }: PasswordFieldProps) {
   const [isVisible, setIsVisible] = useState(false);
@@ -80,7 +85,10 @@ function PasswordField({
 
   return (
     <div className="auth-field">
-      <label htmlFor={field}>{label}</label>
+      <div className="auth-field__heading">
+        <label htmlFor={field}>{label}</label>
+        {labelAction}
+      </div>
       <div className="auth-password">
         <input
           aria-describedby={hasError ? `${field}-error` : undefined}
@@ -90,6 +98,7 @@ function PasswordField({
           maxLength={128}
           minLength={autoComplete === "new-password" ? 8 : undefined}
           name={field}
+          placeholder={placeholder}
           required
           type={isVisible ? "text" : "password"}
         />
@@ -133,21 +142,19 @@ export function LoginForm({ nextPath }: Readonly<{ nextPath: string }>) {
           inputMode="email"
           maxLength={254}
           name="email"
-          placeholder="seu@email.com"
+          placeholder="voce@exemplo.com"
           required
           type="email"
         />
         <FieldError field="email" state={state} />
       </div>
 
-      <div className="auth-form__password-heading">
-        <span>Senha</span>
-        <Link href="/forgot-password">Esqueci minha senha</Link>
-      </div>
       <PasswordField
         autoComplete="current-password"
         field="password"
         label="Senha"
+        labelAction={<Link href="/forgot-password">Esqueci minha senha</Link>}
+        placeholder="Digite sua senha"
         state={state}
       />
 
@@ -178,6 +185,7 @@ export function SignupForm() {
           maxLength={80}
           minLength={2}
           name="displayName"
+          placeholder="Como você quer ser chamado?"
           required
           type="text"
         />
@@ -205,6 +213,7 @@ export function SignupForm() {
         autoComplete="new-password"
         field="password"
         label="Senha"
+        placeholder="Crie uma senha segura"
         state={state}
       />
       <p className="auth-form__hint">Use pelo menos 8 caracteres.</p>
@@ -212,6 +221,7 @@ export function SignupForm() {
         autoComplete="new-password"
         field="passwordConfirmation"
         label="Confirmar senha"
+        placeholder="Repita a senha criada"
         state={state}
       />
 
@@ -267,6 +277,7 @@ export function UpdatePasswordForm() {
         autoComplete="new-password"
         field="password"
         label="Nova senha"
+        placeholder="Crie uma nova senha segura"
         state={state}
       />
       <p className="auth-form__hint">Use pelo menos 8 caracteres.</p>
@@ -274,6 +285,7 @@ export function UpdatePasswordForm() {
         autoComplete="new-password"
         field="passwordConfirmation"
         label="Confirmar nova senha"
+        placeholder="Repita a nova senha"
         state={state}
       />
 

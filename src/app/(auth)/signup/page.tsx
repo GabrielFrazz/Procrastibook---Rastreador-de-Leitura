@@ -11,9 +11,9 @@ export default function SignupPage() {
   return (
     <section className="auth-card" aria-labelledby="signup-title">
       <div className="auth-card__heading">
-        <p className="auth-card__eyebrow">Comece agora</p>
+        <p className="auth-card__eyebrow">Sua próxima leitura começa aqui</p>
         <h1 id="signup-title">Crie sua conta</h1>
-        <p>Centralize livros, mangás, artigos e e-books em um só lugar.</p>
+        <p>Reúna livros, mangás, artigos e e-books no seu próprio ritmo.</p>
       </div>
 
       <GoogleSignInLink enabled={isGoogleAuthEnabled()} nextPath="/dashboard" />

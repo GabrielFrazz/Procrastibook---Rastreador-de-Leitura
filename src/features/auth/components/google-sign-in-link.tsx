@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 type GoogleSignInLinkProps = Readonly<{
@@ -14,7 +15,7 @@ export function GoogleSignInLink({
   const content = (
     <>
       <span aria-hidden="true" className="auth-google__mark">
-        G
+        <Image alt="" height={24} src="/google-icon.svg" width={24} />
       </span>
       {enabled ? "Continuar com Google" : "Google indisponível neste ambiente"}
     </>
