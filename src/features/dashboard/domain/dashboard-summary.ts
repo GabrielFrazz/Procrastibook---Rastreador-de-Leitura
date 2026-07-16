@@ -19,7 +19,8 @@ export type DashboardWorkRecord = Pick<
   | "chapter_count"
   | "finished_at"
   | "updated_at"
->;
+> &
+  Readonly<{ coverUrl?: string | null }>;
 
 export type DashboardProgressEventRecord = Pick<
   ProgressEventRow,
@@ -61,6 +62,7 @@ export type DashboardSummaryInput = Readonly<{
 }>;
 
 export type DashboardCurrentWork = Readonly<{
+  coverUrl: string | null;
   id: string;
   title: string;
   type: WorkRow["type"];
@@ -278,6 +280,7 @@ export function calculateDashboardSummary(
       const totalProgress = getWorkTotal(work);
 
       return {
+        coverUrl: work.coverUrl ?? null,
         id: work.id,
         title: work.title,
         type: work.type,

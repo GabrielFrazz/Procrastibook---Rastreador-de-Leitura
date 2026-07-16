@@ -38,6 +38,7 @@ describe("calculateDashboardSummary", () => {
       works: [
         {
           id: "book-1",
+          coverUrl: "https://books.google.com/books/content?id=book-1",
           title: "Design de sistemas",
           type: "BOOK",
           status: "READING",
@@ -140,6 +141,9 @@ describe("calculateDashboardSummary", () => {
     expect(summary.minutesRead).toBe(50);
     expect(summary.readingSpeedPagesPerHour).toBe(40);
     expect(summary.currentWorks[0]?.progressPercent).toBe(50);
+    expect(summary.currentWorks[0]?.coverUrl).toBe(
+      "https://books.google.com/books/content?id=book-1",
+    );
     expect(summary.recentSessions[0]?.workTitle).toBe("Mangá concluído");
     expect(summary.recentReviews[0]?.rating).toBe(4.5);
     expect(summary.activeGoal).toMatchObject({

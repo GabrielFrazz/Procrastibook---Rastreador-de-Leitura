@@ -147,6 +147,13 @@
   font-weight: 800;
 }
 
+.dashboard-work__cover--image {
+  background-color: var(--color-surface-strong);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 .dashboard-work__content {
   display: grid;
   align-content: center;

@@ -20,7 +20,7 @@ export async function getDashboardSummary(timezone = "America/Sao_Paulo") {
     supabase
       .from("works")
       .select(
-        "id, title, type, status, progress_unit, current_progress, page_count, chapter_count, finished_at, updated_at",
+        "id, title, type, status, progress_unit, current_progress, page_count, chapter_count, cover_path, cover_external_url, finished_at, updated_at",
       ),
     supabase
       .from("progress_events")
@@ -48,9 +48,27 @@ export async function getDashboardSummary(timezone = "America/Sao_Paulo") {
     throw new DashboardQueryError();
   }
 
+  const works = await Promise.all(
+    worksResult.data.map(async (work) => {
+      let coverUrl = work.cover_external_url;
+
+      if (work.cover_path) {
+        const signedCover = await supabase.storage
+          .from("covers")
+          .createSignedUrl(work.cover_path, 60 * 60);
+
+        if (!signedCover.error) {
+          coverUrl = signedCover.data.signedUrl;
+        }
+      }
+
+      return { ...work, coverUrl };
+    }),
+  );
+
   return calculateDashboardSummary(
     {
-      works: worksResult.data,
+      works,
       progressEvents: progressResult.data,
       sessions: sessionsResult.data,
       reviews: reviewsResult.data,

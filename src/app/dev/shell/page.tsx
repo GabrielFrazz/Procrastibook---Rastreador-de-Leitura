@@ -20,6 +20,7 @@ const previewSummary: DashboardSummary = {
   readingSpeedPagesPerHour: 31.4,
   currentWorks: [
     {
+      coverUrl: null,
       id: "preview-work-1",
       title: "O design do dia a dia",
       type: "BOOK",
@@ -29,6 +30,7 @@ const previewSummary: DashboardSummary = {
       progressPercent: 57.5,
     },
     {
+      coverUrl: null,
       id: "preview-work-2",
       title:
         "Uma história longa o bastante para testar títulos extensos no dashboard",
@@ -39,6 +41,7 @@ const previewSummary: DashboardSummary = {
       progressPercent: 42,
     },
     {
+      coverUrl: null,
       id: "preview-work-3",
       title: "Interfaces para quem lê",
       type: "ARTICLE",

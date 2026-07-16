@@ -1,4 +1,4 @@
-import type { ReactNode, SVGProps } from "react";
+import type { CSSProperties, ReactNode, SVGProps } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -158,8 +158,18 @@ function CurrentWork({ work }: Readonly<{ work: DashboardCurrentWork }>) {
 
   return (
     <li className="dashboard-work">
-      <span aria-hidden="true" className="dashboard-work__cover">
-        {work.title.charAt(0).toLocaleUpperCase("pt-BR")}
+      <span
+        aria-hidden="true"
+        className={`dashboard-work__cover${work.coverUrl ? " dashboard-work__cover--image" : ""}`}
+        style={
+          work.coverUrl
+            ? ({
+                backgroundImage: `url(${JSON.stringify(work.coverUrl)})`,
+              } satisfies CSSProperties)
+            : undefined
+        }
+      >
+        {work.coverUrl ? null : work.title.charAt(0).toLocaleUpperCase("pt-BR")}
       </span>
       <div className="dashboard-work__content">
         <div className="dashboard-work__heading">
