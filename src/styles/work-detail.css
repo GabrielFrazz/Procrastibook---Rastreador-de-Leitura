@@ -360,3 +360,112 @@
     width: 100%;
   }
 }
+
+.work-management-card,
+.work-management-form,
+.work-delete-form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.work-management-details {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.work-management-details > summary {
+  min-height: var(--touch-target);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface-subtle);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: 750;
+  line-height: calc(var(--touch-target) - var(--space-6));
+}
+
+.work-management-details[open] > summary {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.work-management-form,
+.work-delete-form {
+  padding: var(--space-4);
+}
+
+.work-management-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.work-management-grid > .ui-form-field:last-child,
+.work-management-unit {
+  grid-column: 1 / -1;
+}
+
+.work-management-grid .ui-textarea {
+  min-height: 8rem;
+}
+
+.work-management-unit,
+.work-delete-form > p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+}
+
+.work-management-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+}
+
+.work-management-message {
+  margin: 0 auto 0 0;
+  font-size: var(--font-size-sm);
+}
+
+.work-management-message--error {
+  color: var(--color-error);
+}
+
+.work-management-message--success {
+  color: var(--color-success);
+}
+
+.work-management-details--danger > summary {
+  color: var(--color-error);
+}
+
+.work-delete-confirmation {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--touch-target);
+  color: var(--color-text-subtle);
+  font-size: var(--font-size-sm);
+}
+
+@media (max-width: 40rem) {
+  .work-management-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .work-management-grid > .ui-form-field:last-child,
+  .work-management-unit {
+    grid-column: auto;
+  }
+
+  .work-management-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .work-management-actions .ui-button {
+    width: 100%;
+  }
+}

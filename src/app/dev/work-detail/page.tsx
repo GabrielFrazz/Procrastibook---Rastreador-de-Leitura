@@ -58,6 +58,9 @@ const previewData: WorkDetailData = {
     chapterCount: null,
     coverUrl: null,
     currentProgress: 184,
+    doi: null,
+    isbn10: null,
+    isbn13: null,
     description:
       "Em um planeta onde os habitantes não possuem gênero fixo, um emissário tenta construir uma aliança enquanto aprende a rever suas próprias certezas.",
     genres: ["Ficção científica", "Clássicos"],

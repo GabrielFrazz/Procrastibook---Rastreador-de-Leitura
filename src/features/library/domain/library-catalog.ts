@@ -10,6 +10,7 @@ export type LibraryWork = Readonly<{
   currentProgress: number;
   genres: readonly string[];
   id: string;
+  identifiers?: readonly string[];
   progressPercent: number | null;
   progressUnit: WorkRow["progress_unit"];
   rating: number | null;
@@ -65,7 +66,14 @@ export function filterAndSortLibraryWorks(
   return works
     .filter((work) => {
       const searchableContent = normalizeSearchValue(
-        [work.title, work.subtitle, ...work.authors].filter(Boolean).join(" "),
+        [
+          work.title,
+          work.subtitle,
+          ...work.authors,
+          ...(work.identifiers ?? []),
+        ]
+          .filter(Boolean)
+          .join(" "),
       );
 
       return (

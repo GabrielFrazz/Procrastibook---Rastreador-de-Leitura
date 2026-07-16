@@ -15,6 +15,9 @@ type LibraryWorkRecord = Pick<
   | "cover_path"
   | "current_progress"
   | "id"
+  | "isbn_10"
+  | "isbn_13"
+  | "doi"
   | "page_count"
   | "progress_unit"
   | "status"
@@ -47,7 +50,7 @@ export async function getLibraryWorks(): Promise<LibraryWork[]> {
     supabase
       .from("works")
       .select(
-        "id, type, title, subtitle, page_count, chapter_count, progress_unit, current_progress, status, cover_path, cover_external_url, updated_at",
+        "id, type, title, subtitle, isbn_10, isbn_13, doi, page_count, chapter_count, progress_unit, current_progress, status, cover_path, cover_external_url, updated_at",
       )
       .order("updated_at", { ascending: false }),
     supabase.from("contributors").select("id, name"),
@@ -115,6 +118,9 @@ export async function getLibraryWorks(): Promise<LibraryWork[]> {
         currentProgress: work.current_progress,
         genres: genresByWork.get(work.id) ?? [],
         id: work.id,
+        identifiers: [work.isbn_10, work.isbn_13, work.doi].filter(
+          (identifier): identifier is string => Boolean(identifier),
+        ),
         progressPercent: getProgressPercent(
           work.current_progress,
           totalProgress,

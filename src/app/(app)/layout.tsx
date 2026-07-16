@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import { AppShell } from "@/components/layout/app-shell";
-import { getCurrentProfile } from "@/features/auth/data/current-profile";
+import { getProfileSettingsData } from "@/features/profile/data/profile-settings-repository";
 
 export const dynamic = "force-dynamic";
 
@@ -10,10 +10,13 @@ export default async function AuthenticatedLayout({
 }: {
   children: ReactNode;
 }) {
-  const profile = await getCurrentProfile();
+  const profile = await getProfileSettingsData();
 
   return (
-    <AppShell displayName={profile?.display_name ?? "Leitor"}>
+    <AppShell
+      avatarUrl={profile?.avatarUrl ?? null}
+      displayName={profile?.displayName ?? "Leitor"}
+    >
       {children}
     </AppShell>
   );

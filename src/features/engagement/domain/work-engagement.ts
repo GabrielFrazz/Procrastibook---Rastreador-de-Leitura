@@ -45,9 +45,12 @@ export type WorkDetail = Readonly<{
   coverUrl: string | null;
   currentProgress: number;
   description: string | null;
+  doi: string | null;
   genres: readonly string[];
   id: string;
   identifiers: readonly string[];
+  isbn10: string | null;
+  isbn13: string | null;
   language: string | null;
   pageCount: number | null;
   progressUnit: ProgressUnit;

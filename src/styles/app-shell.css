@@ -127,11 +127,6 @@
   color: var(--color-text-muted);
 }
 
-.app-search input:disabled {
-  cursor: not-allowed;
-  opacity: 1;
-}
-
 .app-profile {
   display: flex;
   align-items: center;
@@ -141,6 +136,7 @@
   color: var(--color-text-subtle);
   font-size: var(--font-size-sm);
   font-weight: 650;
+  text-decoration: none;
 }
 
 .app-profile__avatar {
@@ -155,6 +151,16 @@
   color: var(--color-text);
 }
 
+.app-profile__avatar--image {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.app-profile:hover .app-profile__name {
+  color: var(--color-text);
+  text-decoration: underline;
+}
 .app-profile__name {
   overflow: hidden;
   max-width: 12rem;

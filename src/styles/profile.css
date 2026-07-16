@@ -1,0 +1,105 @@
+.profile-settings-page,
+.profile-settings-form {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.profile-settings-card {
+  max-width: 52rem;
+}
+
+.profile-avatar-editor {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.profile-avatar-preview {
+  display: grid;
+  width: 8rem;
+  height: 8rem;
+  place-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface-subtle);
+  color: var(--color-text);
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
+}
+
+.profile-avatar-preview--image {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.profile-avatar-fields,
+.profile-settings-grid {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.profile-settings-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.profile-remove-avatar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--touch-target);
+  color: var(--color-text-subtle);
+  font-size: var(--font-size-sm);
+}
+
+.profile-remove-avatar input,
+.work-delete-confirmation input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--color-primary);
+}
+
+.profile-settings-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.profile-settings-message {
+  margin: 0 auto 0 0;
+  color: var(--color-text-subtle);
+  font-size: var(--font-size-sm);
+}
+
+.profile-settings-message--error {
+  color: var(--color-error);
+}
+
+.profile-settings-message--success {
+  color: var(--color-success);
+}
+
+@media (max-width: 40rem) {
+  .profile-avatar-editor,
+  .profile-settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-avatar-preview {
+    width: 6rem;
+    height: 6rem;
+  }
+
+  .profile-settings-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .profile-settings-actions .ui-button {
+    width: 100%;
+  }
+}

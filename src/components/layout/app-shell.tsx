@@ -34,6 +34,7 @@ type NavigationItem = {
 };
 
 type AppShellProps = {
+  avatarUrl?: string | null;
   children: ReactNode;
   displayName: string;
   previewPath?: string;
@@ -50,9 +51,13 @@ const primaryNavigation: NavigationItem[] = [
 ];
 
 const readingNavigation: NavigationItem[] = [
-  { label: "Quero ler", icon: "bookmark" },
-  { label: "Lendo", icon: "flag" },
-  { label: "Finalizados", icon: "check" },
+  {
+    label: "Quero ler",
+    icon: "bookmark",
+    href: "/library?status=WANT_TO_READ",
+  },
+  { label: "Lendo", icon: "flag", href: "/library?status=READING" },
+  { label: "Finalizados", icon: "check", href: "/library?status=FINISHED" },
 ];
 
 function Icon({
@@ -172,6 +177,7 @@ function Navigation({
 }
 
 export function AppShell({
+  avatarUrl = null,
   children,
   displayName,
   previewPath,
@@ -238,22 +244,39 @@ export function AppShell({
             <span className="app-brand__name">Procrastibook</span>
           </Link>
 
-          <div aria-label="Busca global" className="app-search" role="search">
+          <form
+            action="/library"
+            aria-label="Busca global"
+            className="app-search"
+            role="search"
+          >
             <Icon className="app-search__icon" name="search" />
             <input
               aria-label="Buscar na biblioteca"
-              disabled
-              placeholder="Busca disponível em breve"
+              name="q"
+              placeholder="Buscar título, autor, ISBN ou DOI"
               type="search"
             />
-          </div>
+          </form>
 
-          <div aria-label={`Perfil de ${displayName}`} className="app-profile">
-            <span aria-hidden="true" className="app-profile__avatar">
-              {initial}
+          <Link
+            aria-label={`Abrir perfil de ${displayName}`}
+            className="app-profile"
+            href="/profile"
+          >
+            <span
+              aria-hidden="true"
+              className={`app-profile__avatar${avatarUrl ? " app-profile__avatar--image" : ""}`}
+              style={
+                avatarUrl
+                  ? { backgroundImage: `url(${JSON.stringify(avatarUrl)})` }
+                  : undefined
+              }
+            >
+              {avatarUrl ? null : initial}
             </span>
             <span className="app-profile__name">{displayName}</span>
-          </div>
+          </Link>
         </div>
       </header>
 

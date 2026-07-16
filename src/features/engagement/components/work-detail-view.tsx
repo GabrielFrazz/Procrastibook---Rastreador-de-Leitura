@@ -29,6 +29,7 @@ import {
 } from "@/features/engagement/domain/work-engagement";
 import { formatProgressHistoryValue } from "@/features/progress/domain/progress-history";
 import { formatSessionDate } from "@/features/reading/domain/reading-sessions";
+import { WorkManagementPanel } from "@/features/works/components/work-management-panel";
 
 export type WorkDetailResult =
   | Readonly<{ status: "error" }>
@@ -496,6 +497,8 @@ export function WorkDetailView({
         ← Voltar à biblioteca
       </Link>
       <WorkOverview work={result.data.work} />
+
+      <WorkManagementPanel work={result.data.work} />
 
       <div className="work-engagement-grid">
         <ReviewForm data={result.data} initialState={reviewPreviewState} />

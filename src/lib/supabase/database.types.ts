@@ -711,6 +711,28 @@ export type Database = {
         Returns: string;
       };
       delete_reading_list: { Args: { p_list_id: string }; Returns: boolean };
+      delete_owned_work: { Args: { p_work_id: string }; Returns: string };
+      update_owned_work: {
+        Args: {
+          p_authors: string[];
+          p_chapter_count?: number;
+          p_description?: string;
+          p_doi?: string;
+          p_genres?: string[];
+          p_isbn_10?: string;
+          p_isbn_13?: string;
+          p_language?: string;
+          p_page_count?: number;
+          p_published_year?: number;
+          p_publisher?: string;
+          p_status: Database["public"]["Enums"]["reading_status"];
+          p_subtitle?: string;
+          p_title: string;
+          p_type: Database["public"]["Enums"]["work_type"];
+          p_work_id: string;
+        };
+        Returns: boolean;
+      };
       record_work_progress: {
         Args: {
           p_event_type: Database["public"]["Enums"]["progress_event_type"];

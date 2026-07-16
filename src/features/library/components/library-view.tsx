@@ -30,6 +30,8 @@ export type LibraryResult =
 
 type LibraryViewProps = Readonly<{
   historyPreview?: Readonly<Record<string, ProgressHistoryPage>>;
+  initialQuery?: string;
+  initialStatus?: "ALL" | LibraryWork["status"];
   notice?: string;
   result: LibraryResult;
   timezone?: string;
@@ -218,6 +220,8 @@ function LibraryCard({
 
 export function LibraryView({
   historyPreview,
+  initialQuery = "",
+  initialStatus = "ALL",
   notice,
   result,
   timezone = "America/Sao_Paulo",
@@ -226,8 +230,8 @@ export function LibraryView({
     () => (result.status === "success" ? result.works : []),
     [result],
   );
-  const [query, setQuery] = useState("");
-  const [status, setStatus] = useState("ALL");
+  const [query, setQuery] = useState(initialQuery);
+  const [status, setStatus] = useState(initialStatus);
   const [type, setType] = useState("ALL");
   const [genre, setGenre] = useState("ALL");
   const [sort, setSort] = useState<LibrarySort>("UPDATED_DESC");
@@ -271,9 +275,11 @@ export function LibraryView({
         title="Biblioteca"
       />
 
-      {notice === "work-created" ? (
+      {notice === "work-created" || notice === "work-deleted" ? (
         <p className="library-notice" role="status">
-          Obra adicionada à biblioteca com sucesso.
+          {notice === "work-created"
+            ? "Obra adicionada à biblioteca com sucesso."
+            : "Obra excluída da biblioteca."}
         </p>
       ) : null}
 
@@ -316,7 +322,7 @@ export function LibraryView({
                   autoComplete="off"
                   id="library-query"
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Título, subtítulo ou autor"
+                  placeholder="Título, autor, ISBN ou DOI"
                   type="search"
                   value={query}
                 />
@@ -325,7 +331,11 @@ export function LibraryView({
               <FormField htmlFor="library-status" label="Status">
                 <Select
                   id="library-status"
-                  onChange={(event) => setStatus(event.target.value)}
+                  onChange={(event) =>
+                    setStatus(
+                      event.target.value as "ALL" | LibraryWork["status"],
+                    )
+                  }
                   value={status}
                 >
                   <option value="ALL">Todos</option>
@@ -335,7 +345,6 @@ export function LibraryView({
                   <option value="ABANDONED">Abandonadas</option>
                 </Select>
               </FormField>
-
               <FormField htmlFor="library-type" label="Tipo">
                 <Select
                   id="library-type"
