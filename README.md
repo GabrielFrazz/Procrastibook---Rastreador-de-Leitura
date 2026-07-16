@@ -67,11 +67,15 @@ O sistema contará com as seguintes funcionalidades principais:
   - Uma obra pode participar de várias listas;
   - Excluir uma lista preserva as obras da biblioteca.
 
-- Dashboard com estatísticas pessoais:
+- Metas de leitura:
+  - Obras finalizadas, páginas, capítulos ou minutos;
+  - Período configurável e progresso calculado pelos registros reais.
+
+- Dashboard e estatísticas pessoais:
   - Quantidade de obras lidas;
   - Total de páginas;
   - Velocidade média de leitura;
-  - Metas de leitura.
+  - Histórico mensal com alternativa tabular acessível.
 
 - Sistema de busca e filtros:
   - Título;

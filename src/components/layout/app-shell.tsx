@@ -45,8 +45,8 @@ const primaryNavigation: NavigationItem[] = [
   { label: "Adicionar obra", icon: "add", href: "/library/new" },
   { label: "Listas", icon: "bookmark", href: "/lists" },
   { label: "Sessões", icon: "clock", href: "/sessions" },
-  { label: "Metas", icon: "target" },
-  { label: "Estatísticas", icon: "chart" },
+  { label: "Metas", icon: "target", href: "/goals" },
+  { label: "Estatísticas", icon: "chart", href: "/statistics" },
 ];
 
 const readingNavigation: NavigationItem[] = [
