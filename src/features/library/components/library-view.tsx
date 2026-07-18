@@ -21,6 +21,7 @@ import {
   type LibrarySort,
   type LibraryWork,
 } from "@/features/library/domain/library-catalog";
+import { getLibraryViewMode } from "@/features/library/domain/library-view-mode";
 import { ProgressHistory } from "@/features/progress/components/progress-history";
 import { WorkProgressForm } from "@/features/progress/components/work-progress-form";
 import type { ProgressHistoryPage } from "@/features/progress/domain/progress-history";
@@ -230,6 +231,10 @@ export function LibraryView({
   ).length;
   const hasActiveFilters =
     query !== "" || status !== "ALL" || type !== "ALL" || genre !== "ALL";
+  const viewMode = getLibraryViewMode(initialStatus);
+  const headerWorkCount = viewMode.isReadingShelf
+    ? filteredWorks.length
+    : works.length;
 
   const clearFilters = () => {
     setQuery("");
@@ -242,17 +247,19 @@ export function LibraryView({
     <div className="library">
       <PageHeader
         actions={
-          <Link className="ui-button ui-button--primary" href="/library/new">
-            Adicionar obra
-          </Link>
+          viewMode.isReadingShelf ? undefined : (
+            <Link className="ui-button ui-button--primary" href="/library/new">
+              Adicionar obra
+            </Link>
+          )
         }
         description={
           result.status === "success"
-            ? `${works.length} ${works.length === 1 ? "obra organizada" : "obras organizadas"} na sua estante.`
+            ? `${headerWorkCount} ${headerWorkCount === 1 ? "obra organizada" : "obras organizadas"} na sua estante.`
             : "Consulte e organize suas leituras em um só lugar."
         }
-        eyebrow="Sua coleção"
-        title="Biblioteca"
+        eyebrow={viewMode.isReadingShelf ? "Minhas leituras" : "Sua coleção"}
+        title={viewMode.title}
       />
 
       {notice === "work-created" || notice === "work-deleted" ? (
@@ -275,12 +282,14 @@ export function LibraryView({
         <section className="library-feedback">
           <EmptyState
             action={
-              <Link
-                className="ui-button ui-button--primary ui-button--sm"
-                href="/library/new"
-              >
-                Adicionar primeira obra
-              </Link>
+              viewMode.isReadingShelf ? undefined : (
+                <Link
+                  className="ui-button ui-button--primary ui-button--sm"
+                  href="/library/new"
+                >
+                  Adicionar primeira obra
+                </Link>
+              )
             }
             description="Comece com o livro que está na sua cabeceira ou com a próxima leitura da lista."
             title="Sua estante espera a primeira obra"

@@ -129,29 +129,108 @@
   border-color: var(--color-control-border-hover);
 }
 
+.app-account {
+  position: relative;
+  justify-self: end;
+}
+
 .app-profile {
   display: flex;
   align-items: center;
-  justify-self: end;
-  gap: var(--space-3);
-  min-width: 0;
+  justify-content: center;
+  width: var(--touch-target);
+  min-width: var(--touch-target);
   min-height: var(--touch-target);
-  color: var(--color-text-subtle);
-  font-size: var(--font-size-sm);
-  font-weight: 650;
-  text-decoration: none;
-}
-
-.app-profile:hover .app-profile__name {
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
   color: var(--color-text);
-  text-decoration: underline;
+  cursor: pointer;
 }
 
-.app-profile__name {
+.app-profile:hover,
+.app-profile[aria-expanded="true"] {
+  border-color: var(--color-control-border);
+  background: var(--color-surface-hover);
+}
+
+.app-account__menu {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  width: min(18rem, calc(100vw - 2rem));
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-overlay);
+}
+
+.app-account__identity {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.app-account__identity strong,
+.app-account__identity span {
   overflow: hidden;
-  max-width: 12rem;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.app-account__identity strong {
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+}
+
+.app-account__identity span {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.app-account__actions {
+  display: grid;
+  gap: var(--space-1);
+  padding-top: var(--space-2);
+}
+
+.app-account__menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: var(--touch-target);
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-subtle);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 650;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.app-account__menu-item:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+  color: var(--color-text);
+}
+
+.app-account__menu-item:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.app-account__menu-item svg {
+  flex: 0 0 auto;
+  width: 1.2rem;
+  height: 1.2rem;
 }
 
 .app-shell__body {
@@ -421,17 +500,6 @@
 
   .app-header__menu-button {
     display: grid;
-  }
-
-  .app-profile__name {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
   }
 
   .app-shell--sidebar-collapsed .app-header .brand-lockup {

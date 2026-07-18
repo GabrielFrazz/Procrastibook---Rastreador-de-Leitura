@@ -16,6 +16,7 @@ export default async function AuthenticatedLayout({
     <AppShell
       avatarUrl={profile?.avatarUrl ?? null}
       displayName={profile?.displayName ?? "Leitor"}
+      email={profile?.email ?? ""}
     >
       {children}
     </AppShell>

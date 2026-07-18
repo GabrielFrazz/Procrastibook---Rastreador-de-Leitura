@@ -1002,7 +1002,7 @@
 }
 
 .ui-tooltip:hover .ui-tooltip__content,
-.ui-tooltip:focus-within .ui-tooltip__content {
+.ui-tooltip[data-keyboard-focus="true"] .ui-tooltip__content {
   transform: translate(-50%, 0);
   opacity: 1;
   visibility: visible;
@@ -1015,7 +1015,8 @@
 }
 
 .ui-tooltip[data-placement="bottom"]:hover .ui-tooltip__content,
-.ui-tooltip[data-placement="bottom"]:focus-within .ui-tooltip__content {
+.ui-tooltip[data-placement="bottom"][data-keyboard-focus="true"]
+  .ui-tooltip__content {
   transform: translate(-50%, 0);
 }
 
@@ -1028,7 +1029,8 @@
 }
 
 .ui-tooltip[data-placement="left"]:hover .ui-tooltip__content,
-.ui-tooltip[data-placement="left"]:focus-within .ui-tooltip__content {
+.ui-tooltip[data-placement="left"][data-keyboard-focus="true"]
+  .ui-tooltip__content {
   transform: translate(0, -50%);
 }
 
@@ -1040,7 +1042,8 @@
 }
 
 .ui-tooltip[data-placement="right"]:hover .ui-tooltip__content,
-.ui-tooltip[data-placement="right"]:focus-within .ui-tooltip__content {
+.ui-tooltip[data-placement="right"][data-keyboard-focus="true"]
+  .ui-tooltip__content {
   transform: translate(0, -50%);
 }
 

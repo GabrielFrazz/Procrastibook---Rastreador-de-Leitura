@@ -161,7 +161,10 @@ const previewHistory: Readonly<Record<string, ProgressHistoryPage>> = {
 };
 
 type LibraryPreviewPageProps = Readonly<{
-  searchParams: Promise<{ state?: string | string[] }>;
+  searchParams: Promise<{
+    state?: string | string[];
+    status?: string | string[];
+  }>;
 }>;
 
 export default async function LibraryPreviewPage({
@@ -173,19 +176,40 @@ export default async function LibraryPreviewPage({
 
   const params = await searchParams;
   const state = typeof params.state === "string" ? params.state : undefined;
+  const requestedStatus =
+    typeof params.status === "string" ? params.status : undefined;
+  const initialStatus: "ALL" | LibraryWork["status"] = [
+    "WANT_TO_READ",
+    "READING",
+    "FINISHED",
+    "ABANDONED",
+  ].includes(requestedStatus ?? "")
+    ? (requestedStatus as LibraryWork["status"])
+    : "ALL";
+  const previewPath =
+    initialStatus === "ALL" ? "/library" : `/library?status=${initialStatus}`;
 
   if (state === "loading") {
     return (
-      <AppShell displayName="Gabriel" previewPath="/library">
+      <AppShell
+        displayName="Gabriel"
+        email="gabriel@example.com"
+        previewPath={previewPath}
+      >
         <LibraryLoading />
       </AppShell>
     );
   }
 
   return (
-    <AppShell displayName="Gabriel" previewPath="/library">
+    <AppShell
+      displayName="Gabriel"
+      email="gabriel@example.com"
+      previewPath={previewPath}
+    >
       <LibraryView
         historyPreview={previewHistory}
+        initialStatus={initialStatus}
         result={
           state === "error"
             ? { status: "error" }

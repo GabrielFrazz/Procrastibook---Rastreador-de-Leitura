@@ -150,7 +150,5 @@ export async function logoutAction(): Promise<never> {
     logoutFailed = true;
   }
 
-  redirect(
-    logoutFailed ? "/dashboard?authError=logout" : "/login?notice=signed-out",
-  );
+  redirect(logoutFailed ? "/dashboard?authError=logout" : "/login");
 }

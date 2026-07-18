@@ -40,6 +40,7 @@ export default async function ProfilePreviewPage({
             avatarPath: null,
             avatarUrl: null,
             displayName: "Gabriel",
+            email: "gabriel@example.com",
             id: "50000000-0000-4000-8000-000000000001",
             timezone: "America/Sao_Paulo",
           }}

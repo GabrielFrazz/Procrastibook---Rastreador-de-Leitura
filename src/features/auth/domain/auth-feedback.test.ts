@@ -4,10 +4,7 @@ import { getLoginFeedback } from "@/features/auth/domain/auth-feedback";
 
 describe("getLoginFeedback", () => {
   it("retorna somente mensagens conhecidas", () => {
-    expect(getLoginFeedback("signed-out", undefined)).toEqual({
-      kind: "success",
-      message: "Sessão encerrada com segurança.",
-    });
+    expect(getLoginFeedback("signed-out", undefined)).toBeNull();
     expect(getLoginFeedback(undefined, "provider-private-detail")).toBeNull();
   });
 

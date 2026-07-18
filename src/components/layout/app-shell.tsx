@@ -11,6 +11,7 @@ import {
   type ReactNode,
   type SVGProps,
 } from "react";
+import { useFormStatus } from "react-dom";
 
 import { Avatar, BrandLockup, Tooltip } from "@/components/ui";
 import { logoutAction } from "@/features/auth/actions/email-auth-actions";
@@ -35,7 +36,8 @@ type IconName =
   | "logout"
   | "menu"
   | "search"
-  | "target";
+  | "target"
+  | "user";
 
 type NavigationItem = {
   label: string;
@@ -47,6 +49,7 @@ type AppShellProps = {
   avatarUrl?: string | null;
   children: ReactNode;
   displayName: string;
+  email?: string;
   previewPath?: string;
 };
 
@@ -113,6 +116,7 @@ function Icon({
     target: (
       <path d="M12 7a5 5 0 1 0 5 5m4 0a9 9 0 1 1-9-9m0 9 8-8m0 0v5m0-5h-5" />
     ),
+    user: <path d="M20 21a8 8 0 0 0-16 0m12-13a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" />,
   };
 
   return (
@@ -128,6 +132,143 @@ function Icon({
     >
       {paths[name]}
     </svg>
+  );
+}
+
+function NavigationLogoutButton({
+  "aria-describedby": ariaDescribedBy,
+  collapsed,
+  preview,
+}: Readonly<{
+  "aria-describedby"?: string;
+  collapsed: boolean;
+  preview: boolean;
+}>) {
+  const { pending } = useFormStatus();
+  const label = pending ? "Saindo…" : "Sair";
+
+  return (
+    <button
+      aria-busy={pending || undefined}
+      aria-describedby={ariaDescribedBy}
+      aria-label={collapsed ? label : undefined}
+      className="app-nav__item app-nav__item--button"
+      disabled={preview || pending}
+      type="submit"
+    >
+      <Icon className="app-nav__icon" name="logout" />
+      <span className="app-nav__label">{label}</span>
+    </button>
+  );
+}
+
+function AccountLogoutButton({ preview }: Readonly<{ preview: boolean }>) {
+  const { pending } = useFormStatus();
+
+  return (
+    <button
+      aria-busy={pending || undefined}
+      className="app-account__menu-item app-account__logout"
+      disabled={preview || pending}
+      role="menuitem"
+      type="submit"
+    >
+      <Icon name="logout" />
+      <span>{pending ? "Saindo…" : "Sair do aplicativo"}</span>
+    </button>
+  );
+}
+
+function AccountMenu({
+  avatarUrl,
+  displayName,
+  email,
+  preview,
+}: Readonly<{
+  avatarUrl: string | null;
+  displayName: string;
+  email: string;
+  preview: boolean;
+}>) {
+  const [isOpen, setIsOpen] = useState(false);
+  const accountRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (
+        event.target instanceof Node &&
+        !accountRef.current?.contains(event.target)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setIsOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
+
+  return (
+    <div className="app-account" ref={accountRef}>
+      <button
+        aria-controls="app-account-menu"
+        aria-expanded={isOpen}
+        aria-haspopup="menu"
+        aria-label={`Abrir menu da conta de ${displayName}`}
+        className="app-profile"
+        onClick={() => setIsOpen((currentValue) => !currentValue)}
+        ref={triggerRef}
+        type="button"
+      >
+        <Avatar name={displayName} size="sm" src={avatarUrl} />
+      </button>
+
+      {isOpen ? (
+        <div
+          aria-label="Menu da conta"
+          className="app-account__menu"
+          id="app-account-menu"
+          role="menu"
+        >
+          <div className="app-account__identity" role="none">
+            <strong>{displayName}</strong>
+            {email ? <span>{email}</span> : null}
+          </div>
+
+          <div className="app-account__actions" role="none">
+            <Link
+              className="app-account__menu-item"
+              href="/profile"
+              onClick={() => setIsOpen(false)}
+              role="menuitem"
+            >
+              <Icon name="user" />
+              <span>Ir para o perfil</span>
+            </Link>
+            <form action={logoutAction}>
+              <AccountLogoutButton preview={preview} />
+            </form>
+          </div>
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -206,18 +347,6 @@ function Navigation({
     );
   };
 
-  const logoutButton = (
-    <button
-      aria-label={collapsed ? "Sair" : undefined}
-      className="app-nav__item app-nav__item--button"
-      disabled={preview}
-      type="submit"
-    >
-      <Icon className="app-nav__icon" name="logout" />
-      <span className="app-nav__label">Sair</span>
-    </button>
-  );
-
   return (
     <nav aria-label="Navegação da aplicação" className="app-nav">
       <div className="app-nav__group">{primaryNavigation.map(renderItem)}</div>
@@ -230,7 +359,10 @@ function Navigation({
       </div>
 
       <form action={logoutAction} className="app-nav__logout">
-        {withCollapsedTooltip(logoutButton, "Sair")}
+        {withCollapsedTooltip(
+          <NavigationLogoutButton collapsed={collapsed} preview={preview} />,
+          "Sair",
+        )}
       </form>
     </nav>
   );
@@ -240,6 +372,7 @@ export function AppShell({
   avatarUrl = null,
   children,
   displayName,
+  email = "",
   previewPath,
 }: AppShellProps) {
   const pathname = usePathname();
@@ -421,14 +554,12 @@ export function AppShell({
             />
           </form>
 
-          <Link
-            aria-label={`Abrir perfil de ${displayName}`}
-            className="app-profile"
-            href="/profile"
-          >
-            <Avatar name={displayName} size="sm" src={avatarUrl} />
-            <span className="app-profile__name">{displayName}</span>
-          </Link>
+          <AccountMenu
+            avatarUrl={avatarUrl}
+            displayName={displayName}
+            email={email}
+            preview={Boolean(previewPath)}
+          />
         </div>
       </header>
 

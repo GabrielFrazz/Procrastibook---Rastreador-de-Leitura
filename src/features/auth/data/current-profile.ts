@@ -4,7 +4,8 @@ import type { Database } from "@/lib/supabase/database.types";
 export type CurrentProfile = Pick<
   Database["public"]["Tables"]["profiles"]["Row"],
   "id" | "display_name" | "avatar_path" | "timezone"
->;
+> &
+  Readonly<{ email: string }>;
 
 export class CurrentProfileQueryError extends Error {
   constructor() {
@@ -18,6 +19,7 @@ export async function getCurrentProfile(): Promise<CurrentProfile | null> {
   const { data: claimsData, error: claimsError } =
     await supabase.auth.getClaims();
   const subject = claimsData?.claims.sub;
+  const email = claimsData?.claims.email;
 
   if (claimsError || typeof subject !== "string") {
     return null;
@@ -33,5 +35,12 @@ export async function getCurrentProfile(): Promise<CurrentProfile | null> {
     throw new CurrentProfileQueryError();
   }
 
-  return profile;
+  if (!profile) {
+    return null;
+  }
+
+  return {
+    ...profile,
+    email: typeof email === "string" ? email : "",
+  };
 }

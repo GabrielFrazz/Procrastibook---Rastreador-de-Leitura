@@ -5,6 +5,7 @@ export type ProfileSettingsData = Readonly<{
   avatarPath: string | null;
   avatarUrl: string | null;
   displayName: string;
+  email: string;
   id: string;
   timezone: string;
 }>;
@@ -33,6 +34,7 @@ export async function getProfileSettingsData(): Promise<ProfileSettingsData | nu
     avatarPath: profile.avatar_path,
     avatarUrl,
     displayName: profile.display_name,
+    email: profile.email,
     id: profile.id,
     timezone: profile.timezone,
   };
