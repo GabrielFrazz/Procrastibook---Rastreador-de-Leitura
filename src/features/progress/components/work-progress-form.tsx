@@ -1,9 +1,15 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { useFormStatus } from "react-dom";
 
-import { Button, FormField, Input, Select } from "@/components/ui";
+import {
+  Button,
+  FormField,
+  FormStatusMessage,
+  Input,
+  Select,
+} from "@/components/ui";
 import type { LibraryWork } from "@/features/library/domain/library-catalog";
 import { recordProgressAction } from "@/features/progress/actions/record-progress-action";
 import {
@@ -52,6 +58,15 @@ export function WorkProgressForm({
   const inputId = `progress-${id}`;
   const eventId = `progress-event-${id}`;
   const error = getError(state);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (state.status === "error") {
+      formRef.current
+        ?.querySelector<HTMLElement>("[aria-invalid='true']")
+        ?.focus();
+    }
+  }, [state]);
 
   return (
     <details className="work-progress-form">
@@ -59,7 +74,7 @@ export function WorkProgressForm({
         Atualizar progresso
         <span className="sr-only"> de {title}</span>
       </summary>
-      <form action={formAction}>
+      <form action={formAction} ref={formRef}>
         <input name="workId" type="hidden" value={id} />
         <input
           name="expectedPreviousValue"
@@ -106,14 +121,7 @@ export function WorkProgressForm({
           </Select>
         </FormField>
 
-        {state.message ? (
-          <p
-            className={`work-progress-form__message work-progress-form__message--${state.status}`}
-            role={state.status === "error" ? "alert" : "status"}
-          >
-            {state.message}
-          </p>
-        ) : null}
+        <FormStatusMessage message={state.message} status={state.status} />
 
         <SubmitButton />
       </form>

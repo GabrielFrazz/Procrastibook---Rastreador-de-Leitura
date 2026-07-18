@@ -11,6 +11,7 @@ import {
   EmptyState,
   ErrorState,
   FormField,
+  FormStatusMessage,
   Input,
   PageHeader,
   Select,
@@ -47,18 +48,7 @@ const statusLabels = {
 } as const;
 
 function ActionMessage({ state }: Readonly<{ state: ReadingListActionState }>) {
-  if (!state.message) {
-    return null;
-  }
-
-  return (
-    <p
-      className={`reading-list-message reading-list-message--${state.status}`}
-      role={state.status === "error" ? "alert" : "status"}
-    >
-      {state.message}
-    </p>
-  );
+  return <FormStatusMessage message={state.message} status={state.status} />;
 }
 
 function SubmitButton({
@@ -92,12 +82,17 @@ function CreateListForm() {
     if (state.status === "success") {
       formRef.current?.reset();
     }
-  }, [state.status, state.message]);
+
+    if (state.status === "error") {
+      formRef.current
+        ?.querySelector<HTMLElement>("[aria-invalid='true']")
+        ?.focus();
+    }
+  }, [state]);
 
   return (
-    <Card
+    <section
       aria-labelledby="create-list-title"
-      as="section"
       className="reading-list-create"
     >
       <div className="reading-list-section-heading">
@@ -153,7 +148,7 @@ function CreateListForm() {
           <SubmitButton pendingLabel="Criando…">Criar lista</SubmitButton>
         </div>
       </form>
-    </Card>
+    </section>
   );
 }
 
@@ -291,24 +286,24 @@ export function ReadingListsView({
       />
 
       {result.status === "error" ? (
-        <Card as="section">
+        <section className="reading-list-feedback">
           <ErrorState
             description="Verifique sua conexão e tente carregar suas listas novamente."
             retryHref="/lists"
             title="As listas não puderam ser carregadas"
           />
-        </Card>
+        </section>
       ) : (
         <>
           <CreateListForm />
 
           {result.data.lists.length === 0 ? (
-            <Card as="section">
+            <section className="reading-list-feedback">
               <EmptyState
                 description="Crie uma lista para reunir obras por tema, ocasião ou prioridade."
                 title="Você ainda não criou listas"
               />
-            </Card>
+            </section>
           ) : (
             <section aria-labelledby="reading-lists-title">
               <div className="reading-list-section-heading reading-list-section-heading--results">

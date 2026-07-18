@@ -95,27 +95,6 @@
   gap: var(--space-4);
 }
 
-.goal-message {
-  padding: var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  margin: 0;
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-normal);
-}
-
-.goal-message--error {
-  border-color: var(--color-error-border);
-  background: var(--color-error-surface);
-  color: var(--color-error);
-}
-
-.goal-message--success {
-  border-color: var(--color-success-border);
-  background: var(--color-success-surface);
-  color: var(--color-success);
-}
-
 .goal-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -274,5 +253,128 @@
   .goal-card__delete,
   .goal-card__delete .ui-button {
     width: 100%;
+  }
+}
+
+/* Goal planning — stage 10 */
+.goals-page {
+  gap: var(--space-8);
+}
+
+.goal-overview {
+  overflow: hidden;
+  gap: 0;
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-accent-surface);
+}
+
+.goal-overview__item {
+  min-height: 6rem;
+  align-content: center;
+  padding: var(--space-4) var(--space-6);
+  border-left: 1px solid
+    color-mix(in srgb, var(--color-accent) 18%, transparent);
+}
+
+.goal-overview__item:first-child {
+  border-left: 0;
+}
+
+.goal-overview__item dd {
+  color: var(--color-accent-text);
+}
+
+.goal-create {
+  padding: var(--space-6);
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-paper);
+}
+
+.goal-card {
+  position: relative;
+  overflow: hidden;
+  border-color: var(--color-card-border);
+  box-shadow: var(--shadow-card);
+}
+
+.goal-card::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0.25rem;
+  background: var(--color-border-strong);
+  content: "";
+}
+
+.goal-card--active::before {
+  background: var(--color-accent);
+}
+
+.goal-card--completed::before {
+  background: var(--color-success);
+}
+
+.goal-card--upcoming::before {
+  background: var(--color-warning);
+}
+
+.goal-card__period {
+  width: fit-content;
+  padding: var(--space-2) var(--space-3);
+  border-radius: 999px;
+  background: var(--color-surface-paper);
+  color: var(--color-text-subtle);
+}
+
+.goal-card__editor {
+  border-color: var(--color-card-border);
+}
+
+.goal-card__delete .ui-button {
+  color: var(--color-error);
+}
+
+.goal-feedback {
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.goal-loading > span,
+.goal-loading .ui-skeleton {
+  background: var(--color-surface-strong);
+}
+
+.goal-loading__overview,
+.goal-loading__list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+  height: auto;
+}
+
+.goal-loading__list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 48rem) {
+  .goal-loading__list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 40rem) {
+  .goals-page {
+    gap: var(--space-6);
+  }
+
+  .goal-overview__item {
+    min-height: 5rem;
+    padding: var(--space-3);
+  }
+
+  .goal-loading__overview {
+    grid-template-columns: 1fr;
   }
 }

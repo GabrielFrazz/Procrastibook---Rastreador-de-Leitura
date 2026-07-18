@@ -42,7 +42,7 @@ export function EmptyState({
   title,
 }: FeedbackStateProps) {
   return (
-    <div className="ui-feedback-state">
+    <div className="ui-feedback-state" role="status">
       <span aria-hidden="true" className="ui-feedback-state__icon">
         {icon ?? <EmptyIcon />}
       </span>

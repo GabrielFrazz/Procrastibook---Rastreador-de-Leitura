@@ -11,6 +11,7 @@ import {
   EmptyState,
   ErrorState,
   FormField,
+  FormStatusMessage,
   Input,
   PageHeader,
   Select,
@@ -58,18 +59,7 @@ function SubmitButton() {
 function ActionMessage({
   state,
 }: Readonly<{ state: ReadingSessionActionState }>) {
-  if (!state.message) {
-    return null;
-  }
-
-  return (
-    <p
-      className={`reading-session-message reading-session-message--${state.status}`}
-      role={state.status === "error" ? "alert" : "status"}
-    >
-      {state.message}
-    </p>
-  );
+  return <FormStatusMessage message={state.message} status={state.status} />;
 }
 
 function PositionHint({ work }: Readonly<{ work: ReadingSessionWork }>) {
@@ -114,7 +104,13 @@ function ReadingSessionForm({
     if (state.status === "success") {
       formRef.current?.reset();
     }
-  }, [state.status, state.message]);
+
+    if (state.status === "error") {
+      formRef.current
+        ?.querySelector<HTMLElement>("[aria-invalid='true']")
+        ?.focus();
+    }
+  }, [state]);
 
   if (!selectedWork) {
     return (
@@ -134,9 +130,8 @@ function ReadingSessionForm({
   const labels = unitLabels[selectedWork.progressUnit];
 
   return (
-    <Card
+    <section
       aria-labelledby="reading-session-form-title"
-      as="section"
       className="reading-session-form-card"
     >
       <div className="reading-session-section-heading">
@@ -303,7 +298,7 @@ function ReadingSessionForm({
           <SubmitButton />
         </div>
       </form>
-    </Card>
+    </section>
   );
 }
 
@@ -312,10 +307,10 @@ function SummaryCard({
   value,
 }: Readonly<{ label: string; value: string }>) {
   return (
-    <Card as="article" className="reading-session-summary-card">
+    <div className="reading-session-summary-card">
       <span>{label}</span>
       <strong>{value}</strong>
-    </Card>
+    </div>
   );
 }
 
@@ -323,7 +318,7 @@ function SessionCard({ session }: Readonly<{ session: ReadingSessionItem }>) {
   const unitsRead = getReadingSessionUnitsRead(session);
 
   return (
-    <Card as="article" className="reading-session-card">
+    <article className="reading-session-card">
       <header>
         <div>
           <p>{formatSessionDate(session.occurredOn)}</p>
@@ -356,7 +351,7 @@ function SessionCard({ session }: Readonly<{ session: ReadingSessionItem }>) {
       {session.notes ? (
         <p className="reading-session-card__notes">{session.notes}</p>
       ) : null}
-    </Card>
+    </article>
   );
 }
 

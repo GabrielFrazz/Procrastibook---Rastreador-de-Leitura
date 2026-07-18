@@ -6,7 +6,9 @@ export default function WorkDetailLoading() {
       aria-busy="true"
       aria-label="Carregando detalhes da obra"
       className="work-detail-page"
+      role="status"
     >
+      <span className="sr-only">Carregando detalhes da obra…</span>
       <span className="work-detail-back">← Voltar à biblioteca</span>
 
       <div className="work-detail-loading-overview">

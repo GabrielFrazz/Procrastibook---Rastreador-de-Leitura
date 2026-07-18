@@ -2,7 +2,13 @@ import { PageHeader, Skeleton } from "@/components/ui";
 
 export default function AddWorkLoading() {
   return (
-    <div className="add-work">
+    <div
+      aria-busy="true"
+      aria-label="Carregando cadastro de obra"
+      className="add-work"
+      role="status"
+    >
+      <span className="sr-only">Carregando cadastro de obra…</span>
       <PageHeader
         description="Preparando o formulário de cadastro."
         eyebrow="Nova leitura"
@@ -26,8 +32,7 @@ export default function AddWorkLoading() {
         </div>
       </section>
 
-      <div className="add-work-form__layout" role="status">
-        <span className="sr-only">Carregando formulário…</span>
+      <div className="add-work-form__layout">
         <section className="add-cover">
           <div className="add-work-loading__heading-lines">
             <Skeleton variant="text" width="5rem" />

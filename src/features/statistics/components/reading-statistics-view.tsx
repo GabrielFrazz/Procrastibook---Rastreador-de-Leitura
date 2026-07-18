@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import Link from "next/link";
 
 import {
   Badge,
@@ -33,10 +34,10 @@ function MetricCard({
   value,
 }: Readonly<{ label: string; value: string }>) {
   return (
-    <Card as="div" className="statistics-metric">
+    <div className="statistics-metric">
       <dt>{label}</dt>
       <dd>{value}</dd>
-    </Card>
+    </div>
   );
 }
 
@@ -44,14 +45,29 @@ function StatusDistribution({
   statistics,
 }: Readonly<{ statistics: ReadingStatistics }>) {
   const items = [
-    { count: statistics.statusCounts.wantToRead, label: "Quero ler" },
-    { count: statistics.statusCounts.reading, label: "Lendo" },
-    { count: statistics.statusCounts.finished, label: "Finalizadas" },
-    { count: statistics.statusCounts.abandoned, label: "Abandonadas" },
+    {
+      count: statistics.statusCounts.wantToRead,
+      label: "Quero ler",
+      tone: "oat",
+    },
+    { count: statistics.statusCounts.reading, label: "Lendo", tone: "sage" },
+    {
+      count: statistics.statusCounts.finished,
+      label: "Finalizadas",
+      tone: "cocoa",
+    },
+    {
+      count: statistics.statusCounts.abandoned,
+      label: "Abandonadas",
+      tone: "clay",
+    },
   ];
 
   return (
-    <Card aria-labelledby="statistics-status-title" as="section">
+    <section
+      aria-labelledby="statistics-status-title"
+      className="statistics-status-panel"
+    >
       <div className="statistics-section-heading">
         <div>
           <p>Biblioteca</p>
@@ -66,7 +82,10 @@ function StatusDistribution({
               ? 0
               : Math.round((item.count / statistics.totalWorks) * 100);
           return (
-            <li key={item.label}>
+            <li
+              className={`statistics-status-item statistics-status-item--${item.tone}`}
+              key={item.label}
+            >
               <div>
                 <span>{item.label}</span>
                 <strong>
@@ -82,7 +101,7 @@ function StatusDistribution({
           );
         })}
       </ul>
-    </Card>
+    </section>
   );
 }
 
@@ -99,7 +118,10 @@ function ActivityChart({
   );
 
   return (
-    <Card aria-labelledby="statistics-activity-title" as="section">
+    <section
+      aria-labelledby="statistics-activity-title"
+      className="statistics-activity-panel"
+    >
       <div className="statistics-section-heading">
         <div>
           <p>Últimos seis meses</p>
@@ -151,7 +173,7 @@ function ActivityChart({
           </tbody>
         </table>
       </div>
-    </Card>
+    </section>
   );
 }
 
@@ -194,13 +216,13 @@ export function ReadingStatisticsView({
           eyebrow="Análise"
           title="Estatísticas"
         />
-        <Card as="section">
+        <section className="statistics-feedback">
           <ErrorState
             description="Não foi possível calcular seus indicadores agora."
             retryHref="/statistics"
             title="Estatísticas indisponíveis"
           />
-        </Card>
+        </section>
       </div>
     );
   }
@@ -215,12 +237,20 @@ export function ReadingStatisticsView({
           eyebrow="Análise"
           title="Estatísticas"
         />
-        <Card as="section">
+        <section className="statistics-feedback">
           <EmptyState
+            action={
+              <Link
+                className="ui-button ui-button--primary"
+                href="/library/new"
+              >
+                Adicionar obra
+              </Link>
+            }
             description="Cadastre obras e registre seu progresso para construir um histórico de leitura."
             title="Ainda não há dados para analisar"
           />
-        </Card>
+        </section>
       </div>
     );
   }
@@ -261,7 +291,7 @@ export function ReadingStatisticsView({
           className="statistics-layout__side"
           aria-label="Indicadores complementares"
         >
-          <Card as="section" className="statistics-secondary">
+          <section className="statistics-secondary">
             <div>
               <span>Capítulos lidos</span>
               <strong>{numberFormatter.format(statistics.chaptersRead)}</strong>
@@ -274,7 +304,7 @@ export function ReadingStatisticsView({
                   : `${numberFormatter.format(statistics.averageRating)} de 5`}
               </strong>
             </div>
-          </Card>
+          </section>
           <TopWorks statistics={statistics} />
         </aside>
       </div>

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { AppShell } from "@/components/layout/app-shell";
+import ReadingListsLoading from "@/app/(app)/lists/loading";
 import { ReadingListsView } from "@/features/lists/components/reading-lists-view";
 import type { ReadingListsData } from "@/features/lists/domain/reading-lists";
 
@@ -81,6 +82,14 @@ export default async function ListsPreviewPage({
 
   const params = await searchParams;
   const state = typeof params.state === "string" ? params.state : undefined;
+
+  if (state === "loading") {
+    return (
+      <AppShell displayName="Gabriel" previewPath="/lists">
+        <ReadingListsLoading />
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell displayName="Gabriel" previewPath="/lists">

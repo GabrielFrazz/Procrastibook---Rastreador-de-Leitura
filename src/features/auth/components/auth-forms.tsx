@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
+
+import { FormStatusMessage } from "@/components/ui";
 
 import {
   forgotPasswordAction,
@@ -39,18 +41,25 @@ function FieldError({ field, state }: FieldErrorProps) {
 }
 
 function FormMessage({ state }: Readonly<{ state: AuthFormState }>) {
-  if (!state.message) {
-    return null;
-  }
+  return <FormStatusMessage message={state.message} status={state.status} />;
+}
 
-  return (
-    <p
-      className={`auth-message auth-message--${state.status}`}
-      role={state.status === "error" ? "alert" : "status"}
-    >
-      {state.message}
-    </p>
-  );
+function useFocusFirstInvalid(state: AuthFormState) {
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (state.status !== "error") {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      formRef.current
+        ?.querySelector<HTMLElement>("[aria-invalid='true']")
+        ?.focus();
+    });
+  }, [state]);
+
+  return formRef;
 }
 
 function SubmitButton({ idleLabel }: Readonly<{ idleLabel: string }>) {
@@ -125,10 +134,11 @@ export function LoginForm({ nextPath }: Readonly<{ nextPath: string }>) {
     loginAction,
     INITIAL_AUTH_FORM_STATE,
   );
+  const formRef = useFocusFirstInvalid(state);
   const hasEmailError = Boolean(state.fieldErrors.email?.length);
 
   return (
-    <form action={formAction} className="auth-form">
+    <form action={formAction} className="auth-form" ref={formRef}>
       <input name="next" type="hidden" value={nextPath} />
       <FormMessage state={state} />
 
@@ -168,11 +178,12 @@ export function SignupForm() {
     signupAction,
     INITIAL_AUTH_FORM_STATE,
   );
+  const formRef = useFocusFirstInvalid(state);
   const hasNameError = Boolean(state.fieldErrors.displayName?.length);
   const hasEmailError = Boolean(state.fieldErrors.email?.length);
 
   return (
-    <form action={formAction} className="auth-form">
+    <form action={formAction} className="auth-form" ref={formRef}>
       <FormMessage state={state} />
 
       <div className="auth-field">
@@ -235,10 +246,11 @@ export function ForgotPasswordForm() {
     forgotPasswordAction,
     INITIAL_AUTH_FORM_STATE,
   );
+  const formRef = useFocusFirstInvalid(state);
   const hasEmailError = Boolean(state.fieldErrors.email?.length);
 
   return (
-    <form action={formAction} className="auth-form">
+    <form action={formAction} className="auth-form" ref={formRef}>
       <FormMessage state={state} />
 
       <div className="auth-field">
@@ -268,9 +280,10 @@ export function UpdatePasswordForm() {
     updatePasswordAction,
     INITIAL_AUTH_FORM_STATE,
   );
+  const formRef = useFocusFirstInvalid(state);
 
   return (
-    <form action={formAction} className="auth-form">
+    <form action={formAction} className="auth-form" ref={formRef}>
       <FormMessage state={state} />
 
       <PasswordField

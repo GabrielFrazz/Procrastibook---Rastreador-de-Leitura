@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { FormStatusMessage } from "@/components/ui";
 import { LoginForm } from "@/features/auth/components/auth-forms";
 import { GoogleSignInLink } from "@/features/auth/components/google-sign-in-link";
 import { getLoginFeedback } from "@/features/auth/domain/auth-feedback";
@@ -34,12 +35,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       </div>
 
       {feedback ? (
-        <p
-          className={`auth-message auth-message--${feedback.kind}`}
-          role={feedback.kind === "error" ? "alert" : "status"}
-        >
-          {feedback.message}
-        </p>
+        <FormStatusMessage message={feedback.message} status={feedback.kind} />
       ) : null}
 
       <LoginForm nextPath={nextPath} />

@@ -12,6 +12,7 @@ import {
   EmptyState,
   ErrorState,
   FormField,
+  FormStatusMessage,
   Input,
   Progress,
   Select,
@@ -75,18 +76,7 @@ function SubmitButton({
 }
 
 function ActionMessage({ state }: Readonly<{ state: EngagementActionState }>) {
-  if (!state.message) {
-    return null;
-  }
-
-  return (
-    <p
-      className={`work-engagement-message work-engagement-message--${state.status}`}
-      role={state.status === "error" ? "alert" : "status"}
-    >
-      {state.message}
-    </p>
-  );
+  return <FormStatusMessage message={state.message} status={state.status} />;
 }
 
 function getTotalProgress(work: WorkDetail) {

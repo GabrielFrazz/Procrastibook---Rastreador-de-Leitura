@@ -14,6 +14,7 @@ export {
   Select,
   Textarea,
 } from "@/components/ui/form-controls";
+export { FormStatusMessage } from "@/components/ui/form-status-message";
 export { IconButton } from "@/components/ui/icon-button";
 export { PageHeader } from "@/components/ui/page-header";
 export { PasswordInput } from "@/components/ui/password-input";

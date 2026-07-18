@@ -64,27 +64,6 @@
   gap: var(--space-4);
 }
 
-.reading-list-message {
-  padding: var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  margin: 0;
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-normal);
-}
-
-.reading-list-message--error {
-  border-color: var(--color-error-border);
-  background: var(--color-error-surface);
-  color: var(--color-error);
-}
-
-.reading-list-message--success {
-  border-color: var(--color-success-border);
-  background: var(--color-success-surface);
-  color: var(--color-success);
-}
-
 .reading-list-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -269,5 +248,127 @@
 
   .reading-list-card__items li {
     align-items: stretch;
+  }
+}
+
+/* Editorial organization — stage 10 */
+.reading-lists {
+  gap: var(--space-8);
+}
+
+.reading-list-create {
+  padding: var(--space-6);
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-paper);
+}
+
+.reading-list-create__form {
+  grid-template-columns: minmax(14rem, 0.75fr) minmax(18rem, 1.25fr) auto;
+  align-items: end;
+}
+
+.reading-list-create__actions {
+  grid-column: auto;
+  align-self: end;
+  padding-bottom: 0.125rem;
+}
+
+.reading-list-create__actions:has(.ui-form-status) {
+  grid-column: 1 / -1;
+}
+
+.reading-list-card {
+  position: relative;
+  overflow: hidden;
+  border-color: var(--color-card-border);
+  box-shadow: var(--shadow-card);
+}
+
+.reading-list-card::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0.25rem;
+  background: var(--color-accent);
+  content: "";
+}
+
+.reading-list-card__add {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-surface);
+}
+
+.reading-list-card__items {
+  border-color: var(--color-card-border);
+}
+
+.reading-list-card__items li {
+  border-color: var(--color-card-border);
+}
+
+.reading-list-card__empty {
+  border-color: var(--color-card-border);
+  background: var(--color-surface-paper);
+}
+
+.reading-list-card__danger {
+  border-color: var(--color-card-border);
+}
+
+.reading-list-feedback {
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.reading-list-loading {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.reading-list-loading__create {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-paper);
+}
+
+.reading-list-loading__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6);
+}
+
+@media (max-width: 64rem) {
+  .reading-list-create__form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .reading-list-create__actions {
+    grid-column: 1 / -1;
+  }
+
+  .reading-list-loading__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 48rem) {
+  .reading-list-create__form {
+    grid-template-columns: 1fr;
+  }
+
+  .reading-list-create__actions {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 40rem) {
+  .reading-lists {
+    gap: var(--space-6);
   }
 }

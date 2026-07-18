@@ -3,6 +3,7 @@ import type { ReactNode, SVGProps } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { EmptyState, ErrorState } from "@/components/ui/feedback-state";
+import { FormStatusMessage } from "@/components/ui/form-status-message";
 import { BookCover } from "@/components/ui/media-placeholder";
 import { PageHeader } from "@/components/ui/page-header";
 import { Progress } from "@/components/ui/progress";
@@ -470,14 +471,16 @@ export function DashboardView({
       />
 
       {authError === "logout" ? (
-        <p className="auth-message auth-message--error" role="alert">
-          Não foi possível encerrar a sessão. Tente novamente.
-        </p>
+        <FormStatusMessage
+          message="Não foi possível encerrar a sessão. Tente novamente."
+          status="error"
+        />
       ) : null}
       {notice === "password-updated" ? (
-        <p className="auth-message auth-message--success" role="status">
-          Senha atualizada com segurança.
-        </p>
+        <FormStatusMessage
+          message="Senha atualizada com segurança."
+          status="success"
+        />
       ) : null}
 
       {result.status === "error" ? (

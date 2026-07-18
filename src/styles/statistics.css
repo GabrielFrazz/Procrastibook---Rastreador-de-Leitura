@@ -365,3 +365,169 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Calm data storytelling — stage 10 */
+.statistics-page {
+  gap: var(--space-8);
+}
+
+.statistics-metrics {
+  overflow: hidden;
+  gap: 0;
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-accent-surface);
+}
+
+.statistics-metric {
+  min-height: 6.5rem;
+  align-content: center;
+  padding: var(--space-4) var(--space-6);
+  border-left: 1px solid
+    color-mix(in srgb, var(--color-accent) 18%, transparent);
+}
+
+.statistics-metric:first-child {
+  border-left: 0;
+}
+
+.statistics-metric dd {
+  color: var(--color-accent-text);
+}
+
+.statistics-activity-panel,
+.statistics-status-panel,
+.statistics-secondary {
+  min-width: 0;
+  padding: var(--space-6);
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+}
+
+.statistics-activity-panel {
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.statistics-status-panel {
+  background: var(--color-surface-paper);
+}
+
+.statistics-secondary {
+  background: var(--color-accent-surface);
+}
+
+.statistics-chart__bar {
+  background: var(--color-accent);
+}
+
+.statistics-chart li:nth-child(3n + 2) .statistics-chart__bar {
+  background: var(--color-primary);
+}
+
+.statistics-chart li:nth-child(3n) .statistics-chart__bar {
+  background: var(--color-warning);
+}
+
+.statistics-table-wrap {
+  border-color: var(--color-card-border);
+  background: var(--color-surface);
+  scrollbar-color: var(--color-accent) var(--color-surface-paper);
+}
+
+.statistics-table thead th {
+  background: var(--color-accent-surface);
+  color: var(--color-accent-text);
+}
+
+.statistics-status-item {
+  --statistics-status-color: var(--color-accent);
+  --statistics-status-track: var(--color-accent-surface);
+}
+
+.statistics-status-item--oat {
+  --statistics-status-color: var(--color-warning);
+  --statistics-status-track: var(--color-warning-surface);
+}
+
+.statistics-status-item--cocoa {
+  --statistics-status-color: var(--color-primary);
+  --statistics-status-track: var(--color-surface-linen);
+}
+
+.statistics-status-item--clay {
+  --statistics-status-color: var(--color-error);
+  --statistics-status-track: var(--color-error-surface);
+}
+
+.statistics-status-item progress,
+.statistics-status-item progress::-webkit-progress-bar {
+  background: var(--statistics-status-track);
+  color: var(--statistics-status-color);
+}
+
+.statistics-status-item progress::-webkit-progress-value,
+.statistics-status-item progress::-moz-progress-bar {
+  background: var(--statistics-status-color);
+}
+
+.statistics-layout__side > .ui-card {
+  border-color: var(--color-card-border);
+  box-shadow: var(--shadow-card);
+}
+
+.statistics-feedback {
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.statistics-loading__metrics,
+.statistics-loading__layout {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
+  height: auto;
+}
+
+.statistics-loading__layout {
+  grid-template-columns: minmax(0, 1.65fr) minmax(18rem, 0.85fr);
+  align-items: start;
+}
+
+@media (max-width: 70rem) {
+  .statistics-metric:nth-child(odd) {
+    border-left: 0;
+  }
+
+  .statistics-metric:nth-child(n + 3) {
+    border-top: 1px solid
+      color-mix(in srgb, var(--color-accent) 18%, transparent);
+  }
+
+  .statistics-loading__metrics,
+  .statistics-loading__layout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .statistics-loading__layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 40rem) {
+  .statistics-page {
+    gap: var(--space-6);
+  }
+
+  .statistics-metric {
+    min-height: 5.5rem;
+    padding: var(--space-3);
+  }
+
+  .statistics-activity-panel,
+  .statistics-status-panel,
+  .statistics-secondary {
+    padding: var(--space-4);
+  }
+}

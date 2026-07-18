@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { AppShell } from "@/components/layout/app-shell";
+import StatisticsLoading from "@/app/(app)/statistics/loading";
 import { ReadingStatisticsView } from "@/features/statistics/components/reading-statistics-view";
 import type { ReadingStatistics } from "@/features/statistics/domain/reading-statistics";
 
@@ -86,6 +87,14 @@ export default async function StatisticsPreviewPage({
 
   const params = await searchParams;
   const state = typeof params.state === "string" ? params.state : "success";
+
+  if (state === "loading") {
+    return (
+      <AppShell displayName="Gabriel" previewPath="/statistics">
+        <StatisticsLoading />
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell displayName="Gabriel" previewPath="/statistics">

@@ -10,6 +10,7 @@ import {
   EmptyState,
   ErrorState,
   FormField,
+  FormStatusMessage,
   Input,
   PageHeader,
   Progress,
@@ -55,18 +56,7 @@ function formatDate(value: string) {
 }
 
 function ActionMessage({ state }: Readonly<{ state: GoalActionState }>) {
-  if (!state.message) {
-    return null;
-  }
-
-  return (
-    <p
-      className={`goal-message goal-message--${state.status}`}
-      role={state.status === "error" ? "alert" : "status"}
-    >
-      {state.message}
-    </p>
-  );
+  return <FormStatusMessage message={state.message} status={state.status} />;
 }
 
 function SubmitButton({
@@ -76,7 +66,7 @@ function SubmitButton({
 }: Readonly<{
   children: string;
   pendingLabel: string;
-  variant?: "danger" | "primary" | "secondary";
+  variant?: "danger" | "ghost" | "primary" | "secondary";
 }>) {
   const { pending } = useFormStatus();
 
@@ -213,17 +203,19 @@ function CreateGoalForm({
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    if (!previewState && actionState.status === "success") {
+    if (!previewState && state.status === "success") {
       formRef.current?.reset();
     }
-  }, [actionState.status, actionState.message, previewState]);
+
+    if (state.status === "error") {
+      formRef.current
+        ?.querySelector<HTMLElement>("[aria-invalid='true']")
+        ?.focus();
+    }
+  }, [previewState, state]);
 
   return (
-    <Card
-      aria-labelledby="create-goal-title"
-      as="section"
-      className="goal-create"
-    >
+    <section aria-labelledby="create-goal-title" className="goal-create">
       <div className="goal-section-heading">
         <div>
           <p>Planejamento</p>
@@ -240,7 +232,7 @@ function CreateGoalForm({
           <SubmitButton pendingLabel="Criando…">Criar meta</SubmitButton>
         </div>
       </form>
-    </Card>
+    </section>
   );
 }
 
@@ -252,6 +244,7 @@ function GoalCard({
     manageReadingGoalAction,
     INITIAL_GOAL_ACTION_STATE,
   );
+  const editFormRef = useRef<HTMLFormElement>(null);
   const tone =
     goal.status === "COMPLETED"
       ? "success"
@@ -261,8 +254,19 @@ function GoalCard({
           ? "warning"
           : "neutral";
 
+  useEffect(() => {
+    if (state.status === "error") {
+      editFormRef.current
+        ?.querySelector<HTMLElement>("[aria-invalid='true']")
+        ?.focus();
+    }
+  }, [state]);
+
   return (
-    <Card as="article" className="goal-card">
+    <Card
+      as="article"
+      className={`goal-card goal-card--${goal.status.toLowerCase()}`}
+    >
       <header className="goal-card__header">
         <div>
           <p>{metricLabels[goal.metric]}</p>
@@ -289,7 +293,11 @@ function GoalCard({
 
       <details className="goal-card__editor">
         <summary>Editar meta</summary>
-        <form action={formAction} className="goal-form goal-form--compact">
+        <form
+          action={formAction}
+          className="goal-form goal-form--compact"
+          ref={editFormRef}
+        >
           <input name="goalId" type="hidden" value={goal.id} />
           <input name="intent" type="hidden" value="UPDATE" />
           <GoalFields
@@ -321,7 +329,7 @@ function GoalCard({
       >
         <input name="goalId" type="hidden" value={goal.id} />
         <input name="intent" type="hidden" value="DELETE" />
-        <SubmitButton pendingLabel="Excluindo…" variant="danger">
+        <SubmitButton pendingLabel="Excluindo…" variant="ghost">
           Excluir meta
         </SubmitButton>
       </form>
@@ -346,13 +354,13 @@ export function ReadingGoalsView({
           eyebrow="Planejamento"
           title="Metas de leitura"
         />
-        <Card as="section">
+        <section className="goal-feedback">
           <ErrorState
             description="Não foi possível consultar suas metas agora."
             retryHref="/goals"
             title="Metas indisponíveis"
           />
-        </Card>
+        </section>
       </div>
     );
   }
@@ -368,18 +376,18 @@ export function ReadingGoalsView({
       />
 
       <dl className="goal-overview">
-        <Card as="div" className="goal-overview__item">
+        <div className="goal-overview__item">
           <dt>Total</dt>
           <dd>{data.overview.total}</dd>
-        </Card>
-        <Card as="div" className="goal-overview__item">
+        </div>
+        <div className="goal-overview__item">
           <dt>Em andamento</dt>
           <dd>{data.overview.active}</dd>
-        </Card>
-        <Card as="div" className="goal-overview__item">
+        </div>
+        <div className="goal-overview__item">
           <dt>Concluídas</dt>
           <dd>{data.overview.completed}</dd>
-        </Card>
+        </div>
       </dl>
 
       <CreateGoalForm
@@ -397,12 +405,12 @@ export function ReadingGoalsView({
         </div>
 
         {data.goals.length === 0 ? (
-          <Card as="div">
+          <div className="goal-feedback">
             <EmptyState
               description="Crie uma meta acima para começar a acompanhar páginas, capítulos, minutos ou obras finalizadas."
               title="Nenhuma meta cadastrada"
             />
-          </Card>
+          </div>
         ) : (
           <div className="goal-list">
             {data.goals.map((goal) => (

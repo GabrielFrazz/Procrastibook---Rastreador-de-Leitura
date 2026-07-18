@@ -8,6 +8,7 @@ import {
   BookCover,
   Button,
   FormField,
+  FormStatusMessage,
   Input,
   PageHeader,
   Select,
@@ -67,14 +68,12 @@ function getFieldA11y(
 }
 
 function FormMessage({ state }: Readonly<{ state: WorkFormState }>) {
-  if (!state.message) {
-    return null;
-  }
-
   return (
-    <p className="add-work__message" role="alert">
-      {state.message}
-    </p>
+    <FormStatusMessage
+      className="add-work__message"
+      message={state.message}
+      status={state.status}
+    />
   );
 }
 

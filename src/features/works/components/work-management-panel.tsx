@@ -1,10 +1,17 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { useFormStatus } from "react-dom";
 
-import { Button, FormField, Input, Select, Textarea } from "@/components/ui";
+import {
+  Button,
+  FormField,
+  FormStatusMessage,
+  Input,
+  Select,
+  Textarea,
+} from "@/components/ui";
 import type { WorkDetail } from "@/features/engagement/domain/work-engagement";
 import {
   deleteWorkAction,
@@ -40,18 +47,21 @@ function SubmitButton({
 }
 
 function ActionMessage({ state }: Readonly<{ state: WorkManagementState }>) {
-  if (!state.message) {
-    return null;
-  }
+  return <FormStatusMessage message={state.message} status={state.status} />;
+}
 
-  return (
-    <p
-      className={`work-management-message work-management-message--${state.status}`}
-      role={state.status === "error" ? "alert" : "status"}
-    >
-      {state.message}
-    </p>
-  );
+function fieldA11y(
+  state: WorkManagementState,
+  field: string,
+  id: string,
+  hintId?: string,
+) {
+  const hasError = Boolean(state.fieldErrors[field]?.length);
+
+  return {
+    "aria-describedby": hasError ? `${id}-error` : hintId,
+    "aria-invalid": hasError || undefined,
+  } as const;
 }
 
 function getTotal(work: WorkDetail) {
@@ -76,12 +86,19 @@ export function WorkManagementPanel({ work }: Readonly<{ work: WorkDetail }>) {
     deleteWorkAction,
     INITIAL_WORK_MANAGEMENT_STATE,
   );
+  const updateFormRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     if (updateState.status === "success") {
       router.refresh();
     }
-  }, [router, updateState.status]);
+
+    if (updateState.status === "error") {
+      updateFormRef.current
+        ?.querySelector<HTMLElement>("[aria-invalid='true']")
+        ?.focus();
+    }
+  }, [router, updateState]);
 
   return (
     <section
@@ -95,7 +112,11 @@ export function WorkManagementPanel({ work }: Readonly<{ work: WorkDetail }>) {
 
       <details className="work-management-details">
         <summary>Editar dados e status</summary>
-        <form action={updateAction} className="work-management-form">
+        <form
+          action={updateAction}
+          className="work-management-form"
+          ref={updateFormRef}
+        >
           <input name="workId" type="hidden" value={work.id} />
           <input name="progressUnit" type="hidden" value={work.progressUnit} />
 
@@ -107,6 +128,7 @@ export function WorkManagementPanel({ work }: Readonly<{ work: WorkDetail }>) {
               required
             >
               <Input
+                {...fieldA11y(updateState, "title", "work-edit-title")}
                 defaultValue={work.title}
                 id="work-edit-title"
                 maxLength={200}
@@ -121,6 +143,7 @@ export function WorkManagementPanel({ work }: Readonly<{ work: WorkDetail }>) {
               label="Subtítulo"
             >
               <Input
+                {...fieldA11y(updateState, "subtitle", "work-edit-subtitle")}
                 defaultValue={work.subtitle ?? ""}
                 id="work-edit-subtitle"
                 maxLength={200}
@@ -137,6 +160,12 @@ export function WorkManagementPanel({ work }: Readonly<{ work: WorkDetail }>) {
               required
             >
               <Input
+                {...fieldA11y(
+                  updateState,
+                  "authors",
+                  "work-edit-authors",
+                  "work-edit-authors-hint",
+                )}
                 defaultValue={work.authors.join("; ")}
                 id="work-edit-authors"
                 name="authors"
@@ -151,6 +180,12 @@ export function WorkManagementPanel({ work }: Readonly<{ work: WorkDetail }>) {
               label="Gêneros"
             >
               <Input
+                {...fieldA11y(
+                  updateState,
+                  "genres",
+                  "work-edit-genres",
+                  "work-edit-genres-hint",
+                )}
                 defaultValue={work.genres.join(", ")}
                 id="work-edit-genres"
                 name="genres"
@@ -164,6 +199,7 @@ export function WorkManagementPanel({ work }: Readonly<{ work: WorkDetail }>) {
               required
             >
               <Select
+                {...fieldA11y(updateState, "type", "work-edit-type")}
                 defaultValue={work.type}
                 id="work-edit-type"
                 name="type"
@@ -183,6 +219,7 @@ export function WorkManagementPanel({ work }: Readonly<{ work: WorkDetail }>) {
               required
             >
               <Select
+                {...fieldA11y(updateState, "status", "work-edit-status")}
                 defaultValue={work.status}
                 id="work-edit-status"
                 name="status"
@@ -208,6 +245,12 @@ export function WorkManagementPanel({ work }: Readonly<{ work: WorkDetail }>) {
                 label={`Total de ${progressUnitLabels[work.progressUnit]}`}
               >
                 <Input
+                  {...fieldA11y(
+                    updateState,
+                    "total",
+                    "work-edit-total",
+                    "work-edit-total-hint",
+                  )}
                   defaultValue={getTotal(work) ?? ""}
                   id="work-edit-total"
                   min={1}
@@ -224,6 +267,7 @@ export function WorkManagementPanel({ work }: Readonly<{ work: WorkDetail }>) {
               label="Ano"
             >
               <Input
+                {...fieldA11y(updateState, "publishedYear", "work-edit-year")}
                 defaultValue={work.publishedYear ?? ""}
                 id="work-edit-year"
                 max={2100}
@@ -235,6 +279,7 @@ export function WorkManagementPanel({ work }: Readonly<{ work: WorkDetail }>) {
 
             <FormField htmlFor="work-edit-publisher" label="Editora">
               <Input
+                {...fieldA11y(updateState, "isbn10", "work-edit-isbn10")}
                 defaultValue={work.publisher ?? ""}
                 id="work-edit-publisher"
                 maxLength={160}
@@ -245,6 +290,7 @@ export function WorkManagementPanel({ work }: Readonly<{ work: WorkDetail }>) {
 
             <FormField htmlFor="work-edit-language" label="Idioma">
               <Input
+                {...fieldA11y(updateState, "isbn13", "work-edit-isbn13")}
                 defaultValue={work.language ?? ""}
                 id="work-edit-language"
                 maxLength={35}
@@ -259,6 +305,7 @@ export function WorkManagementPanel({ work }: Readonly<{ work: WorkDetail }>) {
               label="ISBN-10"
             >
               <Input
+                {...fieldA11y(updateState, "doi", "work-edit-doi")}
                 defaultValue={work.isbn10 ?? ""}
                 id="work-edit-isbn10"
                 name="isbn10"
@@ -299,6 +346,11 @@ export function WorkManagementPanel({ work }: Readonly<{ work: WorkDetail }>) {
               label="Descrição"
             >
               <Textarea
+                {...fieldA11y(
+                  updateState,
+                  "description",
+                  "work-edit-description",
+                )}
                 defaultValue={work.description ?? ""}
                 id="work-edit-description"
                 maxLength={5_000}

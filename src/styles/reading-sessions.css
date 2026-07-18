@@ -117,27 +117,6 @@
   gap: var(--space-4);
 }
 
-.reading-session-message {
-  padding: var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  margin: 0;
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-normal);
-}
-
-.reading-session-message--error {
-  border-color: var(--color-error-border);
-  background: var(--color-error-surface);
-  color: var(--color-error);
-}
-
-.reading-session-message--success {
-  border-color: var(--color-success-border);
-  background: var(--color-success-surface);
-  color: var(--color-success);
-}
-
 .reading-session-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -293,5 +272,170 @@
   .reading-session-form__actions .ui-button,
   .reading-session-no-works .ui-button {
     width: 100%;
+  }
+}
+
+/* Reading log — stage 10 */
+.reading-sessions {
+  gap: var(--space-8);
+}
+
+.reading-session-summary-grid {
+  overflow: hidden;
+  gap: 0;
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-accent-surface);
+}
+
+.reading-session-summary-card {
+  min-height: 6rem;
+  align-content: center;
+  padding: var(--space-4) var(--space-6);
+  border-left: 1px solid
+    color-mix(in srgb, var(--color-accent) 18%, transparent);
+}
+
+.reading-session-summary-card:first-child {
+  border-left: 0;
+}
+
+.reading-session-summary-card strong {
+  color: var(--color-accent-text);
+}
+
+.reading-session-form-card {
+  padding: var(--space-6);
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-paper);
+}
+
+.reading-session-form {
+  gap: var(--space-3) var(--space-4);
+}
+
+.reading-session-form .ui-textarea {
+  min-height: 4.75rem;
+}
+
+.reading-session-form__position-hint {
+  border-color: var(--color-success-border);
+  background: var(--color-accent-surface);
+  color: var(--color-accent-text);
+}
+
+.reading-session-list {
+  position: relative;
+  grid-template-columns: 1fr;
+  gap: 0;
+  padding-left: var(--space-3);
+}
+
+.reading-session-card {
+  position: relative;
+  padding: 0 0 var(--space-6) var(--space-8);
+  border-left: 1px solid var(--color-card-border);
+}
+
+.reading-session-card::before {
+  position: absolute;
+  top: 0.25rem;
+  left: -0.4rem;
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 0.2rem solid var(--color-background);
+  border-radius: 50%;
+  background: var(--color-accent);
+  content: "";
+}
+
+.reading-session-card:last-child {
+  padding-bottom: 0;
+  border-left-color: transparent;
+}
+
+.reading-session-card dl {
+  padding-block: var(--space-3);
+  border-block: 1px solid var(--color-card-border);
+}
+
+.reading-session-card dl > div {
+  padding: 0 var(--space-4) 0 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.reading-session-card dl > div + div {
+  padding-left: var(--space-4);
+  border-left: 1px solid var(--color-card-border);
+}
+
+.reading-session-card__notes {
+  padding: var(--space-3) var(--space-4);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-paper);
+}
+
+.reading-session-loading {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.reading-session-loading__summary,
+.reading-session-loading__list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.reading-session-loading__list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 64rem) {
+  .reading-session-summary-card:nth-child(4) {
+    border-left: 0;
+  }
+}
+
+@media (max-width: 48rem) {
+  .reading-session-loading__list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 40rem) {
+  .reading-sessions {
+    gap: var(--space-6);
+  }
+
+  .reading-session-summary-card {
+    min-height: 5rem;
+    padding: var(--space-3);
+  }
+
+  .reading-session-summary-card:nth-child(odd) {
+    border-left: 0;
+  }
+
+  .reading-session-card {
+    padding: 0 0 var(--space-6) var(--space-6);
+  }
+
+  .reading-session-card dl > div + div {
+    padding-top: var(--space-3);
+    padding-left: 0;
+    border-top: 1px solid var(--color-card-border);
+    border-left: 0;
+  }
+
+  .reading-session-form__positions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .reading-session-loading__summary {
+    grid-template-columns: 1fr;
   }
 }

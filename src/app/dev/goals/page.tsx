@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { AppShell } from "@/components/layout/app-shell";
+import GoalsLoading from "@/app/(app)/goals/loading";
 import { ReadingGoalsView } from "@/features/goals/components/reading-goals-view";
 import {
   INITIAL_GOAL_ACTION_STATE,
@@ -61,6 +62,14 @@ export default async function GoalsPreviewPage({
   const params = await searchParams;
   const state = typeof params.state === "string" ? params.state : "success";
   const form = typeof params.form === "string" ? params.form : "idle";
+
+  if (state === "loading") {
+    return (
+      <AppShell displayName="Gabriel" previewPath="/goals">
+        <GoalsLoading />
+      </AppShell>
+    );
+  }
   const formState: GoalActionState =
     form === "success"
       ? {

@@ -289,27 +289,6 @@
   gap: var(--space-3);
 }
 
-.work-engagement-message {
-  padding: var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  margin: 0;
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-normal);
-}
-
-.work-engagement-message--error {
-  border-color: var(--color-error-border);
-  background: var(--color-error-surface);
-  color: var(--color-error);
-}
-
-.work-engagement-message--success {
-  border-color: var(--color-success-border);
-  background: var(--color-success-surface);
-  color: var(--color-success);
-}
-
 .work-note-list {
   display: grid;
   gap: var(--space-3);
@@ -451,17 +430,9 @@
   padding-top: var(--space-2);
 }
 
-.work-management-message {
+.work-management-actions > .ui-form-status {
   margin: 0 auto 0 0;
   font-size: var(--font-size-sm);
-}
-
-.work-management-message--error {
-  color: var(--color-error);
-}
-
-.work-management-message--success {
-  color: var(--color-success);
 }
 
 .work-management-details--danger {

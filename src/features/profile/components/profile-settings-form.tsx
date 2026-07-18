@@ -1,10 +1,17 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, type CSSProperties } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { useFormStatus } from "react-dom";
 
-import { Button, Card, FormField, Input, Select } from "@/components/ui";
+import {
+  Avatar,
+  Button,
+  FormField,
+  FormStatusMessage,
+  Input,
+  Select,
+} from "@/components/ui";
 import { updateProfileSettingsAction } from "@/features/profile/actions/profile-settings-action";
 import type { ProfileSettingsData } from "@/features/profile/data/profile-settings-repository";
 import {
@@ -34,12 +41,6 @@ function SaveButton() {
   );
 }
 
-function getAvatarStyle(avatarUrl: string | null): CSSProperties | undefined {
-  return avatarUrl
-    ? { backgroundImage: `url(${JSON.stringify(avatarUrl)})` }
-    : undefined;
-}
-
 export function ProfileSettingsForm({
   profile,
 }: Readonly<{ profile: ProfileSettingsData }>) {
@@ -48,26 +49,42 @@ export function ProfileSettingsForm({
     updateProfileSettingsAction,
     INITIAL_PROFILE_SETTINGS_STATE,
   );
-  const initial =
-    profile.displayName.trim().charAt(0).toLocaleUpperCase("pt-BR") || "L";
+  const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     if (state.status === "success") {
       router.refresh();
     }
-  }, [router, state.status]);
+
+    if (state.status === "error") {
+      formRef.current
+        ?.querySelector<HTMLElement>("[aria-invalid='true']")
+        ?.focus();
+    }
+  }, [router, state]);
 
   return (
-    <Card as="section" className="profile-settings-card">
-      <form action={formAction} className="profile-settings-form">
+    <section
+      aria-labelledby="profile-settings-title"
+      className="profile-settings-card"
+    >
+      <div className="profile-settings-intro">
+        <p>Identidade e preferências</p>
+        <h2 id="profile-settings-title">Como você aparece por aqui</h2>
+        <span>
+          Seu nome e fuso são usados nos registros pessoais de leitura.
+        </span>
+      </div>
+
+      <form action={formAction} className="profile-settings-form" ref={formRef}>
         <div className="profile-avatar-editor">
-          <span
-            aria-hidden="true"
-            className={`profile-avatar-preview${profile.avatarUrl ? " profile-avatar-preview--image" : ""}`}
-            style={getAvatarStyle(profile.avatarUrl)}
-          >
-            {profile.avatarUrl ? null : initial}
-          </span>
+          <Avatar
+            alt={`Avatar de ${profile.displayName}`}
+            className="profile-avatar-preview"
+            name={profile.displayName}
+            size="lg"
+            src={profile.avatarUrl}
+          />
 
           <div className="profile-avatar-fields">
             <FormField
@@ -78,6 +95,12 @@ export function ProfileSettingsForm({
             >
               <Input
                 accept="image/jpeg,image/png,image/webp"
+                aria-describedby={
+                  state.fieldErrors.avatar
+                    ? "profile-avatar-error"
+                    : "profile-avatar-hint"
+                }
+                aria-invalid={Boolean(state.fieldErrors.avatar) || undefined}
                 id="profile-avatar"
                 name="avatar"
                 type="file"
@@ -101,11 +124,18 @@ export function ProfileSettingsForm({
             required
           >
             <Input
+              aria-describedby={
+                state.fieldErrors.displayName
+                  ? "profile-display-name-error"
+                  : undefined
+              }
+              aria-invalid={Boolean(state.fieldErrors.displayName) || undefined}
               autoComplete="name"
               defaultValue={profile.displayName}
               id="profile-display-name"
               maxLength={80}
               name="displayName"
+              placeholder="Ex.: Gabriel"
               required
             />
           </FormField>
@@ -118,6 +148,12 @@ export function ProfileSettingsForm({
             required
           >
             <Select
+              aria-describedby={
+                state.fieldErrors.timezone
+                  ? "profile-timezone-error"
+                  : "profile-timezone-hint"
+              }
+              aria-invalid={Boolean(state.fieldErrors.timezone) || undefined}
               defaultValue={profile.timezone}
               id="profile-timezone"
               name="timezone"
@@ -133,17 +169,10 @@ export function ProfileSettingsForm({
         </div>
 
         <div className="profile-settings-actions">
-          {state.message ? (
-            <p
-              className={`profile-settings-message profile-settings-message--${state.status}`}
-              role={state.status === "error" ? "alert" : "status"}
-            >
-              {state.message}
-            </p>
-          ) : null}
+          <FormStatusMessage message={state.message} status={state.status} />
           <SaveButton />
         </div>
       </form>
-    </Card>
+    </section>
   );
 }

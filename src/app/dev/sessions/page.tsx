@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { AppShell } from "@/components/layout/app-shell";
+import ReadingSessionsLoading from "@/app/(app)/sessions/loading";
 import { ReadingSessionsView } from "@/features/reading/components/reading-sessions-view";
 import {
   INITIAL_READING_SESSION_ACTION_STATE,
@@ -91,6 +92,14 @@ export default async function ReadingSessionsPreviewPage({
   const params = await searchParams;
   const state = typeof params.state === "string" ? params.state : "success";
   const form = typeof params.form === "string" ? params.form : "idle";
+
+  if (state === "loading") {
+    return (
+      <AppShell displayName="Gabriel" previewPath="/sessions">
+        <ReadingSessionsLoading />
+      </AppShell>
+    );
+  }
   const previewSessions = state === "empty" ? [] : sessions;
   const formState: ReadingSessionActionState =
     form === "success"
