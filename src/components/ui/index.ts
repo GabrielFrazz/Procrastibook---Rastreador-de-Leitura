@@ -3,6 +3,7 @@ export { Badge } from "@/components/ui/badge";
 export { BrandLockup, BrandMark } from "@/components/ui/brand-lockup";
 export { Button } from "@/components/ui/button";
 export { Card } from "@/components/ui/card";
+export { DateInput } from "@/components/ui/date-input";
 export {
   EmptyState,
   ErrorState,

@@ -7,6 +7,7 @@ import { useFormStatus } from "react-dom";
 import {
   BookCover,
   Button,
+  DateInput,
   FormField,
   FormStatusMessage,
   Input,
@@ -522,11 +523,10 @@ function WorkForm({
                 htmlFor="startedAt"
                 label="Data de início"
               >
-                <Input
+                <DateInput
                   {...getFieldA11y(state, "startedAt")}
                   id="startedAt"
                   name="startedAt"
-                  type="date"
                 />
               </FormField>
 

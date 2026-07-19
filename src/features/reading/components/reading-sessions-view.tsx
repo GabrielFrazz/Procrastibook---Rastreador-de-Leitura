@@ -8,6 +8,7 @@ import {
   Badge,
   Button,
   Card,
+  DateInput,
   EmptyState,
   ErrorState,
   FormField,
@@ -178,7 +179,7 @@ function ReadingSessionForm({
           label="Data"
           required
         >
-          <Input
+          <DateInput
             aria-describedby={
               state.fieldErrors.occurredOn
                 ? "reading-session-date-error"
@@ -190,7 +191,6 @@ function ReadingSessionForm({
             max={today}
             name="occurredOn"
             required
-            type="date"
           />
         </FormField>
 

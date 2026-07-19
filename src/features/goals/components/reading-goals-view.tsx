@@ -7,6 +7,7 @@ import {
   Badge,
   Button,
   Card,
+  DateInput,
   EmptyState,
   ErrorState,
   FormField,
@@ -77,7 +78,7 @@ function SubmitButton({
   );
 }
 
-function MetricOptions() {
+function getMetricOptions() {
   return Object.entries(metricLabels).map(([metric, label]) => (
     <option key={metric} value={metric}>
       {label}
@@ -119,7 +120,7 @@ function GoalFields({
           name="metric"
           required
         >
-          <MetricOptions />
+          {getMetricOptions()}
         </Select>
       </FormField>
 
@@ -156,7 +157,7 @@ function GoalFields({
         label="Início"
         required
       >
-        <Input
+        <DateInput
           aria-describedby={
             state.fieldErrors.periodStart ? `${startId}-error` : undefined
           }
@@ -165,7 +166,6 @@ function GoalFields({
           id={startId}
           name="periodStart"
           required
-          type="date"
         />
       </FormField>
 
@@ -175,7 +175,7 @@ function GoalFields({
         label="Fim"
         required
       >
-        <Input
+        <DateInput
           aria-describedby={
             state.fieldErrors.periodEnd ? `${endId}-error` : undefined
           }
@@ -184,7 +184,6 @@ function GoalFields({
           id={endId}
           name="periodEnd"
           required
-          type="date"
         />
       </FormField>
     </div>

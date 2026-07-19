@@ -1,9 +1,10 @@
 import type {
   InputHTMLAttributes,
   ReactNode,
-  SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from "react";
+
+export { Select } from "@/components/ui/select";
 
 type FormFieldProps = Readonly<{
   children: ReactNode;
@@ -60,21 +61,6 @@ export function Input({
       {...props}
       className={["ui-input", className].filter(Boolean).join(" ")}
     />
-  );
-}
-
-export function Select({
-  children,
-  className,
-  ...props
-}: SelectHTMLAttributes<HTMLSelectElement>) {
-  return (
-    <select
-      {...props}
-      className={["ui-select", className].filter(Boolean).join(" ")}
-    >
-      {children}
-    </select>
   );
 }
 
