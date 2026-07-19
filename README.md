@@ -1,239 +1,164 @@
-# CSI606-2026-01 - Proposta trabalho final
+# Procrastibook
 
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![pnpm](https://img.shields.io/badge/pnpm-F69220?style=for-the-badge&logo=pnpm&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=flat-square&logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/React_19-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript_6-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=supabase&logoColor=white)
 
-## Aluno: Carlos Gabriel de Oliveira Frazão - 22.1.8100
+Aplicação web pessoal para organizar obras, acompanhar o progresso de leitura e visualizar hábitos ao longo do tempo.
 
----
+Trabalho final da disciplina **CSI606 — Desenvolvimento Web**, desenvolvido por **Carlos Gabriel de Oliveira Frazão (22.1.8100)**.
 
-## Resumo
+## Sobre o projeto
 
-O presente trabalho propõe o desenvolvimento de uma aplicação web voltada para o gerenciamento e acompanhamento de hábitos de leitura de diferentes tipos de obras, como livros, mangás, artigos e e-books.
+O Procrastibook centraliza livros, mangás, artigos e e-books em uma biblioteca pessoal. O usuário pode registrar seu progresso e suas sessões de leitura, organizar obras em listas, definir metas e consultar estatísticas.
 
-A plataforma permitirá que usuários organizem suas leituras de forma simples e centralizada, registrando progresso, sessões de leitura, avaliações, anotações e listas personalizadas. Além disso, o sistema contará com dashboards e estatísticas para auxiliar no acompanhamento do desempenho e dos hábitos de leitura ao longo do tempo.
+O sistema também permite importar informações do Google Books e da Open Library, mantendo disponível o cadastro manual quando uma obra não é encontrada.
 
-O projeto tem como foco a aplicação de conceitos de desenvolvimento web full stack utilizando tecnologias modernas tanto no frontend quanto no backend, além da integração com APIs externas para enriquecimento automático das informações das obras cadastradas.
+## Funcionalidades
 
----
+- Autenticação por e-mail e senha, recuperação de acesso e Google OAuth opcional.
+- Biblioteca com busca, filtros e status de leitura.
+- Cadastro manual ou importação de obras por catálogos externos.
+- Progresso por páginas, capítulos ou porcentagem.
+- Sessões de leitura com duração, posição final e anotações.
+- Avaliações, reviews, notas, citações e listas personalizadas.
+- Metas, dashboard e estatísticas pessoais.
+- Perfil com avatar, nome e fuso horário.
+- Interface responsiva para desktop, tablet e mobile.
 
-# 1. Tema
+## Protótipos
 
-O trabalho final tem como tema o desenvolvimento de um sistema web para gerenciamento e acompanhamento de hábitos de leitura.
+Os protótipos de baixa fidelidade abaixo registram a concepção inicial do sistema. A interface atual evoluiu durante o desenvolvimento, portanto essas imagens funcionam como referência histórica.
 
-A aplicação será voltada para usuários que desejam centralizar informações relacionadas às suas leituras em um único ambiente, permitindo organizar obras, acompanhar progresso, registrar sessões de leitura e visualizar estatísticas pessoais.
+### Login
 
----
-
-# 2. Escopo
-
-O sistema contará com as seguintes funcionalidades principais:
-
-- Cadastro e gerenciamento de obras:
-  - Livros;
-  - Mangás;
-  - Artigos;
-  - E-books.
-
-- Controle de progresso de leitura:
-  - Páginas lidas;
-  - Porcentagem concluída;
-  - Controle de capítulos;
-  - Histórico auditável e paginado sob demanda, com correção explícita para reduções;
-  - Atualização atômica protegida contra alterações concorrentes.
-
-- Registro de sessões de leitura:
-  - Tempo gasto;
-  - Avanço por páginas, capítulos ou percentual;
-  - Anotações pessoais;
-  - Resumo acumulado e histórico recente.
-
-- Sistema de avaliações e reviews:
-  - Avaliação editável de 1 a 5 por obra;
-  - Comentários opcionais;
-  - Anotações e citações com localização e vínculo opcional a uma sessão.
-
-- Status de leitura:
-  - Quero Ler;
-  - Lendo;
-  - Finalizado;
-  - Abandonado.
-
-- Listas personalizadas independentes dos status:
-  - Criação por nome e descrição;
-  - Uma obra pode participar de várias listas;
-  - Excluir uma lista preserva as obras da biblioteca.
-
-- Metas de leitura:
-  - Obras finalizadas, páginas, capítulos ou minutos;
-  - Período configurável e progresso calculado pelos registros reais.
-
-- Dashboard e estatísticas pessoais:
-  - Quantidade de obras lidas;
-  - Total de páginas;
-  - Velocidade média de leitura;
-  - Histórico mensal com alternativa tabular acessível.
-
-- Sistema de busca e filtros:
-  - Título;
-  - Autor;
-  - Gênero;
-  - Status da leitura.
-
-- Integração com APIs externas:
-  - Google Books API;
-  - Open Library API.
-
----
-
-# 3. Restrições
-
-Neste trabalho não serão considerados:
-
-- Recursos de rede social entre usuários;
-- Sistema de mensagens ou chat em tempo real;
-- Marketplace ou compra de livros;
-- Aplicativo mobile nativo;
-- Recomendações baseadas em inteligência artificial;
-- Funcionalidades offline;
-- Sistema avançado de autenticação com múltiplos fatores.
-
----
-
-# 4. Protótipo
-
-Os esboços da interface do sistema foram elaborados na forma de protótipos de baixa fidelidade, servindo para ilustrar o fluxo de navegação principal e a disposição inicial dos componentes de tela. Os arquivos de imagem correspondentes encontram-se estruturados na pasta `prototipos`:
-
-### Tela de Login
-
-Interface simples contendo campos para autenticação do usuário na plataforma.
-![Tela de Login](prototipos/login.png)
+![Protótipo da tela de login](prototipos/login.png)
 
 ### Dashboard
 
-Painel central contendo as métricas de leitura, metas anuais, etc.
-![Dashboard](prototipos/dashboard.png)
+![Protótipo do dashboard](prototipos/dashboard.png)
 
 ### Biblioteca
 
-Visualização de todas as obras cadastradas pelo usuário, separadas por categorias e progresso.
-![Biblioteca](prototipos/biblioteca.png)
+![Protótipo da biblioteca](prototipos/biblioteca.png)
 
-### Adicionar Obra
+### Adicionar obra
 
-Formulário para inclusão manual de novos materiais ou para importação automatizada via APIs externas.
-![Adicionar Obra](prototipos/adicionar.png)
----
+![Protótipo da tela de adicionar obra](prototipos/adicionar.png)
 
-# 5. Tecnologias Previstas
+## Tecnologias e arquitetura
 
-O projeto será implementado como uma aplicação full stack em um único workspace:
+O projeto é uma aplicação full stack em um único workspace. O Next.js atende a interface, as páginas do servidor, Server Actions e endpoints internos. O Supabase fornece PostgreSQL, autenticação e armazenamento de arquivos.
 
-- Next.js com App Router;
-- React e TypeScript estrito;
-- pnpm e Node.js 24 LTS;
-- PostgreSQL, Auth e Storage pelo Supabase;
-- Zod e React Hook Form nas fases de domínio;
-- Vitest, Testing Library, pgTAP e Playwright conforme os módulos forem adicionados.
+| Área                 | Tecnologias                              |
+| -------------------- | ---------------------------------------- |
+| Aplicação            | Next.js 16, React 19 e TypeScript 6      |
+| Validação            | Zod 4                                    |
+| Banco e autenticação | PostgreSQL, Supabase Auth, Storage e RLS |
+| Integrações          | Google Books e Open Library              |
+| Testes               | Vitest e pgTAP                           |
+| Deploy               | Vercel e Supabase                        |
 
-## Ambiente local
+As funcionalidades são organizadas por domínio em `src/features`. Componentes visuais não consultam o banco diretamente: os comandos passam por actions e serviços, enquanto consultas e persistência ficam isoladas nas camadas de dados. O banco utiliza RLS para separar os dados de cada usuário e funções PostgreSQL para operações atômicas, como progresso e sessões de leitura.
 
-Pré-requisitos:
+## Estrutura principal
+
+```text
+.
+├── src/
+│   ├── app/                 # Rotas, layouts, Server Actions e endpoints
+│   ├── components/          # Shell e componentes visuais compartilhados
+│   ├── features/            # Regras e interfaces organizadas por domínio
+│   ├── lib/                 # Configuração e clientes do Supabase
+│   ├── styles/              # Tokens e estilos globais ou por tela
+│   └── proxy.ts             # Sessão e proteção das rotas autenticadas
+├── supabase/
+│   ├── migrations/          # Schema, RLS, Storage e funções PostgreSQL
+│   ├── tests/               # Testes de banco com pgTAP
+│   └── seed.sql             # Dados do ambiente local
+├── prototipos/              # Protótipos históricos do projeto
+├── .env.example             # Modelo das variáveis de ambiente
+├── package.json             # Dependências e scripts
+└── README.md
+```
+
+## Como executar localmente
+
+### Pré-requisitos
 
 - Node.js 24 LTS;
 - pnpm 11;
-- Docker Desktop com o mecanismo WSL 2 para o Supabase local.
+- Docker Desktop em execução.
 
-Instale as dependências e execute o servidor:
+Instale o pnpm adotado pelo projeto:
 
-```bash
+```powershell
+npm install --global pnpm@11.7.0
+```
+
+Na raiz do repositório, execute:
+
+```powershell
 pnpm install
+Copy-Item .env.example .env.local
+pnpm db:start
+pnpm db:status
+```
+
+Copie para `.env.local` a URL e a chave pública exibidas por `pnpm db:status`. Depois, prepare o banco e inicie a aplicação:
+
+```powershell
+pnpm db:reset
 pnpm dev
 ```
 
-A aplicação ficará disponível em <http://localhost:3000>.
+A aplicação ficará disponível em <http://localhost:3000>. O Supabase Studio local estará em <http://127.0.0.1:54323>.
 
-Copie `.env.example` para `.env.local` quando precisar alterar os valores locais. Os placeholders do Supabase devem ser substituídos pelos valores exibidos por `pnpm db:status`. A chave `GOOGLE_BOOKS_API_KEY` é usada somente no servidor e nunca deve receber o prefixo `NEXT_PUBLIC_`. Ajuste `OPEN_LIBRARY_USER_AGENT` com o nome da aplicação e um contato real; esse valor também permanece somente no servidor.
+> Se o PowerShell bloquear `pnpm.ps1`, execute `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned` e abra um novo terminal.
 
-A busca externa autenticada está disponível em `GET /api/catalog/search`. As respostas normalizadas ficam em cache por 24 horas e cada instância limita cada usuário a 20 consultas por minuto. A seleção de um resultado preenche o formulário de nova obra; o salvamento registra obra, autores, gêneros e referência externa em uma única transação.
+> `pnpm db:reset` apaga e recria somente o banco local. Nunca execute esse comando em produção.
 
-## Supabase local
+## Variáveis de ambiente
 
-Com o Docker Desktop em execução:
+| Variável                               | Finalidade                                       |
+| -------------------------------------- | ------------------------------------------------ |
+| `NEXT_PUBLIC_APP_URL`                  | URL base da aplicação                            |
+| `NEXT_PUBLIC_SUPABASE_URL`             | URL do projeto Supabase                          |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Chave pública do Supabase                        |
+| `GOOGLE_AUTH_ENABLED`                  | Habilita o login com Google                      |
+| `GOOGLE_BOOKS_API_KEY`                 | Credencial usada no servidor para o Google Books |
+| `OPEN_LIBRARY_USER_AGENT`              | Identificação enviada à Open Library             |
 
-```bash
-pnpm db:start
-pnpm db:status
-pnpm db:reset
-pnpm db:types
-pnpm db:test
-pnpm db:stop
-```
+Segredos administrativos, como `service_role`, senha do banco e segredos OAuth, não devem ser adicionados ao repositório nem expostos ao navegador.
 
-Serviços locais padrão:
+## Comandos principais
 
-- API: <http://127.0.0.1:54321>;
-- Studio: <http://127.0.0.1:54323>;
-- Mailpit: <http://127.0.0.1:54324>.
+| Comando                          | Ação                                            |
+| -------------------------------- | ----------------------------------------------- |
+| `pnpm dev`                       | Inicia o ambiente de desenvolvimento            |
+| `pnpm build`                     | Gera o build de produção                        |
+| `pnpm db:start` / `pnpm db:stop` | Inicia ou encerra o Supabase local              |
+| `pnpm db:reset`                  | Recria o banco local a partir das migrações     |
+| `pnpm db:test`                   | Executa os testes de banco                      |
+| `pnpm test`                      | Executa os testes Vitest                        |
+| `pnpm validate`                  | Executa lint, formatação, tipos, testes e build |
 
-`pnpm db:reset` recria o banco a partir das migrações e executa `supabase/seed.sql`.
-`pnpm db:types` atualiza o contrato TypeScript a partir do esquema local.
-`pnpm db:test` executa os testes pgTAP de constraints e isolamento por RLS.
+## Deploy
 
-## Comandos de qualidade
+A aplicação é hospedada na Vercel e utiliza um projeto Supabase para banco, autenticação e arquivos. A ordem segura de publicação é:
 
-```bash
-pnpm lint
-pnpm format:check
-pnpm typecheck
-pnpm test
-pnpm build
-```
+1. Executar `pnpm validate`.
+2. Conferir e aplicar as migrações com `pnpm exec supabase migration list` e `pnpm exec supabase db push`.
+3. Publicar o código na Vercel e testar os fluxos principais.
 
-`pnpm validate` executa a sequência completa acima.
+Migrações já aplicadas não devem ser editadas. Correções de banco devem ser feitas por uma nova migração.
 
-## Fundação visual
+## Referências
 
-Durante `pnpm dev`, a rota <http://localhost:3000/dev/ui> apresenta os tokens e
-componentes compartilhados. Ela existe somente no ambiente de desenvolvimento;
-as cores, espaçamentos, tipografia e estados ficam centralizados em
-`src/styles/tokens.css` e `src/components/ui`.
-
----
-
-# 6. Estrutura de Pastas Prevista
-
-O workspace inicial segue esta organização:
-
-```text
-procrastibook/
-├── src/
-│   ├── app/              # Rotas e layouts do Next.js
-│   ├── styles/           # Estilos globais; tokens entram na fundação visual
-│   └── test/             # Testes e configuração compartilhada
-├── prototipos/           # Protótipos de baixa fidelidade
-├── .env.example          # Nomes e valores fictícios de ambiente
-├── package.json          # Scripts e dependências fixadas
-└── pnpm-lock.yaml        # Resolução reproduzível das dependências
-```
-
-Banco, autenticação, integrações externas e funcionalidades de leitura serão adicionados em entregas posteriores.
-
----
-
-# 7. Referências
-
-GOOGLE BOOKS API. Google Books APIs Getting Started. Disponível em: <https://developers.google.com/books>. Acesso em: 15 maio 2026.
-
-NEXT.JS. Next.js Documentation. Disponível em: <https://nextjs.org/docs>. Acesso em: 14 jul. 2026.
-
-OPEN LIBRARY API. Open Library Developer Center. Disponível em: <https://openlibrary.org/developers/api>. Acesso em: 15 maio 2026.
-
-POSTGRESQL. PostgreSQL Database Management System Documentation. Disponível em: <https://www.postgresql.org/docs/>. Acesso em: 14 jul. 2026.
-
-REACT. React Documentation and Guides. Disponível em: <https://react.dev>. Acesso em: 14 jul. 2026.
-
-SUPABASE. Supabase Documentation. Disponível em: <https://supabase.com/docs>. Acesso em: 14 jul. 2026.
+- [Next.js](https://nextjs.org/docs)
+- [React](https://react.dev/)
+- [Supabase](https://supabase.com/docs)
+- [PostgreSQL](https://www.postgresql.org/docs/)
+- [Google Books APIs](https://developers.google.com/books)
+- [Open Library Developer Center](https://openlibrary.org/developers/api)
