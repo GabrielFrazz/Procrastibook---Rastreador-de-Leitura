@@ -18,7 +18,6 @@ function appendValidFields(formData: FormData) {
   formData.set("workId", workId);
   formData.set("occurredOn", "2026-07-15");
   formData.set("durationMinutes", "45");
-  formData.set("startPosition", "10");
   formData.set("endPosition", "35,5");
   formData.set("notes", "Sessão noturna.");
   return formData;
@@ -36,7 +35,6 @@ describe("formulário de sessão de leitura", () => {
         endPosition: 35.5,
         notes: "Sessão noturna.",
         occurredOn: "2026-07-15",
-        startPosition: 10,
         workId,
       },
       ok: true,
@@ -53,36 +51,13 @@ describe("formulário de sessão de leitura", () => {
     },
   );
 
-  it("permite uma sessão sem posições", () => {
-    const formData = appendValidFields(validFormData());
-    formData.set("startPosition", "");
-    formData.set("endPosition", "");
-
-    const result = validateReadingSessionForm(formData);
-    expect(result.ok && result.data.startPosition).toBeNull();
-    expect(result.ok && result.data.endPosition).toBeNull();
-  });
-
-  it("exige posições inicial e final em conjunto", () => {
+  it("exige a posição final", () => {
     const formData = appendValidFields(validFormData());
     formData.set("endPosition", "");
 
     const result = validateReadingSessionForm(formData);
     expect(result.ok).toBe(false);
-    expect(!result.ok && result.fieldErrors.endPosition?.[0]).toContain(
-      "juntas",
-    );
-  });
-
-  it("rejeita posição final menor que a inicial", () => {
-    const formData = appendValidFields(validFormData());
-    formData.set("endPosition", "9");
-
-    const result = validateReadingSessionForm(formData);
-    expect(result.ok).toBe(false);
-    expect(!result.ok && result.fieldErrors.endPosition?.[0]).toContain(
-      "menor",
-    );
+    expect(!result.ok && result.fieldErrors.endPosition).toBeDefined();
   });
 
   it("rejeita data inexistente e payload de notas excessivo", () => {

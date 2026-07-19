@@ -1,27 +1,16 @@
 import type { CreateReadingSessionInput } from "@/features/reading/domain/reading-sessions";
-import type { Database } from "@/lib/supabase/database.types";
-
-type ProgressUnit = Database["public"]["Enums"]["progress_unit"];
-
-export type ReadingSessionInsert = Readonly<{
+export type ReadingSessionCommand = Readonly<{
   durationSeconds: number;
-  endPosition: number | null;
+  endPosition: number;
   notes?: string | undefined;
   occurredOn: string;
-  ownerId: string;
-  progressUnit: ProgressUnit;
-  startPosition: number | null;
   workId: string;
 }>;
 
 export type CreateReadingSessionDependencies = Readonly<{
-  findOwnedWorkUnit: (
-    ownerId: string,
-    workId: string,
-  ) => Promise<ProgressUnit | null>;
   getUserId: () => Promise<string | null>;
-  insertSession: (
-    session: ReadingSessionInsert,
+  recordSession: (
+    session: ReadingSessionCommand,
   ) => Promise<{ errorCode?: string | undefined }>;
 }>;
 
@@ -37,7 +26,7 @@ function mapFailure(code: string | undefined): CreateReadingSessionResult {
     return { code: "INVALID", ok: false };
   }
 
-  if (code === "23503") {
+  if (code === "23503" || code === "P0002") {
     return { code: "NOT_FOUND", ok: false };
   }
 
@@ -58,23 +47,11 @@ export async function createReadingSession(
     return { code: "AUTH_REQUIRED", ok: false };
   }
 
-  const progressUnit = await dependencies.findOwnedWorkUnit(
-    ownerId,
-    input.workId,
-  );
-
-  if (!progressUnit) {
-    return { code: "NOT_FOUND", ok: false };
-  }
-
-  const result = await dependencies.insertSession({
+  const result = await dependencies.recordSession({
     durationSeconds: input.durationSeconds,
     endPosition: input.endPosition,
     ...(input.notes ? { notes: input.notes } : {}),
     occurredOn: input.occurredOn,
-    ownerId,
-    progressUnit,
-    startPosition: input.startPosition,
     workId: input.workId,
   });
 

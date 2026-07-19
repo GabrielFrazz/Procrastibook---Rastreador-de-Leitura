@@ -5,12 +5,7 @@ import type { Database } from "@/lib/supabase/database.types";
 type ProgressUnit = Database["public"]["Enums"]["progress_unit"];
 
 export type ReadingSessionFormField =
-  | "durationMinutes"
-  | "endPosition"
-  | "notes"
-  | "occurredOn"
-  | "startPosition"
-  | "workId";
+  "durationMinutes" | "endPosition" | "notes" | "occurredOn" | "workId";
 
 export type ReadingSessionActionState = Readonly<{
   fieldErrors: Partial<Record<ReadingSessionFormField, readonly string[]>>;
@@ -61,16 +56,15 @@ export type ReadingSessionsData = Readonly<{
 
 const decimalPattern = /^\d{1,8}(?:[.,]\d{1,2})?$/;
 
-const optionalPositionSchema = z
+const positionSchema = z
   .string()
   .trim()
   .refine(
-    (value) => value === "" || decimalPattern.test(value),
+    (value) => decimalPattern.test(value),
     "Informe uma posição válida com até duas casas decimais.",
   )
-  .transform((value) =>
-    value === "" ? null : Number(value.replace(",", ".")),
-  );
+  .transform((value) => Number(value.replace(",", ".")))
+  .pipe(z.number().positive("A posição final deve ser maior que zero."));
 
 const dateSchema = z
   .string()
@@ -96,40 +90,14 @@ const formSchema = z
           .min(1, "A duração deve ser maior que zero.")
           .max(1_440, "A duração não pode superar 24 horas."),
       ),
-    endPosition: optionalPositionSchema,
+    endPosition: positionSchema,
     notes: z
       .string()
       .trim()
       .max(2_000, "As anotações podem ter no máximo 2.000 caracteres.")
       .transform((value) => value || undefined),
     occurredOn: dateSchema,
-    startPosition: optionalPositionSchema,
     workId: z.string().uuid("Selecione uma obra válida."),
-  })
-  .superRefine((value, context) => {
-    const hasStart = value.startPosition !== null;
-    const hasEnd = value.endPosition !== null;
-
-    if (hasStart !== hasEnd) {
-      const message = "Informe as posições inicial e final juntas.";
-      context.addIssue({
-        code: "custom",
-        message,
-        path: hasStart ? ["endPosition"] : ["startPosition"],
-      });
-    }
-
-    if (
-      value.startPosition !== null &&
-      value.endPosition !== null &&
-      value.endPosition < value.startPosition
-    ) {
-      context.addIssue({
-        code: "custom",
-        message: "A posição final não pode ser menor que a inicial.",
-        path: ["endPosition"],
-      });
-    }
   })
   .transform(({ durationMinutes, ...value }) => ({
     ...value,
@@ -166,7 +134,6 @@ export function validateReadingSessionForm(formData: FormData) {
     endPosition: readText(formData, "endPosition"),
     notes: readText(formData, "notes"),
     occurredOn: readText(formData, "occurredOn"),
-    startPosition: readText(formData, "startPosition"),
     workId: readText(formData, "workId"),
   });
 

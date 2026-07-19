@@ -22,30 +22,17 @@ export function createReadingSessionDependencies(
   supabase: ServerSupabaseClient,
 ): CreateReadingSessionDependencies {
   return {
-    findOwnedWorkUnit: async (ownerId, workId) => {
-      const result = await supabase
-        .from("works")
-        .select("progress_unit")
-        .eq("owner_id", ownerId)
-        .eq("id", workId)
-        .maybeSingle();
-
-      return result.error ? null : (result.data?.progress_unit ?? null);
-    },
     getUserId: async () => {
       const result = await supabase.auth.getUser();
       return result.error ? null : (result.data.user?.id ?? null);
     },
-    insertSession: async (session) => {
-      const result = await supabase.from("reading_sessions").insert({
-        duration_seconds: session.durationSeconds,
-        end_position: session.endPosition,
-        notes: session.notes ?? null,
-        occurred_on: session.occurredOn,
-        owner_id: session.ownerId,
-        progress_unit: session.progressUnit,
-        start_position: session.startPosition,
-        work_id: session.workId,
+    recordSession: async (session) => {
+      const result = await supabase.rpc("record_reading_session", {
+        p_duration_seconds: session.durationSeconds,
+        p_end_position: session.endPosition,
+        ...(session.notes ? { p_notes: session.notes } : {}),
+        p_occurred_on: session.occurredOn,
+        p_work_id: session.workId,
       });
 
       return result.error ? { errorCode: result.error.code } : {};

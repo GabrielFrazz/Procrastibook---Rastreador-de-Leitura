@@ -34,7 +34,7 @@ function commandError(result: CreateReadingSessionResult) {
   }
 
   if (result.code === "INVALID") {
-    return "A duração, a unidade ou as posições ultrapassam os limites da obra.";
+    return "A posição final deve ser maior que o progresso atual e não pode ultrapassar o total da obra.";
   }
 
   return "Não foi possível registrar a sessão. Tente novamente.";
@@ -72,11 +72,15 @@ export async function createReadingSessionAction(
   }
 
   revalidatePath("/sessions");
+  revalidatePath("/library");
+  revalidatePath(`/library/${validation.data.workId}`);
   revalidatePath("/dashboard");
+  revalidatePath("/goals");
+  revalidatePath("/statistics");
 
   return {
     fieldErrors: {},
-    message: "Sessão registrada com sucesso.",
+    message: "Sessão registrada e progresso atualizado.",
     status: "success",
   };
 }

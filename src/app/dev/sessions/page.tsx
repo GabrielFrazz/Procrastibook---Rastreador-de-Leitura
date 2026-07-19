@@ -105,7 +105,7 @@ export default async function ReadingSessionsPreviewPage({
     form === "success"
       ? {
           fieldErrors: {},
-          message: "Sessão registrada com sucesso.",
+          message: "Sessão registrada e progresso atualizado.",
           status: "success",
         }
       : form === "error"

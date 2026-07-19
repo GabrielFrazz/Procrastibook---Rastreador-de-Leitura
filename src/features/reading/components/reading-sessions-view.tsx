@@ -42,9 +42,9 @@ type ReadingSessionsViewProps = Readonly<{
 }>;
 
 const unitLabels = {
-  CHAPTER: { end: "Capítulo final", start: "Capítulo inicial" },
-  PAGE: { end: "Página final", start: "Página inicial" },
-  PERCENT: { end: "Percentual final", start: "Percentual inicial" },
+  CHAPTER: "Até qual capítulo você leu?",
+  PAGE: "Até qual página você leu?",
+  PERCENT: "Até qual percentual você avançou?",
 } as const;
 
 function SubmitButton() {
@@ -75,7 +75,8 @@ function PositionHint({ work }: Readonly<{ work: ReadingSessionWork }>) {
 
   return (
     <span>
-      Progresso atual: {current}
+      A sessão começa no progresso atual, {current}, e atualiza a obra ao ser
+      registrada.
       {limit ? ` · limite conhecido: ${limit}` : ""}
     </span>
   );
@@ -128,7 +129,7 @@ function ReadingSessionForm({
     );
   }
 
-  const labels = unitLabels[selectedWork.progressUnit];
+  const positionLabel = unitLabels[selectedWork.progressUnit];
 
   return (
     <section
@@ -221,35 +222,12 @@ function ReadingSessionForm({
           />
         </FormField>
 
-        <div className="reading-session-form__positions">
-          <FormField
-            error={state.fieldErrors.startPosition?.[0]}
-            htmlFor="reading-session-start"
-            label={labels.start}
-          >
-            <Input
-              aria-describedby={
-                state.fieldErrors.startPosition
-                  ? "reading-session-start-error"
-                  : undefined
-              }
-              aria-invalid={
-                Boolean(state.fieldErrors.startPosition) || undefined
-              }
-              id="reading-session-start"
-              inputMode="decimal"
-              min={0}
-              name="startPosition"
-              placeholder="Opcional"
-              step="0.01"
-              type="number"
-            />
-          </FormField>
-
+        <div className="reading-session-form__progress">
           <FormField
             error={state.fieldErrors.endPosition?.[0]}
             htmlFor="reading-session-end"
-            label={labels.end}
+            label={positionLabel}
+            required
           >
             <Input
               aria-describedby={
@@ -260,9 +238,12 @@ function ReadingSessionForm({
               aria-invalid={Boolean(state.fieldErrors.endPosition) || undefined}
               id="reading-session-end"
               inputMode="decimal"
-              min={0}
+              key={selectedWork.id}
+              max={selectedWork.totalProgress ?? undefined}
+              min={selectedWork.currentProgress + 0.01}
               name="endPosition"
-              placeholder="Opcional"
+              placeholder={`Maior que ${formatProgressHistoryValue(selectedWork.currentProgress, selectedWork.progressUnit)}`}
+              required
               step="0.01"
               type="number"
             />

@@ -742,6 +742,16 @@ export type Database = {
         };
         Returns: number;
       };
+      record_reading_session: {
+        Args: {
+          p_duration_seconds: number;
+          p_end_position: number;
+          p_notes?: string;
+          p_occurred_on: string;
+          p_work_id: string;
+        };
+        Returns: string;
+      };
       remove_work_from_reading_list: {
         Args: { p_list_id: string; p_work_id: string };
         Returns: boolean;
