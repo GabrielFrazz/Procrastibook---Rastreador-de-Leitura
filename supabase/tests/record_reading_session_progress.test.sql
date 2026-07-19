@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select extensions.plan(9);
+select extensions.plan(11);
 
 insert into auth.users (id, email, raw_user_meta_data)
 values
@@ -61,6 +61,25 @@ select extensions.is(
   ),
   42::numeric,
   'A obra assume a posição final da sessão'
+);
+
+select extensions.is(
+  (
+    select status
+    from public.works
+    where id = '10000000-0000-4000-8000-000000000040'
+  ),
+  'READING'::public.reading_status,
+  'A primeira sessão move a obra de quero ler para lendo'
+);
+
+select extensions.ok(
+  (
+    select started_at is not null
+    from public.works
+    where id = '10000000-0000-4000-8000-000000000040'
+  ),
+  'A primeira sessão preenche a data de início'
 );
 
 select extensions.is(

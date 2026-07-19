@@ -68,6 +68,7 @@ export async function recordProgressAction(
   }
 
   revalidatePath("/library");
+  revalidatePath(`/library/${validation.data.workId}`);
   revalidatePath("/dashboard");
 
   return {

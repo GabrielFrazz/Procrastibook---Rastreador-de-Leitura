@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select extensions.plan(16);
+select extensions.plan(20);
 
 select extensions.ok(
   not has_function_privilege(
@@ -82,6 +82,27 @@ values
     5
   );
 
+insert into public.works (
+  id,
+  owner_id,
+  type,
+  title,
+  page_count,
+  progress_unit,
+  current_progress,
+  status
+)
+values (
+  '10000000-0000-4000-8000-000000000014',
+  '00000000-0000-4000-8000-000000000010',
+  'BOOK',
+  'Obra abandonada de A',
+  80,
+  'PAGE',
+  0,
+  'ABANDONED'
+);
+
 set local role authenticated;
 set local request.jwt.claim.sub = '00000000-0000-4000-8000-000000000010';
 set local request.jwt.claim.role = 'authenticated';
@@ -116,6 +137,25 @@ select extensions.is(
   ),
   30::numeric,
   'A obra é atualizada na mesma operação'
+);
+
+select extensions.is(
+  (
+    select status
+    from public.works
+    where id = '10000000-0000-4000-8000-000000000010'
+  ),
+  'READING'::public.reading_status,
+  'Progresso positivo move a obra de quero ler para lendo'
+);
+
+select extensions.ok(
+  (
+    select started_at is not null
+    from public.works
+    where id = '10000000-0000-4000-8000-000000000010'
+  ),
+  'O primeiro progresso preenche a data de início'
 );
 
 select extensions.is(
@@ -244,6 +284,27 @@ select extensions.throws_ok(
   '22023',
   null,
   'Atualização sem mudança é rejeitada'
+);
+
+select extensions.is(
+  public.record_work_progress(
+    '10000000-0000-4000-8000-000000000014',
+    10,
+    'UPDATE',
+    0
+  ),
+  10::numeric,
+  'Uma obra abandonada ainda pode receber progresso explícito'
+);
+
+select extensions.is(
+  (
+    select status
+    from public.works
+    where id = '10000000-0000-4000-8000-000000000014'
+  ),
+  'ABANDONED'::public.reading_status,
+  'Progresso não reabre automaticamente uma obra abandonada'
 );
 
 select extensions.throws_ok(
