@@ -29,8 +29,24 @@ export type ProfileSettingsInput = Readonly<{
   timezone: (typeof PROFILE_TIMEZONES)[number];
 }>;
 
-const allowedAvatarTypes = ["image/jpeg", "image/png", "image/webp"];
-const maxAvatarSize = 2 * 1024 * 1024;
+export const ALLOWED_AVATAR_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+] as const;
+export const MAX_AVATAR_SIZE_BYTES = 2 * 1024 * 1024;
+
+export function getAvatarFileError(file: File): string | null {
+  if (!ALLOWED_AVATAR_TYPES.some((type) => type === file.type)) {
+    return "Use uma imagem JPEG, PNG ou WebP.";
+  }
+
+  if (file.size > MAX_AVATAR_SIZE_BYTES) {
+    return "O avatar deve ter no máximo 2 MB.";
+  }
+
+  return null;
+}
 
 export function validateProfileSettingsForm(formData: FormData) {
   const errors: Record<string, string[]> = {};
@@ -57,10 +73,10 @@ export function validateProfileSettingsForm(formData: FormData) {
     errors.timezone = ["Selecione um fuso horário válido."];
   }
 
-  if (avatarFile && !allowedAvatarTypes.includes(avatarFile.type)) {
-    errors.avatar = ["Use uma imagem JPEG, PNG ou WebP."];
-  } else if (avatarFile && avatarFile.size > maxAvatarSize) {
-    errors.avatar = ["O avatar deve ter no máximo 2 MB."];
+  const avatarError = avatarFile ? getAvatarFileError(avatarFile) : null;
+
+  if (avatarError) {
+    errors.avatar = [avatarError];
   }
 
   if (Object.keys(errors).length > 0) {

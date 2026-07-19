@@ -1,11 +1,16 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useRef } from "react";
+import {
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+} from "react";
 import { useFormStatus } from "react-dom";
 
 import {
-  Avatar,
   Button,
   FormField,
   FormStatusMessage,
@@ -13,6 +18,7 @@ import {
   Select,
 } from "@/components/ui";
 import { updateProfileSettingsAction } from "@/features/profile/actions/profile-settings-action";
+import { AvatarEditor } from "@/features/profile/components/avatar-editor";
 import type { ProfileSettingsData } from "@/features/profile/data/profile-settings-repository";
 import {
   INITIAL_PROFILE_SETTINGS_STATE,
@@ -31,11 +37,11 @@ const timezoneLabels: Readonly<
   UTC: "UTC",
 };
 
-function SaveButton() {
+function SaveButton({ disabled }: Readonly<{ disabled: boolean }>) {
   const { pending } = useFormStatus();
 
   return (
-    <Button isLoading={pending} type="submit">
+    <Button disabled={disabled} isLoading={pending} type="submit">
       {pending ? "Salvando…" : "Salvar perfil"}
     </Button>
   );
@@ -50,6 +56,7 @@ export function ProfileSettingsForm({
     INITIAL_PROFILE_SETTINGS_STATE,
   );
   const formRef = useRef<HTMLFormElement>(null);
+  const [isAvatarCropPending, setIsAvatarCropPending] = useState(false);
 
   useEffect(() => {
     if (state.status === "success") {
@@ -62,6 +69,15 @@ export function ProfileSettingsForm({
         ?.focus();
     }
   }, [router, state]);
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    if (isAvatarCropPending) {
+      event.preventDefault();
+      formRef.current
+        ?.querySelector<HTMLButtonElement>("[data-avatar-apply]")
+        ?.focus();
+    }
+  };
 
   return (
     <section
@@ -76,45 +92,19 @@ export function ProfileSettingsForm({
         </span>
       </div>
 
-      <form action={formAction} className="profile-settings-form" ref={formRef}>
-        <div className="profile-avatar-editor">
-          <Avatar
-            alt={`Avatar de ${profile.displayName}`}
-            className="profile-avatar-preview"
-            name={profile.displayName}
-            size="lg"
-            src={profile.avatarUrl}
-          />
-
-          <div className="profile-avatar-fields">
-            <FormField
-              error={state.fieldErrors.avatar?.[0]}
-              hint="JPEG, PNG ou WebP, com no máximo 2 MB."
-              htmlFor="profile-avatar"
-              label="Avatar"
-            >
-              <Input
-                accept="image/jpeg,image/png,image/webp"
-                aria-describedby={
-                  state.fieldErrors.avatar
-                    ? "profile-avatar-error"
-                    : "profile-avatar-hint"
-                }
-                aria-invalid={Boolean(state.fieldErrors.avatar) || undefined}
-                id="profile-avatar"
-                name="avatar"
-                type="file"
-              />
-            </FormField>
-
-            {profile.avatarPath ? (
-              <label className="profile-remove-avatar">
-                <input name="removeAvatar" type="checkbox" value="true" />
-                <span>Remover o avatar atual</span>
-              </label>
-            ) : null}
-          </div>
-        </div>
+      <form
+        action={formAction}
+        className="profile-settings-form"
+        onSubmit={handleSubmit}
+        ref={formRef}
+      >
+        <AvatarEditor
+          avatarPath={profile.avatarPath}
+          avatarUrl={profile.avatarUrl}
+          displayName={profile.displayName}
+          onCropPendingChange={setIsAvatarCropPending}
+          serverError={state.fieldErrors.avatar?.[0]}
+        />
 
         <div className="profile-settings-grid">
           <FormField
@@ -170,7 +160,7 @@ export function ProfileSettingsForm({
 
         <div className="profile-settings-actions">
           <FormStatusMessage message={state.message} status={state.status} />
-          <SaveButton />
+          <SaveButton disabled={isAvatarCropPending} />
         </div>
       </form>
     </section>
